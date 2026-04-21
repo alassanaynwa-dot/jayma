@@ -57,3 +57,62 @@ class User(AbstractUser):
     @property
     def is_platform_admin(self) -> bool:
         return self.role == self.Role.ADMIN or self.is_superuser
+
+    @property
+    def is_client(self) -> bool:
+        return self.role == self.Role.CLIENT
+
+
+class ClientAddress(models.Model):
+    """Adresse sauvegardée d'un client (carnet d'adresses)."""
+    user = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        related_name="addresses",
+    )
+    label = models.CharField(
+        max_length=40,
+        help_text="Ex : Maison, Bureau, Chez maman",
+    )
+    address = models.TextField()
+    city = models.CharField(max_length=100)
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Adresse client"
+        verbose_name_plural = "Adresses clients"
+        ordering = ("-is_default", "-created_at")
+
+    def __str__(self):
+        return f"{self.label} — {self.city}"
+
+    def save(self, *args, **kwargs):
+        # Si on marque celle-ci par défaut, enlever le flag des autres
+        if self.is_default:
+            ClientAddress.objects.filter(
+                user=self.user, is_default=True
+            ).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)
+
+
+class OTPToken(models.Model):
+    """
+    Code OTP à 4 chiffres envoyé par SMS pour l'auth client.
+    Stockage DB plutôt que cache (audit + max 1 actif par phone).
+    """
+    phone = models.CharField(max_length=20, db_index=True)
+    code = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+    consumed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Code OTP"
+        verbose_name_plural = "Codes OTP"
+        ordering = ("-created_at",)
+        indexes = [models.Index(fields=["phone", "-created_at"])]
+
+    def __str__(self):
+        return f"{self.phone} → {self.code} ({'utilisé' if self.consumed_at else 'actif'})"

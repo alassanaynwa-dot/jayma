@@ -1,0 +1,36 @@
+{% extends "base/shop_base.html" %}
+{% block title %}{% if address %}Modifier{% else %}Nouvelle{% endif %} adresse — {{ shop.name }}{% endblock %}
+
+{% block content %}
+<section class="max-w-md mx-auto px-4 py-8">
+  <a href="{% url 'client:addresses' %}" class="inline-flex items-center text-sm text-slate-500 hover:text-ink-500 mb-4">← Mes adresses</a>
+
+  <form method="post" class="card space-y-5">
+    {% csrf_token %}
+    <h1 class="font-serif text-xl font-medium text-ink-500">{% if address %}Modifier l'adresse{% else %}Nouvelle adresse{% endif %}</h1>
+
+    <div>
+      <label class="label">{{ form.label.label }}</label>
+      {{ form.label }}
+      {% if form.label.errors %}<p class="mt-1 text-xs text-red-600">{{ form.label.errors.0 }}</p>{% endif %}
+    </div>
+    <div>
+      <label class="label">{{ form.address.label }}</label>
+      {{ form.address }}
+    </div>
+    <div>
+      <label class="label">{{ form.city.label }}</label>
+      {{ form.city }}
+    </div>
+    <label class="inline-flex items-center gap-2">
+      {{ form.is_default }}
+      <span class="text-sm">{{ form.is_default.label }}</span>
+    </label>
+
+    <div class="flex gap-2 pt-2">
+      <a href="{% url 'client:addresses' %}" class="btn-secondary">Annuler</a>
+      <button type="submit" class="shop-btn flex-1">{% if address %}Enregistrer{% else %}Ajouter{% endif %}</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

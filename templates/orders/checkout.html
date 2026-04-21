@@ -7,6 +7,14 @@
   <h1 class="font-serif text-3xl sm:text-4xl font-medium text-ink-500">Finaliser ma commande</h1>
   <p class="mt-1 text-sm text-slate-500">Encore une étape et c'est à toi !</p>
 
+  {# Bandeau : invitation à se connecter si guest #}
+  {% if not request.user.is_authenticated %}
+    <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm flex items-center justify-between gap-3">
+      <span class="text-slate-700">Tu as déjà un compte ?</span>
+      <a href="{% url 'client:login' %}?next={% url 'orders_public:checkout' %}" class="font-medium shop-accent hover:underline">Se connecter (plus rapide) →</a>
+    </div>
+  {% endif %}
+
   <form method="post" class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
     {% csrf_token %}
 
@@ -61,6 +69,19 @@
           </div>
         </div>
       </div>
+
+      {# Bloc "sauvegarder mes infos" — uniquement si pas connecté #}
+      {% if not request.user.is_authenticated %}
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <label class="flex items-start gap-3 cursor-pointer">
+            {{ form.save_profile }}
+            <div>
+              <div class="text-sm font-medium text-ink-500">{{ form.save_profile.label }}</div>
+              <div class="text-xs text-slate-500">La prochaine fois, on pré-remplira ton nom, téléphone et adresse.</div>
+            </div>
+          </label>
+        </div>
+      {% endif %}
 
       <div class="bg-white rounded-xl border border-slate-200 p-5">
         <h2 class="font-serif text-lg font-medium text-ink-500">Mode de paiement</h2>

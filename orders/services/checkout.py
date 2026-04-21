@@ -25,6 +25,9 @@ def create_order_from_cart(request, shop: Shop, form_data: dict) -> Order:
     """
     Crée l'Order à partir du panier actuel + données checkout.
 
+    Si le client a coché "Sauvegarder mes infos", on crée (ou retrouve) un
+    User client et on sauvegarde l'adresse pour la prochaine fois.
+
     Ne déclenche pas l'appel de paiement (à faire en aval via payments/services/<provider>.py).
     """
     cart = Cart(request)
@@ -135,6 +138,37 @@ def create_order_from_cart(request, shop: Shop, form_data: dict) -> Order:
             client_phone=form_data["client_phone"],
             discount_xof=discount,
         )
+
+    # Sauvegarder l'adresse si le client l'a demandé
+    if form_data.get("save_profile"):
+        from accounts.models import ClientAddress, User
+        phone = form_data["client_phone"]
+        user, created = User.objects.get_or_create(
+            phone=phone,
+            defaults={
+                "username": f"client_{phone.lstrip('+')}",
+                "role": User.Role.CLIENT,
+                "first_name": form_data["client_name"].split(" ")[0] if form_data.get("client_name") else "",
+                "email": form_data.get("client_email", ""),
+                "city": form_data["client_city"],
+            },
+        )
+        if created:
+            user.set_unusable_password()
+            user.save()
+
+        # Si pas déjà d'adresse à cet endroit, on la sauvegarde
+        exists = ClientAddress.objects.filter(
+            user=user, address=form_data["client_address"], city=form_data["client_city"],
+        ).exists()
+        if not exists:
+            ClientAddress.objects.create(
+                user=user,
+                label="Adresse de livraison",
+                address=form_data["client_address"],
+                city=form_data["client_city"],
+                is_default=not user.addresses.exists(),
+            )
 
     # Vider le panier + le coupon session
     cart.clear()

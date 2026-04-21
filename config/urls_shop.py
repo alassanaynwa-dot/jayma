@@ -14,6 +14,7 @@ urlpatterns = [
     path("paiements/", include("payments.urls")),
     path("livreur/", include("delivery.urls_public")),
     path("promo/", include("coupons.urls_public")),
+    path("compte/", include("accounts.urls_client")),
 
     # Calcul dynamique des frais de livraison (HTMX au checkout)
     path("api/frais-livraison/", compute_fee_partial, name="compute_fee"),
