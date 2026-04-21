@@ -1,0 +1,61 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="min-h-screen lg:flex bg-slate-50" x-data="{ sidebarOpen: false }">
+
+  {# === Sidebar desktop (fixe à gauche) === #}
+  <aside class="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 border-r border-slate-200 bg-white">
+    {% include "dashboard/partials/sidebar.html" %}
+  </aside>
+
+  {# === Drawer mobile (slide from left) === #}
+  <div x-show="sidebarOpen" x-cloak class="lg:hidden fixed inset-0 z-40" x-transition.opacity>
+    <div class="absolute inset-0 bg-ink-500/50" @click="sidebarOpen = false"></div>
+    <aside class="absolute inset-y-0 left-0 w-72 bg-white border-r border-slate-200 shadow-xl flex flex-col"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="-translate-x-full"
+           x-transition:enter-end="translate-x-0"
+           x-transition:leave="transition ease-in duration-150"
+           x-transition:leave-start="translate-x-0"
+           x-transition:leave-end="-translate-x-full">
+      {% include "dashboard/partials/sidebar.html" %}
+    </aside>
+  </div>
+
+  {# === Contenu principal === #}
+  <div class="lg:pl-64 w-full flex flex-col min-h-screen">
+    {% include "dashboard/partials/header.html" %}
+
+    <main class="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 lg:pb-8">
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for m in messages %}
+            <div class="rounded-lg border px-4 py-3 text-sm
+              {% if m.tags == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800
+              {% elif m.tags == 'error' %}bg-red-50 border-red-200 text-red-800
+              {% elif m.tags == 'warning' %}bg-amber-50 border-amber-200 text-amber-800
+              {% else %}bg-jayma-50 border-jayma-200 text-jayma-800{% endif %}">
+              {{ m }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    {% include "dashboard/partials/bottom_nav.html" %}
+  </div>
+
+  {# Container toasts pour les nouvelles commandes + poller HTMX #}
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+  {% include "dashboard/partials/notifications.html" with new_orders=None now_iso="" pending_count=0 %}
+</div>
+{% endblock %}

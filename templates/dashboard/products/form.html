@@ -1,0 +1,114 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}{% if product %}Modifier{% else %}Nouveau produit{% endif %} — Jayma{% endblock %}
+{% block header_title %}{% if product %}{{ product.name }}{% else %}Nouveau produit{% endif %}{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="max-w-3xl space-y-6">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium mb-4 text-ink-500">Informations de base</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="sm:col-span-2">
+        <label class="label">{{ form.name.label }} <span class="text-jayma-500">*</span></label>
+        {{ form.name }}
+        {% if form.name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.name.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="label">{{ form.category.label }}</label>
+        {{ form.category }}
+      </div>
+      <div class="sm:col-span-2">
+        <label class="label">{{ form.description.label }}</label>
+        {{ form.description }}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium mb-4 text-ink-500">Prix & stock</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="label">{{ form.price.label }} <span class="text-jayma-500">*</span></label>
+        {{ form.price }}
+        {% if form.price.errors %}<p class="mt-1 text-xs text-red-600">{{ form.price.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="label">{{ form.compare_at_price.label }}</label>
+        {{ form.compare_at_price }}
+        <p class="mt-1 text-xs text-slate-500">{{ form.compare_at_price.help_text }}</p>
+      </div>
+      <div>
+        <label class="label">{{ form.stock.label }}</label>
+        {{ form.stock }}
+      </div>
+      <div class="flex items-end">
+        <label class="inline-flex items-center gap-2">
+          {{ form.track_stock }}
+          <span class="text-sm text-slate-700">{{ form.track_stock.label }}</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium mb-2 text-ink-500">Images</h2>
+    <p class="text-xs text-slate-500 mb-4">Jusqu'à 8 images. Coche "primaire" pour celle affichée en vignette.</p>
+
+    {{ image_formset.management_form }}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {% for img_form in image_formset %}
+        <div class="rounded-lg border border-slate-200 p-3">
+          {% for hidden in img_form.hidden_fields %}{{ hidden }}{% endfor %}
+          {% if img_form.instance.pk and img_form.instance.image %}
+            <img src="{{ img_form.instance.image.url }}" class="h-28 w-full object-cover rounded mb-2">
+          {% endif %}
+          <label class="block text-xs text-slate-500 mb-1">Image</label>
+          {{ img_form.image }}
+          <label class="mt-2 inline-flex items-center gap-2 text-xs">
+            {{ img_form.is_primary }}
+            <span>Image principale</span>
+          </label>
+          {% if img_form.instance.pk %}
+            <label class="mt-2 inline-flex items-center gap-2 text-xs text-red-600">
+              {{ img_form.DELETE }}
+              <span>Supprimer</span>
+            </label>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium mb-4 text-ink-500">Visibilité</h2>
+    <div class="space-y-3">
+      <label class="flex items-start gap-3">
+        {{ form.is_active }}
+        <div>
+          <div class="text-sm font-medium text-ink-500">{{ form.is_active.label }}</div>
+          <div class="text-xs text-slate-500">Visible sur ta boutique publique.</div>
+        </div>
+      </label>
+      <label class="flex items-start gap-3">
+        {{ form.is_featured }}
+        <div>
+          <div class="text-sm font-medium text-ink-500">{{ form.is_featured.label }}</div>
+          <div class="text-xs text-slate-500">Apparaît sur l'accueil de ta boutique.</div>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div class="sticky bottom-0 -mx-4 sm:-mx-6 lg:-mx-8 bg-white/80 backdrop-blur border-t border-slate-200 px-4 sm:px-6 lg:px-8 py-3 flex gap-3 justify-end">
+    <a href="{% url 'products_dashboard:list' %}" class="btn-secondary">Annuler</a>
+    <button type="submit" class="btn-primary">{% if product %}Enregistrer{% else %}Créer le produit{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

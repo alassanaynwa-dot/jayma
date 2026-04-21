@@ -1,0 +1,60 @@
+{# Une ligne produit dans la table desktop #}
+<tr id="product-{{ product.pk }}" class="hover:bg-slate-50 transition">
+  <td class="px-5 py-3">
+    <div class="flex items-center gap-3">
+      <div class="h-10 w-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
+        {% if product.primary_image %}
+          <img src="{{ product.primary_image.image.url }}" class="h-full w-full object-cover">
+        {% else %}
+          <div class="h-full w-full flex items-center justify-center text-slate-300">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/></svg>
+          </div>
+        {% endif %}
+      </div>
+      <div>
+        <a href="{% url 'products_dashboard:edit' product.pk %}" class="text-sm font-medium text-ink-500 hover:text-jayma-600">{{ product.name }}</a>
+        {% if product.is_featured %}
+          <div class="text-[11px] text-jayma-600">★ En vedette</div>
+        {% endif %}
+      </div>
+    </div>
+  </td>
+  <td class="px-5 py-3 text-sm text-slate-600">{{ product.category.name|default:"—" }}</td>
+  <td class="px-5 py-3 text-right">
+    <div class="text-sm font-semibold text-ink-500">{{ product.price }} XOF</div>
+    {% if product.compare_at_price %}
+      <div class="text-xs text-slate-400 line-through">{{ product.compare_at_price }} XOF</div>
+    {% endif %}
+  </td>
+  <td class="px-5 py-3 text-right">
+    {% if product.track_stock %}
+      <span class="text-sm {% if product.stock <= 5 %}text-amber-600 font-medium{% else %}text-slate-700{% endif %}">{{ product.stock }}</span>
+    {% else %}
+      <span class="text-xs text-slate-400">illimité</span>
+    {% endif %}
+  </td>
+  <td class="px-5 py-3 text-center">
+    <button type="button"
+            hx-post="{% url 'products_dashboard:toggle_active' product.pk %}"
+            hx-target="#product-{{ product.pk }}"
+            hx-swap="outerHTML"
+            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+            class="relative inline-flex h-5 w-9 items-center rounded-full transition {% if product.is_active %}bg-jayma-500{% else %}bg-slate-300{% endif %}"
+            aria-label="Basculer l'état actif">
+      <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white transition {% if product.is_active %}translate-x-5{% else %}translate-x-1{% endif %}"></span>
+    </button>
+  </td>
+  <td class="px-5 py-3">
+    <div class="flex items-center justify-end gap-1">
+      <a href="{% url 'products_dashboard:edit' product.pk %}" class="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-ink-500" title="Modifier">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+      </a>
+      <form method="post" action="{% url 'products_dashboard:delete' product.pk %}" onsubmit="return confirm('Supprimer « {{ product.name|escapejs }} » ?')">
+        {% csrf_token %}
+        <button type="submit" class="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600" title="Supprimer">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 7V4a1 1 0 011-1h2a1 1 0 011 1v3"/></svg>
+        </button>
+      </form>
+    </div>
+  </td>
+</tr>

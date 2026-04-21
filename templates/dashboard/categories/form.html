@@ -1,0 +1,26 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{% if category %}Modifier{% else %}Nouvelle{% endif %} catégorie — Jayma{% endblock %}
+{% block header_title %}{% if category %}{{ category.name }}{% else %}Nouvelle catégorie{% endif %}{% endblock %}
+
+{% block content %}
+<form method="post" class="max-w-md space-y-5 card">
+  {% csrf_token %}
+  <div>
+    <label class="label">{{ form.name.label }}</label>
+    {{ form.name }}
+    {% if form.name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.name.errors.0 }}</p>{% endif %}
+  </div>
+  <div>
+    <label class="label">{{ form.position.label }}</label>
+    {{ form.position }}
+  </div>
+  <label class="inline-flex items-center gap-2">
+    {{ form.is_active }}
+    <span class="text-sm">{{ form.is_active.label }}</span>
+  </label>
+  <div class="flex gap-2 pt-2">
+    <a href="{% url 'products_dashboard:category_list' %}" class="btn-secondary">Annuler</a>
+    <button type="submit" class="btn-primary flex-1">{% if category %}Enregistrer{% else %}Créer{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

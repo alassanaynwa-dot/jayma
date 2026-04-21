@@ -1,0 +1,43 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{% if courier %}Modifier{% else %}Nouveau{% endif %} livreur — Jayma{% endblock %}
+{% block header_title %}{% if courier %}{{ courier.name }}{% else %}Nouveau livreur{% endif %}{% endblock %}
+
+{% block content %}
+<form method="post" class="max-w-lg space-y-5 card">
+  {% csrf_token %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="sm:col-span-2">
+      <label class="label">{{ form.name.label }} <span class="text-jayma-500">*</span></label>
+      {{ form.name }}
+      {% if form.name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.name.errors.0 }}</p>{% endif %}
+    </div>
+    <div>
+      <label class="label">{{ form.phone.label }} <span class="text-jayma-500">*</span></label>
+      {{ form.phone }}
+      <p class="mt-1 text-xs text-slate-500">{{ form.phone.help_text }}</p>
+      {% if form.phone.errors %}<p class="mt-1 text-xs text-red-600">{{ form.phone.errors.0 }}</p>{% endif %}
+    </div>
+    <div>
+      <label class="label">{{ form.vehicle.label }}</label>
+      {{ form.vehicle }}
+    </div>
+    <div class="sm:col-span-2">
+      <label class="label">{{ form.zones.label }}</label>
+      {{ form.zones }}
+      <p class="mt-1 text-xs text-slate-500">{{ form.zones.help_text }}</p>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="label">{{ form.notes.label }}</label>
+      {{ form.notes }}
+    </div>
+  </div>
+  <label class="inline-flex items-center gap-2">
+    {{ form.is_active }}
+    <span class="text-sm">{{ form.is_active.label }}</span>
+  </label>
+  <div class="flex gap-2 pt-2">
+    <a href="{% url 'delivery_dashboard:list' %}" class="btn-secondary">Annuler</a>
+    <button type="submit" class="btn-primary flex-1">{% if courier %}Enregistrer{% else %}Ajouter{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

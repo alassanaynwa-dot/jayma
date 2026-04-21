@@ -1,0 +1,53 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{% if zone %}Modifier{% else %}Nouvelle{% endif %} zone — Jayma{% endblock %}
+{% block header_title %}{% if zone %}{{ zone.name }}{% else %}Nouvelle zone de livraison{% endif %}{% endblock %}
+
+{% block content %}
+<form method="post" class="max-w-lg space-y-5 card">
+  {% csrf_token %}
+
+  <div>
+    <label class="label">{{ form.name.label }} <span class="text-jayma-500">*</span></label>
+    {{ form.name }}
+    {% if form.name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.name.errors.0 }}</p>{% endif %}
+  </div>
+
+  <div>
+    <label class="label">{{ form.cities.label }} <span class="text-jayma-500">*</span></label>
+    {{ form.cities }}
+    <p class="mt-1 text-xs text-slate-500">{{ form.cities.help_text }}</p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="label">{{ form.fee_xof.label }} <span class="text-jayma-500">*</span></label>
+      {{ form.fee_xof }}
+      <p class="mt-1 text-xs text-slate-500">{{ form.fee_xof.help_text }}</p>
+    </div>
+    <div>
+      <label class="label">{{ form.position.label }}</label>
+      {{ form.position }}
+    </div>
+  </div>
+
+  <label class="inline-flex items-center gap-2">
+    {{ form.is_active }}
+    <span class="text-sm">{{ form.is_active.label }}</span>
+  </label>
+
+  <div class="flex gap-2 pt-2">
+    <a href="{% url 'delivery_dashboard:zone_list' %}" class="btn-secondary">Annuler</a>
+    <button type="submit" class="btn-primary flex-1">{% if zone %}Enregistrer{% else %}Créer la zone{% endif %}</button>
+  </div>
+</form>
+
+<div class="max-w-lg mt-6 rounded-lg bg-slate-50 border border-slate-200 p-4">
+  <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">💡 Exemple</h3>
+  <p class="mt-2 text-sm text-slate-600">
+    <strong>Dakar centre</strong> — Plateau, Médina, Point E, Fann — <strong class="shop-accent">1 500 XOF</strong>
+  </p>
+  <p class="mt-1 text-sm text-slate-600">
+    <strong>Banlieue</strong> — Pikine, Guédiawaye, Parcelles — <strong class="shop-accent">2 500 XOF</strong>
+  </p>
+</div>
+{% endblock %}

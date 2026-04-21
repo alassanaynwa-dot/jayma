@@ -1,0 +1,71 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Livreurs — Jayma{% endblock %}
+{% block header_title %}Mes livreurs{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="grid grid-cols-2 gap-3 sm:gap-4">
+    <div class="card">
+      <div class="text-xs uppercase text-slate-500 font-medium">Livreurs actifs</div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">{{ couriers|length }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase text-slate-500 font-medium">Courses en cours</div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-sky-600">{{ active_deliveries }}</div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between gap-3">
+    <p class="text-sm text-slate-600 min-w-0">Gère ton équipe de livraison. Chaque livreur reçoit un lien portail par SMS pour voir ses courses.</p>
+    <div class="flex gap-2 shrink-0">
+      <a href="{% url 'delivery_dashboard:zone_list' %}" class="btn-secondary">📍 Zones tarifées</a>
+      <a href="{% url 'delivery_dashboard:create' %}" class="btn-primary">
+        <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Livreur
+      </a>
+    </div>
+  </div>
+
+  {% if couriers %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {% for c in couriers %}
+        <a href="{% url 'delivery_dashboard:detail' c.pk %}" class="card hover:shadow-md transition flex items-start gap-4">
+          <div class="h-12 w-12 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif text-lg shrink-0">
+            {{ c.name|slice:":1"|upper }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <div class="font-medium text-ink-500">{{ c.name }}</div>
+                <div class="text-xs text-slate-500">{{ c.phone }}</div>
+              </div>
+              {% if c.is_active %}
+                <span class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700">Actif</span>
+              {% else %}
+                <span class="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">Inactif</span>
+              {% endif %}
+            </div>
+            <div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
+              <span class="rounded-md bg-slate-100 px-2 py-0.5">{{ c.get_vehicle_display }}</span>
+              {% if c.zones %}<span class="truncate">📍 {{ c.zones }}</span>{% endif %}
+            </div>
+            <div class="mt-2 text-xs text-slate-500">
+              {{ c.orders.count }} course{{ c.orders.count|pluralize }} assignée{{ c.orders.count|pluralize }}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card px-6 py-16 text-center">
+      <div class="mx-auto h-16 w-16 rounded-2xl bg-jayma-50 flex items-center justify-center">
+        <svg class="h-8 w-8 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16l2-7 6 1-2 7H8z M5 7a2 2 0 012-2h3m4 0h3a2 2 0 012 2v2M9 3v2m6-2v2"/></svg>
+      </div>
+      <h3 class="mt-4 font-serif text-lg text-ink-500">Aucun livreur pour l'instant</h3>
+      <p class="mt-1 text-sm text-slate-500 max-w-sm mx-auto">Ajoute ton premier livreur pour pouvoir lui assigner des commandes et lui envoyer un lien portail.</p>
+      <a href="{% url 'delivery_dashboard:create' %}" class="btn-primary mt-6 inline-flex">Ajouter un livreur</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

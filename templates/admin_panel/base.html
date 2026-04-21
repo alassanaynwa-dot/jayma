@@ -1,0 +1,59 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block body %}
+<div class="min-h-screen lg:flex bg-slate-50" x-data="{ sidebarOpen: false }">
+
+  <aside class="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 border-r border-slate-200 bg-ink-500 text-white">
+    {% include "admin_panel/partials/sidebar.html" %}
+  </aside>
+
+  <div x-show="sidebarOpen" x-cloak class="lg:hidden fixed inset-0 z-40">
+    <div class="absolute inset-0 bg-black/50" @click="sidebarOpen = false"></div>
+    <aside class="absolute inset-y-0 left-0 w-72 bg-ink-500 text-white shadow-xl flex flex-col">
+      {% include "admin_panel/partials/sidebar.html" %}
+    </aside>
+  </div>
+
+  <div class="lg:pl-64 w-full flex flex-col min-h-screen">
+    <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-30">
+      <div class="flex items-center gap-3">
+        <button @click="sidebarOpen = true" class="lg:hidden -ml-2 p-2 rounded-lg hover:bg-slate-100">
+          <svg class="h-6 w-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <h1 class="font-serif text-xl font-medium text-ink-500">{% block header_title %}Plateforme{% endblock %}</h1>
+      </div>
+      <div x-data="{ open: false }" class="relative">
+        <button @click="open = !open" class="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100">
+          <div class="h-8 w-8 rounded-full bg-ink-500 flex items-center justify-center text-white text-sm font-semibold">
+            {{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}
+          </div>
+          <span class="hidden sm:block text-sm font-medium text-slate-700">{{ request.user.username }}</span>
+        </button>
+        <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50">
+          <a href="{% url 'accounts:password_change' %}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Changer mon mot de passe</a>
+          <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
+            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Se déconnecter</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for m in messages %}
+            <div class="rounded-lg border px-4 py-3 text-sm
+              {% if m.tags == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800
+              {% elif m.tags == 'error' %}bg-red-50 border-red-200 text-red-800
+              {% else %}bg-jayma-50 border-jayma-200 text-jayma-800{% endif %}">
+              {{ m }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}

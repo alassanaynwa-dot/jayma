@@ -1,0 +1,64 @@
+{% comment %}
+  Partial HTMX — renvoyé toutes les 15s par /notifications/.
+  Affiche une toast pour chaque nouvelle commande + met à jour le badge pending.
+  Le data-ts stocke le timestamp courant pour le prochain appel.
+{% endcomment %}
+<div id="notifications-poller"
+     data-ts="{{ now_iso }}"
+     hx-get="{% url 'dashboard:check_notifications' %}"
+     hx-trigger="load delay:15s, every 15s"
+     hx-vals='js:{since: document.getElementById("notifications-poller").dataset.ts}'
+     hx-swap="outerHTML"
+     class="contents">
+
+  {# Badge "en attente" (swap via OOB pour être partout) #}
+  <span id="nav-pending-badge"
+        hx-swap-oob="outerHTML"
+        class="{% if pending_count %}inline-flex{% else %}hidden{% endif %} items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-jayma-500 text-white text-[11px] font-bold">
+    {{ pending_count }}
+  </span>
+
+  {# Toasts des nouvelles commandes #}
+  {% if new_orders %}
+    <div id="toast-container"
+         hx-swap-oob="beforeend"
+         class="fixed bottom-6 right-6 z-50 space-y-2">
+      {% for order in new_orders %}
+        <div class="rounded-xl border border-jayma-200 bg-white shadow-lg p-4 max-w-sm animate-[slideIn_0.3s_ease-out] flex items-start gap-3"
+             x-data="{ show: true }"
+             x-show="show"
+             x-init="setTimeout(() => show = false, 12000)">
+          <div class="h-10 w-10 rounded-full bg-jayma-500 flex items-center justify-center text-white shrink-0">
+            🛎️
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-semibold text-ink-500">Nouvelle commande !</div>
+            <div class="mt-0.5 text-xs text-slate-600">
+              <span class="font-mono">{{ order.reference }}</span> · {{ order.client_name }} · <strong>{{ order.total_xof }} XOF</strong>
+            </div>
+            <a href="{% url 'orders_dashboard:detail' order.reference %}" class="mt-2 inline-flex text-xs font-medium text-jayma-600 hover:text-jayma-700">Voir la commande →</a>
+          </div>
+          <button type="button" @click="show = false" class="text-slate-400 hover:text-ink-500 shrink-0">×</button>
+        </div>
+      {% endfor %}
+    </div>
+    <script>
+      // Son de notification (génération Web Audio, pas besoin de fichier)
+      (function() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(880, ctx.currentTime);
+          osc.frequency.setValueAtTime(1320, ctx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.4);
+        } catch(e) {}
+      })();
+    </script>
+  {% endif %}
+</div>

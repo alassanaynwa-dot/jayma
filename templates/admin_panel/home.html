@@ -1,0 +1,131 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Admin Jayma — Vue d'ensemble{% endblock %}
+{% block header_title %}Vue d'ensemble{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  {# KPIs #}
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">GMV du mois</div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">{{ stats.gmv_month }} <span class="text-sm text-slate-500 font-sans">XOF</span></div>
+      <div class="mt-1 text-xs text-slate-500">{{ stats.orders_month }} commande(s) payée(s)</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Commission du mois</div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-jayma-600">{{ stats.commissions_month }} <span class="text-sm text-slate-500 font-sans">XOF</span></div>
+      <div class="mt-1 text-xs text-slate-500">8% par défaut</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Boutiques actives</div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">{{ stats.total_shops }}</div>
+      <div class="mt-1 text-xs text-slate-500">{{ stats.total_merchants }} commerçants</div>
+    </div>
+    <a href="{% url 'admin_panel:requests' %}" class="card hover:border-jayma-300 transition">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Demandes en attente</div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium {% if stats.pending_requests %}text-amber-600{% else %}text-slate-400{% endif %}">{{ stats.pending_requests }}</div>
+      <div class="mt-1 text-xs text-jayma-600">Traiter →</div>
+    </a>
+  </div>
+
+  {# Commissions à reverser #}
+  {% if stats.payout_count %}
+  <a href="{% url 'admin_panel:commissions' %}?state=unpaid" class="block rounded-xl border border-amber-200 bg-amber-50 p-5 hover:shadow-sm transition">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <div class="text-xs uppercase tracking-wide text-amber-700 font-semibold">À reverser aux commerçants</div>
+        <div class="mt-1 font-serif text-2xl font-medium text-amber-800">{{ stats.payout_total }} XOF</div>
+        <div class="text-sm text-amber-700">{{ stats.payout_count }} commission(s) à payer</div>
+      </div>
+      <div class="h-12 w-12 rounded-full bg-amber-200 flex items-center justify-center">
+        <svg class="h-6 w-6 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2"/></svg>
+      </div>
+    </div>
+  </a>
+  {% endif %}
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    {# Demandes récentes #}
+    <div class="card p-0 overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <h2 class="font-serif text-lg font-medium">Dernières demandes</h2>
+        <a href="{% url 'admin_panel:requests' %}" class="text-sm text-jayma-600 hover:underline">Tout →</a>
+      </div>
+      {% if stats.recent_requests %}
+        <ul class="divide-y divide-slate-100">
+          {% for sr in stats.recent_requests %}
+            <li class="px-5 py-3 flex items-center justify-between">
+              <div>
+                <div class="text-sm font-medium">{{ sr.shop_name }}</div>
+                <div class="text-xs text-slate-500">{{ sr.desired_slug }} · {{ sr.full_name }} · {{ sr.city }}</div>
+              </div>
+              <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">En attente</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="px-5 py-10 text-center text-sm text-slate-500">Aucune demande en attente.</div>
+      {% endif %}
+    </div>
+
+    {# Top boutiques #}
+    <div class="card p-0 overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-100">
+        <h2 class="font-serif text-lg font-medium">Top boutiques (par commandes)</h2>
+      </div>
+      {% if stats.top_shops %}
+        <ul class="divide-y divide-slate-100">
+          {% for shop in stats.top_shops %}
+            <li class="px-5 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                {% if shop.logo %}
+                  <img src="{{ shop.logo.url }}" class="h-9 w-9 rounded-lg object-cover">
+                {% else %}
+                  <div class="h-9 w-9 rounded-lg bg-jayma-500 flex items-center justify-center text-white font-serif">{{ shop.name|slice:":1"|upper }}</div>
+                {% endif %}
+                <div>
+                  <div class="text-sm font-medium">{{ shop.name }}</div>
+                  <div class="text-xs text-slate-500">{{ shop.city }} · {{ shop.slug }}.jayma.sn</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-semibold">{{ shop.orders_count }}</div>
+                <div class="text-xs text-slate-500">commande{{ shop.orders_count|pluralize }}</div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="px-5 py-10 text-center text-sm text-slate-500">Pas encore de boutiques.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# Dernières commandes plateforme #}
+  <div class="card p-0 overflow-hidden">
+    <div class="px-5 py-4 border-b border-slate-100">
+      <h2 class="font-serif text-lg font-medium">Dernières commandes (toutes boutiques)</h2>
+    </div>
+    {% if stats.recent_orders %}
+      <ul class="divide-y divide-slate-100">
+        {% for o in stats.recent_orders %}
+          <li class="px-5 py-3 flex items-center justify-between">
+            <div>
+              <div class="text-sm"><span class="font-mono text-xs text-slate-500">{{ o.reference }}</span> — <span class="font-medium">{{ o.shop.name }}</span></div>
+              <div class="text-xs text-slate-500">{{ o.client_name }} · {{ o.created_at|date:"d/m H:i" }}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm font-semibold">{{ o.total_xof }} XOF</div>
+              <div class="text-xs text-slate-500">{{ o.get_status_display }}</div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="px-5 py-10 text-center text-sm text-slate-500">Pas encore de commandes.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

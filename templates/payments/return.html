@@ -1,0 +1,21 @@
+{% extends "base/shop_base.html" %}
+{% block title %}Retour paiement — {{ shop.name }}{% endblock %}
+
+{% block content %}
+<section class="max-w-xl mx-auto px-4 py-16 text-center">
+  {% if order.payment_status == "paid" %}
+    <div class="mx-auto h-20 w-20 rounded-full bg-emerald-100 flex items-center justify-center">
+      <svg class="h-10 w-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <h1 class="mt-6 font-serif text-3xl font-medium text-ink-500">Paiement confirmé</h1>
+    <p class="mt-2 text-slate-600">Ta commande {{ order.reference }} est bien payée.</p>
+  {% else %}
+    <div class="mx-auto h-20 w-20 rounded-full bg-amber-100 flex items-center justify-center">
+      <svg class="h-10 w-10 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"/></svg>
+    </div>
+    <h1 class="mt-6 font-serif text-3xl font-medium text-ink-500">Paiement en cours…</h1>
+    <p class="mt-2 text-slate-600">On attend la confirmation du provider. Ça prend quelques secondes.</p>
+  {% endif %}
+  <a href="{% url 'orders_public:confirmation' order.reference %}" class="shop-btn mt-8">Voir ma commande</a>
+</section>
+{% endblock %}

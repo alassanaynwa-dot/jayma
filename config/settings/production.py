@@ -1,0 +1,48 @@
+"""Settings de production."""
+from .base import *  # noqa: F401, F403
+
+DEBUG = False
+
+# ALLOWED_HOSTS est fourni via .env en prod
+
+# Sécurité HTTPS
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
+X_FRAME_OPTIONS = "DENY"
+
+# Email SMTP prod (réel)
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# SMS : vrai backend AfricasTalking
+SMS_BACKEND = "notifications.services.sms.AfricasTalkingSMSBackend"
+
+# Stockage fichiers : Cloudflare R2 (S3-compatible)
+if env.bool("USE_R2", default=True):  # noqa: F405
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "bucket_name": env("R2_BUCKET_NAME"),  # noqa: F405
+                "access_key": env("R2_ACCESS_KEY_ID"),  # noqa: F405
+                "secret_key": env("R2_SECRET_ACCESS_KEY"),  # noqa: F405
+                "endpoint_url": env("R2_ENDPOINT_URL"),  # noqa: F405
+                "custom_domain": env("R2_PUBLIC_URL", default=None),  # noqa: F405
+                "default_acl": None,
+                "querystring_auth": False,
+                "region_name": "auto",
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+# Logging plus verbeux en prod (erreurs)
+LOGGING["root"]["level"] = "WARNING"  # noqa: F405

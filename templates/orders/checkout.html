@@ -1,0 +1,113 @@
+{% extends "base/shop_base.html" %}
+
+{% block title %}Finaliser la commande — {{ shop.name }}{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+  <h1 class="font-serif text-3xl sm:text-4xl font-medium text-ink-500">Finaliser ma commande</h1>
+  <p class="mt-1 text-sm text-slate-500">Encore une étape et c'est à toi !</p>
+
+  <form method="post" class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {% csrf_token %}
+
+    <div class="lg:col-span-2 space-y-5">
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h2 class="font-serif text-lg font-medium text-ink-500">Tes coordonnées</h2>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="label">{{ form.client_name.label }} <span class="shop-accent">*</span></label>
+            {{ form.client_name }}
+            {% if form.client_name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.client_name.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="label">{{ form.client_phone.label }} <span class="shop-accent">*</span></label>
+            {{ form.client_phone }}
+            {% if form.client_phone.errors %}<p class="mt-1 text-xs text-red-600">{{ form.client_phone.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="label">{{ form.client_email.label }}</label>
+            {{ form.client_email }}
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h2 class="font-serif text-lg font-medium text-ink-500">Livraison</h2>
+        <div class="mt-4 space-y-4">
+          <div>
+            <label class="label">{{ form.client_address.label }} <span class="shop-accent">*</span></label>
+            {{ form.client_address }}
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="label">{{ form.client_city.label }} <span class="shop-accent">*</span></label>
+              <input type="text" name="client_city" id="id_client_city" value="{{ form.client_city.value|default_if_none:'' }}" class="input"
+                     required
+                     hx-get="{% url 'compute_fee' %}"
+                     hx-trigger="keyup changed delay:400ms, blur"
+                     hx-target="#delivery-fee-box"
+                     hx-swap="outerHTML"
+                     hx-vals='js:{city: document.getElementById("id_client_city").value}'>
+            </div>
+          </div>
+
+          {# Partial HTMX — tarif livraison en direct #}
+          {% include "orders/_delivery_fee.html" %}
+
+          <div>
+            <label class="label">{{ form.client_notes.label }}</label>
+            {{ form.client_notes }}
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h2 class="font-serif text-lg font-medium text-ink-500">Mode de paiement</h2>
+        <p class="mt-1 text-xs text-slate-500">Choisis comment tu veux payer — tu recevras les instructions à la dernière étape.</p>
+        <div class="mt-4 space-y-2">
+          {% for radio in form.payment_method %}
+            <label class="flex items-center gap-3 rounded-lg border border-slate-200 px-4 py-3 cursor-pointer has-[:checked]:shop-border-soft has-[:checked]:shop-bg-soft transition">
+              {{ radio.tag }}
+              <span class="text-sm font-medium text-ink-500">{{ radio.choice_label }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        {% if form.payment_method.errors %}<p class="mt-2 text-xs text-red-600">{{ form.payment_method.errors.0 }}</p>{% endif %}
+      </div>
+    </div>
+
+    <aside class="bg-white rounded-xl border border-slate-200 p-5 h-fit lg:sticky lg:top-20 space-y-4">
+      <h3 class="font-serif text-lg font-medium text-ink-500">Ma commande</h3>
+      <ul class="space-y-2 text-sm">
+        {% for item in cart %}
+          <li class="flex justify-between gap-2">
+            <span class="text-slate-700 min-w-0 truncate">{{ item.name }} × {{ item.quantity }}</span>
+            <span class="shrink-0 font-medium">{{ item.line_total }} XOF</span>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {# Bloc code promo (HTMX) #}
+      {% include "coupons/_coupon_box.html" with subtotal=cart.total_xof coupon=active_coupon discount=active_discount %}
+
+      <div class="pt-3 border-t border-slate-100 space-y-1 text-sm">
+        <div class="flex justify-between"><span class="text-slate-600">Sous-total</span><span>{{ cart.total_xof }} XOF</span></div>
+        {% if active_discount %}
+          <div class="flex justify-between text-emerald-600">
+            <span>Remise ({{ active_coupon.code }})</span>
+            <span>−{{ active_discount }} XOF</span>
+          </div>
+        {% endif %}
+        <div class="flex justify-between"><span class="text-slate-600">Livraison</span><span class="text-slate-500">Selon ville</span></div>
+      </div>
+      <div class="pt-3 border-t border-slate-100 flex justify-between items-baseline">
+        <span class="font-medium text-ink-500">Total estimé</span>
+        <span class="font-serif text-2xl font-medium text-ink-500">{{ total_estimate }} <span class="text-sm font-sans text-slate-500">XOF</span></span>
+      </div>
+      <button type="submit" class="shop-btn w-full">Passer ma commande</button>
+      <a href="{% url 'cart:view' %}" class="block text-center text-sm text-slate-500 hover:text-ink-500">← Retour au panier</a>
+    </aside>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Commissions — Admin Jayma{% endblock %}
+{% block header_title %}Commissions & reversements{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="card">
+      <div class="text-xs uppercase text-slate-500">À reverser aux commerçants</div>
+      <div class="mt-2 font-serif text-3xl font-medium text-amber-600">{{ total_unpaid_merchant }} <span class="text-sm font-sans text-slate-500">XOF</span></div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase text-slate-500">Commission Jayma (non encore compensée)</div>
+      <div class="mt-2 font-serif text-3xl font-medium text-jayma-600">{{ total_commission }} <span class="text-sm font-sans text-slate-500">XOF</span></div>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <a href="?state=unpaid" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'unpaid' %}bg-amber-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">À reverser</a>
+    <a href="?state=paid" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'paid' %}bg-emerald-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Reversées</a>
+    <a href="?state=" class="rounded-full px-4 py-1.5 text-sm font-medium {% if not state %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Toutes</a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    {% if commissions %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Commande</th>
+            <th class="px-5 py-3">Boutique</th>
+            <th class="px-5 py-3 text-right">Vente</th>
+            <th class="px-5 py-3 text-right">Commission Jayma</th>
+            <th class="px-5 py-3 text-right">À reverser</th>
+            <th class="px-5 py-3">Statut</th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for c in commissions %}
+            <tr class="hover:bg-slate-50">
+              <td class="px-5 py-3"><span class="font-mono text-xs text-slate-600">{{ c.order.reference }}</span></td>
+              <td class="px-5 py-3 text-sm">{{ c.shop.name }}</td>
+              <td class="px-5 py-3 text-right text-sm">{{ c.sale_amount_xof }} XOF</td>
+              <td class="px-5 py-3 text-right text-sm text-jayma-600">{{ c.commission_xof }} XOF</td>
+              <td class="px-5 py-3 text-right text-sm font-medium">{{ c.merchant_amount_xof }} XOF</td>
+              <td class="px-5 py-3">
+                {% if c.is_paid %}
+                  <span class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700">Reversé {{ c.paid_at|date:"d/m" }}</span>
+                {% else %}
+                  <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">À reverser</span>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3 text-right">
+                {% if not c.is_paid %}
+                  <form method="post" action="{% url 'admin_panel:commission_mark_paid' c.pk %}" class="inline-flex gap-1"
+                        onsubmit="const ref=prompt('Référence du virement (optionnel) :'); this.querySelector('input[name=payout_reference]').value = ref || ''; return true;">
+                    {% csrf_token %}
+                    <input type="hidden" name="payout_reference" value="">
+                    <button type="submit" class="text-xs font-medium text-emerald-700 hover:underline">Marquer payé</button>
+                  </form>
+                {% elif c.payout_reference %}
+                  <span class="text-xs text-slate-500 font-mono">{{ c.payout_reference }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucune commission.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

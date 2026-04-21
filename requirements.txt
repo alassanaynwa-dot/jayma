@@ -1,0 +1,37 @@
+# Django 5.2 LTS (support jusqu'en avril 2028)
+Django>=5.2,<5.3
+
+# Admin moderne
+django-unfold>=0.43
+
+# Base de données
+psycopg[binary]>=3.2
+
+# Cache / queue
+redis>=5.0
+django-redis>=5.4
+celery[redis]>=5.4
+django-celery-beat>=2.8
+
+# Formulaires & UI
+django-htmx>=1.21
+Pillow>=11.0
+
+# Utilitaires
+python-dotenv>=1.0
+django-environ>=0.11
+django-extensions>=3.2
+requests>=2.32
+
+# Stockage fichiers (R2 / S3)
+boto3>=1.35
+django-storages>=1.14
+
+# Static files en prod
+whitenoise>=6.8
+
+# SMS
+africastalking>=1.2
+
+# Serveur prod
+gunicorn>=23.0

@@ -1,0 +1,196 @@
+"""
+Modèles products — catalogue par boutique.
+
+Chaque Category et chaque Product appartiennent à un Shop (isolation tenant).
+Prix en XOF entiers (PositiveIntegerField), jamais de décimales.
+"""
+from django.db import models
+from django.utils.text import slugify
+
+
+class Category(models.Model):
+    """Catégorie propre à une boutique."""
+
+    shop = models.ForeignKey(
+        "shops.Shop",
+        on_delete=models.CASCADE,
+        related_name="categories",
+    )
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
+    position = models.PositiveSmallIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Catégorie"
+        verbose_name_plural = "Catégories"
+        unique_together = [("shop", "slug")]
+        ordering = ("position", "name")
+
+    def __str__(self):
+        return f"{self.name} — {self.shop.name}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)[:100]
+        super().save(*args, **kwargs)
+
+
+class Product(models.Model):
+    """Produit d'une boutique — prix en XOF entier. Peut être simple ou pack."""
+
+    class Kind(models.TextChoices):
+        SIMPLE = "simple", "Produit simple"
+        PACK = "pack", "Pack de produits"
+
+    shop = models.ForeignKey(
+        "shops.Shop",
+        on_delete=models.CASCADE,
+        related_name="products",
+    )
+    category = models.ForeignKey(
+        Category,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name="products",
+    )
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200)
+    description = models.TextField(blank=True)
+
+    kind = models.CharField(
+        max_length=10,
+        choices=Kind.choices,
+        default=Kind.SIMPLE,
+    )
+    # Pour les packs : les produits inclus, avec leur quantité (via PackItem)
+    pack_items = models.ManyToManyField(
+        "self",
+        through="PackItem",
+        through_fields=("pack", "item"),
+        symmetrical=False,
+        related_name="in_packs",
+        blank=True,
+    )
+
+    # Prix en XOF entiers — JAMAIS de décimales pour l'argent
+    price = models.PositiveIntegerField(help_text="Prix en XOF (entier). Pour un pack : prix total du pack.")
+    compare_at_price = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Prix barré (promo), optionnel. Pour un pack : somme des prix individuels.",
+    )
+
+    stock = models.PositiveIntegerField(default=0)
+    track_stock = models.BooleanField(
+        default=True,
+        help_text="Si désactivé, le produit est toujours en stock. Ignoré pour les packs.",
+    )
+
+    is_active = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False, help_text="Mis en avant sur l'accueil boutique.")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Produit"
+        verbose_name_plural = "Produits"
+        unique_together = [("shop", "slug")]
+        ordering = ("-created_at",)
+        indexes = [
+            models.Index(fields=["shop", "is_active"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} — {self.price} XOF"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)[:200]
+        super().save(*args, **kwargs)
+
+    @property
+    def is_available(self) -> bool:
+        """Disponible à la vente ?"""
+        if not self.is_active:
+            return False
+        if self.kind == self.Kind.PACK:
+            # Un pack est disponible si tous ses sous-produits le sont
+            for item in self.items_in_pack.select_related("item"):
+                sub = item.item
+                if not sub.is_active:
+                    return False
+                if sub.track_stock and sub.stock < item.quantity:
+                    return False
+            return True
+        if self.track_stock and self.stock <= 0:
+            return False
+        return True
+
+    @property
+    def is_pack(self) -> bool:
+        return self.kind == self.Kind.PACK
+
+    def total_savings(self) -> int:
+        """Pour un pack : combien on économise par rapport aux prix individuels."""
+        if not self.is_pack:
+            return 0
+        total = sum(item.item.price * item.quantity for item in self.items_in_pack.all())
+        return max(total - self.price, 0)
+
+    @property
+    def primary_image(self):
+        """Image principale, ou première image, ou None."""
+        return (
+            self.images.filter(is_primary=True).first()
+            or self.images.first()
+        )
+
+
+class PackItem(models.Model):
+    """Composition d'un pack : tel produit en telle quantité."""
+    pack = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="items_in_pack",
+        limit_choices_to={"kind": "pack"},
+    )
+    item = models.ForeignKey(
+        Product,
+        on_delete=models.PROTECT,
+        related_name="+",
+        limit_choices_to={"kind": "simple"},
+    )
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        verbose_name = "Élément de pack"
+        verbose_name_plural = "Éléments de packs"
+        unique_together = [("pack", "item")]
+
+    def __str__(self):
+        return f"{self.pack.name} — {self.item.name} × {self.quantity}"
+
+
+class ProductImage(models.Model):
+    """Image(s) d'un produit — plusieurs possibles."""
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
+    image = models.ImageField(upload_to="products/")
+    alt_text = models.CharField(max_length=200, blank=True)
+    is_primary = models.BooleanField(default=False)
+    position = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Image produit"
+        verbose_name_plural = "Images produits"
+        ordering = ("position", "created_at")
+
+    def __str__(self):
+        return f"Image #{self.pk} de {self.product.name}"

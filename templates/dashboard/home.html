@@ -1,0 +1,122 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Dashboard — {{ shop.name }}{% endblock %}
+{% block header_title %}Bonjour {{ request.user.first_name|default:request.user.username }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  {# Bandeau d'intro #}
+  <div class="hidden sm:block">
+    <p class="text-slate-600">Voici un aperçu de ta boutique <strong class="text-ink-500">{{ shop.name }}</strong>.</p>
+  </div>
+
+  {# Cartes de stats #}
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+
+    {# Revenus ce mois #}
+    <div class="card relative overflow-hidden">
+      <div class="absolute top-0 right-0 h-24 w-24 -mr-10 -mt-10 rounded-full bg-jayma-50"></div>
+      <div class="relative">
+        <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Revenus du mois</div>
+        <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">
+          {{ stats.revenue_month|default:"0" }}
+          <span class="text-sm text-slate-500 font-sans">XOF</span>
+        </div>
+        {% if stats.revenue_delta_pct is not None %}
+          <div class="mt-1 text-xs {% if stats.revenue_delta_pct >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">
+            {% if stats.revenue_delta_pct >= 0 %}↑{% else %}↓{% endif %} {{ stats.revenue_delta_pct }}% vs mois dernier
+          </div>
+        {% else %}
+          <div class="mt-1 text-xs text-slate-400">Pas de données mois dernier</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Commandes ce mois #}
+    <div class="card relative overflow-hidden">
+      <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Commandes du mois</div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">{{ stats.orders_month }}</div>
+      <div class="mt-1 text-xs text-slate-500">dont <strong class="text-amber-600">{{ stats.orders_pending }}</strong> en attente</div>
+    </div>
+
+    {# Produits #}
+    <div class="card relative overflow-hidden">
+      <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Produits actifs</div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">{{ stats.total_products }}</div>
+      {% if stats.low_stock %}
+        <div class="mt-1 text-xs text-amber-600">⚠ {{ stats.low_stock }} en stock bas</div>
+      {% else %}
+        <div class="mt-1 text-xs text-slate-400">Stocks OK</div>
+      {% endif %}
+    </div>
+
+    {# Action rapide #}
+    <a href="{% url 'products_dashboard:create' %}" class="card group hover:border-jayma-300 hover:shadow-md transition flex flex-col justify-between">
+      <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Action rapide</div>
+      <div class="mt-2 flex items-center gap-2 text-jayma-600 font-medium">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Ajouter un produit
+      </div>
+    </a>
+  </div>
+
+  {# Dernières commandes + Aperçu boutique #}
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <div class="lg:col-span-2 card p-0 overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <h2 class="font-serif text-lg font-medium text-ink-500">Dernières commandes</h2>
+        <a href="{% url 'orders_dashboard:list' %}" class="text-sm text-jayma-600 hover:text-jayma-700 font-medium">Tout voir →</a>
+      </div>
+      {% if stats.last_orders %}
+        <ul class="divide-y divide-slate-100">
+          {% for order in stats.last_orders %}
+            <li class="px-5 py-3 flex items-center justify-between">
+              <div>
+                <div class="text-sm font-medium text-ink-500">{{ order.client_name }}</div>
+                <div class="text-xs text-slate-500">#{{ order.reference }} — {{ order.created_at|date:"d/m H:i" }}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-semibold text-ink-500">{{ order.total_xof }} XOF</div>
+                <div class="text-xs text-slate-500">{{ order.get_status_display }}</div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="px-5 py-12 text-center text-slate-500">
+          <svg class="mx-auto h-12 w-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+          <p class="mt-2 text-sm">Aucune commande pour le moment.</p>
+          <p class="text-xs text-slate-400">Partage ta boutique pour recevoir tes premières commandes.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    {% load shop_urls %}
+    {% shop_public_url shop as shop_url %}
+    {% shop_public_host shop as shop_host %}
+    <div class="card">
+      <h2 class="font-serif text-lg font-medium text-ink-500">Ma boutique</h2>
+      <div class="mt-4 flex items-center gap-3">
+        {% if shop.logo %}
+          <img src="{{ shop.logo.url }}" class="h-14 w-14 rounded-lg object-cover">
+        {% else %}
+          <div class="h-14 w-14 rounded-lg bg-jayma-500 flex items-center justify-center text-white font-serif text-xl">{{ shop.name|slice:":1"|upper }}</div>
+        {% endif %}
+        <div>
+          <div class="font-medium text-ink-500">{{ shop.name }}</div>
+          <div class="text-sm text-slate-500">{{ shop.city }}</div>
+        </div>
+      </div>
+      <div class="mt-5 rounded-lg bg-slate-50 p-3">
+        <div class="text-xs text-slate-500">Ton lien boutique</div>
+        <div class="mt-1 font-mono text-sm text-ink-500 break-all">{{ shop_host }}</div>
+      </div>
+      <a href="{{ shop_url }}" target="_blank" class="btn-secondary mt-4 w-full text-center text-sm py-2">
+        Voir ma boutique ↗
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

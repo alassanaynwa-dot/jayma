@@ -1,0 +1,57 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Catégories — Jayma{% endblock %}
+{% block header_title %}Catégories{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <p class="text-slate-600 text-sm">Organise tes produits par catégories.</p>
+    <a href="{% url 'products_dashboard:category_create' %}" class="btn-primary">
+      <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Nouvelle catégorie
+    </a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    {% if categories %}
+      <ul class="divide-y divide-slate-100">
+        {% for cat in categories %}
+          <li class="flex items-center justify-between px-5 py-3 hover:bg-slate-50">
+            <div class="flex items-center gap-3">
+              <div class="h-9 w-9 rounded-lg bg-jayma-50 flex items-center justify-center text-jayma-600 font-serif">
+                {{ cat.name|slice:":1"|upper }}
+              </div>
+              <div>
+                <a href="{% url 'products_dashboard:category_edit' cat.pk %}" class="text-sm font-medium text-ink-500 hover:text-jayma-600">{{ cat.name }}</a>
+                <div class="text-xs text-slate-500">{{ cat.products.count }} produit{{ cat.products.count|pluralize }}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              {% if cat.is_active %}
+                <span class="text-[11px] rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-700">active</span>
+              {% else %}
+                <span class="text-[11px] rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">inactive</span>
+              {% endif %}
+              <form method="post" action="{% url 'products_dashboard:category_delete' cat.pk %}" onsubmit="return confirm('Supprimer cette catégorie ? Les produits ne seront pas supprimés.')">
+                {% csrf_token %}
+                <button type="submit" class="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/></svg>
+                </button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="px-6 py-16 text-center">
+        <div class="mx-auto h-16 w-16 rounded-2xl bg-jayma-50 flex items-center justify-center">
+          <svg class="h-8 w-8 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        </div>
+        <h3 class="mt-4 font-serif text-lg text-ink-500">Aucune catégorie</h3>
+        <p class="mt-1 text-sm text-slate-500">Crée une première catégorie pour organiser tes produits.</p>
+        <a href="{% url 'products_dashboard:category_create' %}" class="btn-primary mt-5 inline-flex">Créer une catégorie</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

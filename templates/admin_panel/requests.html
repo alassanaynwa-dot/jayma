@@ -1,0 +1,69 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Demandes de boutiques — Admin Jayma{% endblock %}
+{% block header_title %}Demandes de boutiques{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="flex gap-2 overflow-x-auto pb-2">
+    <a href="?status=pending" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'pending' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">En attente</a>
+    <a href="?status=approved" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'approved' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Approuvées</a>
+    <a href="?status=rejected" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'rejected' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Rejetées</a>
+    <a href="?status=" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if not status %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Toutes</a>
+  </div>
+
+  {% for sr in shop_requests %}
+    <div class="card">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div class="flex items-center gap-3 flex-wrap">
+            <h3 class="font-serif text-lg font-medium">{{ sr.shop_name }}</h3>
+            {% if sr.status == 'pending' %}
+              <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">En attente</span>
+            {% elif sr.status == 'approved' %}
+              <span class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700">✓ Approuvée</span>
+            {% else %}
+              <span class="inline-flex rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-600">Rejetée</span>
+            {% endif %}
+          </div>
+          <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+            <div><span class="text-slate-500">Slug :</span> <strong class="text-jayma-600">{{ sr.desired_slug }}.jayma.sn</strong></div>
+            <div><span class="text-slate-500">Catégorie :</span> {{ sr.product_category|default:"—" }}</div>
+            <div><span class="text-slate-500">Demandeur :</span> {{ sr.full_name }}</div>
+            <div><span class="text-slate-500">Ville :</span> {{ sr.city }}</div>
+            <div><span class="text-slate-500">Email :</span> {{ sr.email }}</div>
+            <div><span class="text-slate-500">Téléphone :</span> {{ sr.phone }}</div>
+          </div>
+          {% if sr.description %}<p class="mt-3 text-sm text-slate-600">{{ sr.description }}</p>{% endif %}
+          <div class="mt-3 text-xs text-slate-500">
+            Reçue le {{ sr.created_at|date:"d F Y à H:i" }}
+            {% if sr.reviewed_by %} · traitée par {{ sr.reviewed_by.username }}{% endif %}
+          </div>
+        </div>
+
+        {% if sr.status == 'pending' %}
+          <div class="flex flex-col gap-2 w-full sm:w-auto">
+            <form method="post" action="{% url 'admin_panel:request_approve' sr.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-primary w-full">✓ Approuver</button>
+            </form>
+            <form method="post" action="{% url 'admin_panel:request_reject' sr.pk %}" onsubmit="return confirm('Rejeter cette demande ?')">
+              {% csrf_token %}
+              <button type="submit" class="w-full rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100">Rejeter</button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <div class="card px-6 py-16 text-center">
+      <div class="mx-auto h-16 w-16 rounded-2xl bg-jayma-50 flex items-center justify-center">
+        <svg class="h-8 w-8 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <h3 class="mt-4 font-serif text-lg">Aucune demande</h3>
+      <p class="text-sm text-slate-500">Tout est traité.</p>
+    </div>
+  {% endfor %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{# Partial HTMX — bloc "Code promo" au checkout #}
+<div id="coupon-box" class="rounded-lg border border-slate-200 p-3">
+  {% if coupon %}
+    <div class="flex items-center justify-between gap-2">
+      <div class="min-w-0">
+        <div class="inline-flex items-center gap-2">
+          <span class="font-mono text-sm font-bold shop-accent">{{ coupon.code }}</span>
+          <span class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+            ✓ {{ coupon.display_value }}
+          </span>
+        </div>
+        <div class="text-xs text-slate-500 mt-0.5">Remise : −{{ discount }} XOF</div>
+      </div>
+      <form hx-post="{% url 'coupons_public:remove' %}"
+            hx-target="#coupon-box"
+            hx-swap="outerHTML"
+            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <button type="submit" class="text-xs text-slate-500 hover:text-red-600 underline">Retirer</button>
+      </form>
+    </div>
+  {% else %}
+    <form hx-post="{% url 'coupons_public:apply' %}"
+          hx-target="#coupon-box"
+          hx-swap="outerHTML"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+          class="flex gap-2 items-end">
+      <div class="flex-1">
+        <label class="label text-xs">Code promo</label>
+        <input type="text" name="code" value="{{ entered_code|default:'' }}" placeholder="SOLDES10"
+               class="input font-mono uppercase text-sm">
+      </div>
+      <button type="submit" class="shop-btn py-2 px-4 text-sm">Appliquer</button>
+    </form>
+    {% if error %}
+      <p class="mt-2 text-xs text-red-600">{{ error }}</p>
+    {% endif %}
+  {% endif %}
+</div>

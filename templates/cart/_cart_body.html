@@ -1,0 +1,77 @@
+{% load static %}
+{% if cart|length == 0 %}
+  <div class="py-20 text-center">
+    <div class="mx-auto h-24 w-24 rounded-2xl shop-bg-soft flex items-center justify-center">
+      <svg class="h-12 w-12 shop-accent opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17"/></svg>
+    </div>
+    <h3 class="mt-5 font-serif text-xl font-medium text-ink-500">Ton panier est vide</h3>
+    <p class="mt-2 text-sm text-slate-500">Parcours la boutique pour ajouter des produits.</p>
+    <a href="{% url 'products_public:list' %}" class="shop-btn mt-6 inline-flex">Voir les produits</a>
+  </div>
+{% else %}
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+      {% for item in cart %}
+        <div class="p-4 flex gap-4" id="item-{{ item.product_id }}">
+          <div class="h-20 w-20 bg-slate-100 rounded-lg overflow-hidden shrink-0">
+            {# On a pas direct access à l'image — on lazy-fetch via le product_id #}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <div class="font-medium text-ink-500 line-clamp-1">{{ item.name }}</div>
+                <div class="text-xs text-slate-500">{{ item.unit_price }} XOF / unité</div>
+              </div>
+              <form hx-post="{% url 'cart:remove' item.product_id %}"
+                    hx-target="#cart-body"
+                    hx-swap="innerHTML"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    class="shrink-0">
+                <button type="submit" class="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600" title="Retirer">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </form>
+            </div>
+
+            <div class="mt-3 flex items-center justify-between gap-3">
+              <form hx-post="{% url 'cart:update' item.product_id %}"
+                    hx-target="#cart-body"
+                    hx-swap="innerHTML"
+                    hx-trigger="change"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    class="flex items-center rounded-lg border border-slate-300 bg-white">
+                <button type="button" class="px-3 py-1.5 text-slate-500 hover:text-ink-500"
+                        onclick="const i=this.nextElementSibling; i.value=Math.max(1, parseInt(i.value)-1); i.dispatchEvent(new Event('change', {bubbles:true}))">−</button>
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="w-12 text-center border-0 focus:ring-0 text-sm font-medium">
+                <button type="button" class="px-3 py-1.5 text-slate-500 hover:text-ink-500"
+                        onclick="const i=this.previousElementSibling; i.value=parseInt(i.value)+1; i.dispatchEvent(new Event('change', {bubbles:true}))">+</button>
+              </form>
+              <div class="font-semibold text-ink-500">{{ item.line_total }} XOF</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <aside class="bg-white rounded-xl border border-slate-200 p-5 h-fit lg:sticky lg:top-20">
+      <h3 class="font-serif text-lg font-medium text-ink-500">Récapitulatif</h3>
+      <div class="mt-4 space-y-2 text-sm">
+        <div class="flex justify-between"><span class="text-slate-600">Sous-total</span><span class="font-medium">{{ cart.total_xof }} XOF</span></div>
+        <div class="flex justify-between"><span class="text-slate-600">Livraison</span><span class="text-slate-500">Calculée à la commande</span></div>
+      </div>
+      <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-baseline">
+        <span class="font-medium text-ink-500">Total</span>
+        <span class="font-serif text-2xl font-medium text-ink-500">{{ cart.total_xof }} <span class="text-sm font-sans text-slate-500">XOF</span></span>
+      </div>
+      <a href="{% url 'orders_public:checkout' %}" class="shop-btn mt-5 w-full">
+        Commander
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </a>
+      <a href="{% url 'products_public:list' %}" class="mt-2 block text-center text-sm text-slate-500 hover:text-ink-500">← Continuer mes achats</a>
+    </aside>
+  </div>
+
+  {# Update compteur header via OOB swap #}
+  {% include "cart/_cart_counter.html" with count=cart|length %}
+{% endif %}

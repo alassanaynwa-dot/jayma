@@ -1,0 +1,119 @@
+{% extends "base/base.html" %}
+
+{% block title %}Créer ma boutique — Jayma{% endblock %}
+
+{% block body %}
+<main class="mx-auto max-w-xl px-4 py-8 sm:py-12">
+
+  <header class="mb-8">
+    <a href="{% url 'core:home' %}" class="inline-flex items-center">
+      {% include "partials/logo.html" with size="h-7" %}
+    </a>
+  </header>
+
+  <h1 class="font-serif text-3xl sm:text-4xl font-medium text-ink-500">Créer ma boutique</h1>
+  <p class="mt-2 text-slate-600">Remplis le formulaire — on valide ta demande sous 24h.</p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="mt-4 rounded-lg bg-jayma-50 border border-jayma-200 px-4 py-3 text-sm text-jayma-800">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" class="mt-8 space-y-5 card">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div>
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Toi</h2>
+    </div>
+
+    {% for field in form %}
+      {% if field.name == "shop_name" %}
+        <div class="pt-4 border-t border-slate-100">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Ta boutique</h2>
+        </div>
+      {% endif %}
+
+      {% if field.name != "terms_accepted" %}
+        <div x-data="{% if field.name == 'desired_slug' %}slugPreview('{{ field.value|default_if_none:''|escapejs }}'){% else %}{}{% endif %}">
+          <label for="{{ field.id_for_label }}" class="label">
+            {{ field.label }}
+            {% if field.field.required %}<span class="text-jayma-500">*</span>{% endif %}
+          </label>
+          {% if field.name == "desired_slug" %}
+            <input type="text"
+                   name="{{ field.name }}"
+                   id="{{ field.id_for_label }}"
+                   value="{{ field.value|default_if_none:'' }}"
+                   placeholder="{{ field.field.widget.attrs.placeholder }}"
+                   class="input"
+                   x-model="raw"
+                   x-on:input="slugify()"
+                   required>
+            <div class="mt-1.5 text-xs flex items-center gap-1.5">
+              <span class="text-slate-500">Ta boutique sera sur</span>
+              <span class="font-mono font-medium text-jayma-600" x-text="preview || 'ton-choix'"></span><span class="font-mono text-slate-500">.jayma.sn</span>
+            </div>
+          {% else %}
+            {{ field }}
+          {% endif %}
+          {% if field.help_text and field.name != "desired_slug" %}
+            <p class="mt-1 text-xs text-slate-500">{{ field.help_text|safe }}</p>
+          {% elif field.name == "desired_slug" %}
+            <p class="mt-1 text-xs text-slate-500">Tape ce que tu veux — accents, espaces, majuscules autorisés. On normalise pour toi.</p>
+          {% endif %}
+          {% if field.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <script>
+      // Slugify côté client — même logique que Django slugify() pour le preview
+      function slugPreview(initial) {
+        return {
+          raw: initial,
+          preview: '',
+          init() { this.slugify(); },
+          slugify() {
+            let s = (this.raw || '').toString().toLowerCase().trim();
+            s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');  // accents
+            s = s.replace(/[^a-z0-9\s-]/g, '');                     // chars invalides
+            s = s.replace(/\s+/g, '-').replace(/-+/g, '-');         // espaces → -
+            s = s.replace(/^-+|-+$/g, '');                          // trim tirets
+            this.preview = s.slice(0, 40);
+          },
+        };
+      }
+    </script>
+
+    <div class="pt-4 border-t border-slate-100">
+      <label class="flex items-start gap-2">
+        {{ form.terms_accepted }}
+        <span class="text-sm text-slate-700">{{ form.terms_accepted.label }}</span>
+      </label>
+      {% if form.terms_accepted.errors %}
+        <p class="mt-1 text-xs text-red-600">{{ form.terms_accepted.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <button type="submit" class="btn-primary flex-1">Envoyer ma demande</button>
+      <a href="{% url 'core:home' %}" class="btn-secondary flex-1 text-center">Annuler</a>
+    </div>
+  </form>
+
+  <p class="mt-6 text-center text-xs text-slate-500">
+    Une fois validée, tu reçois un email et un SMS avec tes identifiants.
+  </p>
+</main>
+{% endblock %}

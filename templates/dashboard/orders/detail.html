@@ -1,0 +1,192 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Commande {{ order.reference }} — Jayma{% endblock %}
+{% block header_title %}Commande {{ order.reference }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <a href="{% url 'orders_dashboard:list' %}" class="inline-flex items-center text-sm text-slate-500 hover:text-ink-500">← Retour aux commandes</a>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <div class="lg:col-span-2 space-y-6">
+
+      {# En-tête #}
+      <div class="card flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="font-serif text-2xl font-medium text-ink-500">{{ order.reference }}</h1>
+            {% include "dashboard/orders/_status_badge.html" %}
+          </div>
+          <div class="mt-1 text-sm text-slate-500">Reçue le {{ order.created_at|date:"d F Y à H:i" }}</div>
+        </div>
+        <div class="text-right">
+          <div class="font-serif text-2xl font-medium text-ink-500">{{ order.total_xof }} <span class="text-sm font-sans text-slate-500">XOF</span></div>
+          <div class="text-xs text-slate-500">
+            <span class="{% if order.payment_status == 'paid' %}text-emerald-600 font-medium{% endif %}">{{ order.get_payment_status_display }}</span>
+            · {{ order.get_payment_method_display }}
+          </div>
+        </div>
+      </div>
+
+      {# Articles #}
+      <div class="card p-0 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+          <h2 class="font-serif text-lg font-medium text-ink-500">Articles</h2>
+          <span class="text-xs text-slate-500">{{ order.items.count }} article{{ order.items.count|pluralize }}</span>
+        </div>
+        <ul class="divide-y divide-slate-100">
+          {% for item in order.items.all %}
+            <li class="px-5 py-3 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="h-10 w-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
+                  {% if item.product.primary_image %}<img src="{{ item.product.primary_image.image.url }}" class="h-full w-full object-cover">{% endif %}
+                </div>
+                <div class="min-w-0">
+                  <div class="text-sm font-medium text-ink-500 truncate">{{ item.product_name }}</div>
+                  <div class="text-xs text-slate-500">{{ item.unit_price_xof }} XOF × {{ item.quantity }}</div>
+                </div>
+              </div>
+              <div class="font-semibold text-ink-500 shrink-0">{{ item.line_total_xof }} XOF</div>
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 text-sm space-y-1">
+          <div class="flex justify-between"><span class="text-slate-600">Sous-total</span><span>{{ order.subtotal_xof }} XOF</span></div>
+          <div class="flex justify-between"><span class="text-slate-600">Livraison</span><span>{{ order.delivery_xof }} XOF</span></div>
+          <div class="flex justify-between text-slate-500 text-xs italic"><span>Commission Jayma ({{ order.commission_rate }}%)</span><span>−{{ order.commission_xof }} XOF</span></div>
+          <div class="flex justify-between pt-2 border-t border-slate-200 text-base font-medium">
+            <span>À recevoir</span>
+            <span class="text-emerald-600">{{ order.merchant_amount_xof }} XOF</span>
+          </div>
+        </div>
+      </div>
+
+      {# Tracking + notes #}
+      <form method="post" action="{% url 'orders_dashboard:update_tracking' order.reference %}" class="card space-y-4">
+        {% csrf_token %}
+        <h2 class="font-serif text-lg font-medium text-ink-500">Livraison & notes</h2>
+        <div>
+          <label class="label">Numéro de suivi</label>
+          <input type="text" name="tracking_number" value="{{ order.tracking_number }}" class="input" placeholder="Ex : JAY-SN-123456">
+        </div>
+        <div>
+          <label class="label">Notes internes</label>
+          <textarea name="notes" class="input" rows="2" placeholder="Notes privées…">{{ order.notes }}</textarea>
+        </div>
+        <div class="text-right">
+          <button type="submit" class="btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+
+    {# ========== Sidebar actions ========== #}
+    <aside class="space-y-6">
+
+      <div class="card">
+        <h2 class="font-serif text-lg font-medium text-ink-500">Client</h2>
+        <div class="mt-3 space-y-1 text-sm">
+          <div class="font-medium text-ink-500">{{ order.client_name }}</div>
+          <div class="text-slate-600">📞 {{ order.client_phone }}</div>
+          {% if order.client_email %}<div class="text-slate-600">✉ {{ order.client_email }}</div>{% endif %}
+          <div class="text-slate-600 mt-2">📍 {{ order.client_address }}<br>{{ order.client_city }}</div>
+          {% if order.client_notes %}
+            <div class="mt-3 rounded-lg bg-slate-50 p-2.5 text-xs text-slate-700">💬 {{ order.client_notes }}</div>
+          {% endif %}
+        </div>
+        <a href="tel:{{ order.client_phone }}" class="btn-secondary mt-4 w-full text-center text-sm py-2">Appeler</a>
+        <a href="https://wa.me/{{ order.client_phone|cut:'+'|cut:' ' }}?text=Bonjour%2C%20au%20sujet%20de%20ta%20commande%20{{ order.reference }}" target="_blank"
+           class="mt-2 w-full text-center text-sm py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+          💬 WhatsApp
+        </a>
+      </div>
+
+      {# Actions selon le statut #}
+      {% if order.status == "pending" %}
+        <form method="post" action="{% url 'orders_dashboard:update_status' order.reference %}" class="card space-y-3">
+          {% csrf_token %}
+          <h2 class="font-serif text-lg font-medium text-ink-500">Actions</h2>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="notify" value="1" checked> Envoyer SMS au client</label>
+          <button type="submit" name="status" value="confirmed" class="btn-primary w-full">✓ Confirmer la commande</button>
+          <button type="submit" name="status" value="cancelled"
+                  onclick="return confirm('Annuler cette commande ?')"
+                  class="w-full rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100">Annuler</button>
+        </form>
+      {% elif order.status == "confirmed" %}
+        <form method="post" action="{% url 'orders_dashboard:update_status' order.reference %}" class="card space-y-3">
+          {% csrf_token %}
+          <h2 class="font-serif text-lg font-medium text-ink-500">Actions</h2>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="notify" value="1" checked> Envoyer SMS au client</label>
+          <button type="submit" name="status" value="shipped" class="btn-primary w-full">🚚 Marquer comme expédiée</button>
+        </form>
+      {% elif order.status == "shipped" %}
+        <form method="post" action="{% url 'orders_dashboard:update_status' order.reference %}" class="card space-y-3">
+          {% csrf_token %}
+          <h2 class="font-serif text-lg font-medium text-ink-500">Actions</h2>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="notify" value="1" checked> Envoyer SMS au client</label>
+          <button type="submit" name="status" value="delivered" class="btn-primary w-full bg-emerald-600 hover:bg-emerald-700">✓ Marquer comme livrée</button>
+          <button type="submit" name="status" value="disputed"
+                  class="w-full rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100">
+            ⚠ Signaler un litige
+          </button>
+        </form>
+      {% elif order.status == "delivered" %}
+        <div class="card bg-emerald-50 border-emerald-200">
+          <div class="flex items-center gap-2 text-emerald-700 font-medium">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Commande livrée
+          </div>
+          {% if order.delivered_at %}<div class="mt-1 text-xs text-emerald-600">le {{ order.delivered_at|date:"d/m/Y à H:i" }}</div>{% endif %}
+        </div>
+      {% endif %}
+
+      {# Livreur assigné #}
+      {% if order.status == "confirmed" or order.status == "shipped" %}
+        <form method="post" action="{% url 'orders_dashboard:assign_courier' order.reference %}" class="card space-y-3">
+          {% csrf_token %}
+          <h2 class="font-serif text-lg font-medium text-ink-500">Livreur</h2>
+          {% if order.courier %}
+            <div class="flex items-center gap-3 rounded-lg shop-bg-soft p-3">
+              <div class="h-10 w-10 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif">{{ order.courier.name|slice:":1"|upper }}</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium truncate">{{ order.courier.name }}</div>
+                <div class="text-xs text-slate-500">{{ order.courier.phone }} · {{ order.courier.get_vehicle_display }}</div>
+              </div>
+              <a href="{% url 'delivery_dashboard:detail' order.courier.pk %}" class="text-xs font-medium shop-accent shrink-0">Voir →</a>
+            </div>
+          {% endif %}
+          <div>
+            <label class="label text-xs">{% if order.courier %}Changer le livreur{% else %}Assigner à un livreur{% endif %}</label>
+            <select name="courier_id" class="input">
+              <option value="">— Aucun —</option>
+              {% for c in shop.couriers.all %}
+                {% if c.is_active or c == order.courier %}
+                  <option value="{{ c.pk }}" {% if order.courier_id == c.pk %}selected{% endif %}>
+                    {{ c.name }} ({{ c.get_vehicle_display }}){% if not c.is_active %} — inactif{% endif %}
+                  </option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn-primary w-full text-sm py-2">{% if order.courier %}Mettre à jour{% else %}Assigner{% endif %}</button>
+          {% if not shop.couriers.exists %}
+            <a href="{% url 'delivery_dashboard:create' %}" class="block text-center text-xs shop-accent hover:underline">+ Ajouter ton premier livreur</a>
+          {% endif %}
+        </form>
+      {% endif %}
+
+      {# Infos paiement #}
+      <div class="card">
+        <h2 class="font-serif text-lg font-medium text-ink-500">Paiement</h2>
+        <div class="mt-3 text-sm space-y-1">
+          <div class="flex justify-between"><span class="text-slate-600">Méthode</span><span class="font-medium">{{ order.get_payment_method_display }}</span></div>
+          <div class="flex justify-between">
+            <span class="text-slate-600">Statut</span>
+            <span class="font-medium {% if order.payment_status == 'paid' %}text-emerald-600{% endif %}">{{ order.get_payment_status_display }}</span>
+          </div>
+          {% if order.paid_at %}<div class="flex justify-between text-xs text-slate-500"><span>Payé le</span><span>{{ order.paid_at|date:"d/m H:i" }}</span></div>{% endif %}
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

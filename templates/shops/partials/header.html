@@ -1,0 +1,33 @@
+{% load cart_tags %}
+<header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+    <a href="{% url 'shops_public:home' %}" class="flex items-center gap-3 min-w-0">
+      {% if shop.logo %}
+        <img src="{{ shop.logo.url }}" alt="{{ shop.name }}" class="h-9 w-9 rounded-lg object-cover shrink-0">
+      {% else %}
+        <div class="h-9 w-9 rounded-lg flex items-center justify-center text-white font-serif shrink-0 shop-bg">
+          {{ shop.name|slice:":1"|upper }}
+        </div>
+      {% endif %}
+      <span class="font-serif text-lg font-medium text-ink-500 truncate">{{ shop.name }}</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6 text-sm">
+      <a href="{% url 'shops_public:home' %}" class="text-slate-600 hover:text-ink-500 font-medium">Accueil</a>
+      <a href="{% url 'products_public:list' %}" class="text-slate-600 hover:text-ink-500 font-medium">Produits</a>
+      {% if shop.whatsapp %}
+        <a href="https://wa.me/{{ shop.whatsapp|cut:'+'|cut:' ' }}" class="text-slate-600 hover:text-emerald-600 font-medium" target="_blank">WhatsApp</a>
+      {% endif %}
+    </nav>
+
+    <a href="{% url 'cart:view' %}" class="relative inline-flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-slate-100">
+      <svg class="h-5 w-5 text-ink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+      <span class="hidden sm:inline text-sm font-medium">Panier</span>
+      {% cart_count as n %}
+      <span id="cart-counter"
+            class="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full shop-bg text-white text-[10px] font-bold flex items-center justify-center px-1 {% if n == 0 %}hidden{% endif %}">
+        {{ n }}
+      </span>
+    </a>
+  </div>
+</header>

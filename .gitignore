@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+/static_collected/
+
+# Environnement
+.env
+.env.local
+.env.*.local
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+.docker-data/
+
+# Node / Tailwind
+node_modules/
+package-lock.json
+
+# Binaire Tailwind CLI (téléchargé via scripts/install_tailwind.sh)
+.bin/
+
+# CSS générée — on build avec `make css` au déploiement
+static/css/main.css
+static/css/main.css.map
+
+# Celery
+celerybeat-schedule
+celerybeat.pid

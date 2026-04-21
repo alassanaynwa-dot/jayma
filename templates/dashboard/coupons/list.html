@@ -1,0 +1,91 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Codes promo — Jayma{% endblock %}
+{% block header_title %}Codes promo{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="flex items-center justify-between gap-3">
+    <p class="text-sm text-slate-600 min-w-0">Crée des réductions pour fidéliser tes clients ou booster les ventes pendant les périodes creuses.</p>
+    <a href="{% url 'coupons_dashboard:create' %}" class="btn-primary shrink-0">
+      <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Nouveau code
+    </a>
+  </div>
+
+  {% if coupons %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {% for c in coupons %}
+        <div class="card relative {% if not c.is_active %}opacity-60{% endif %}">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="inline-block rounded-md bg-jayma-50 border border-dashed border-jayma-300 px-3 py-1.5 font-mono text-sm font-bold text-jayma-700 tracking-wide">
+                {{ c.code }}
+              </div>
+              <div class="mt-2 font-serif text-xl font-medium text-ink-500">{{ c.display_value }}</div>
+              {% if c.min_order_xof %}
+                <div class="text-xs text-slate-500">Panier min. {{ c.min_order_xof }} XOF</div>
+              {% endif %}
+            </div>
+            <div class="text-right text-xs">
+              {% if c.is_active %}
+                <span class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700">Actif</span>
+              {% else %}
+                <span class="inline-flex rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Inactif</span>
+              {% endif %}
+              <div class="mt-2 text-slate-500">
+                {{ c.uses_count }}{% if c.max_uses %} / {{ c.max_uses }}{% endif %} utilisation{{ c.uses_count|pluralize }}
+              </div>
+            </div>
+          </div>
+
+          {# Stats conversion #}
+          {% if c.uses_count %}
+            <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div class="text-[10px] uppercase text-slate-500 font-semibold">CA généré</div>
+                <div class="text-sm font-semibold text-ink-500">{{ c.revenue_generated|default:0 }}</div>
+                <div class="text-[10px] text-slate-400">XOF</div>
+              </div>
+              <div>
+                <div class="text-[10px] uppercase text-slate-500 font-semibold">Remise</div>
+                <div class="text-sm font-semibold text-jayma-600">−{{ c.total_discount|default:0 }}</div>
+                <div class="text-[10px] text-slate-400">XOF</div>
+              </div>
+              <div>
+                <div class="text-[10px] uppercase text-slate-500 font-semibold">Clients</div>
+                <div class="text-sm font-semibold text-ink-500">{{ c.unique_customers|default:0 }}</div>
+                <div class="text-[10px] text-slate-400">uniques</div>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div class="text-xs text-slate-500">
+              {% if c.one_per_customer %}<span class="inline-flex rounded bg-sky-50 text-sky-700 px-1.5 py-0.5 text-[10px] mr-1">1 / client</span>{% endif %}
+              {% if c.valid_until %}Jusqu'au {{ c.valid_until|date:"d/m/Y" }}{% else %}Sans date de fin{% endif %}
+            </div>
+            <div class="flex gap-2">
+              <a href="{% url 'coupons_dashboard:edit' c.pk %}" class="text-xs font-medium text-slate-600 hover:text-jayma-600">Modifier</a>
+              <span class="text-slate-300">·</span>
+              <form method="post" action="{% url 'coupons_dashboard:delete' c.pk %}" class="inline" onsubmit="return confirm('Supprimer le code « {{ c.code|escapejs }} » ?')">
+                {% csrf_token %}
+                <button type="submit" class="text-xs font-medium text-red-600 hover:text-red-700">Supprimer</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card px-6 py-16 text-center">
+      <div class="mx-auto h-16 w-16 rounded-2xl bg-jayma-50 flex items-center justify-center">
+        <svg class="h-8 w-8 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+      </div>
+      <h3 class="mt-4 font-serif text-lg text-ink-500">Aucun code promo</h3>
+      <p class="mt-1 text-sm text-slate-500 max-w-sm mx-auto">Crée ton premier code pour animer tes ventes.</p>
+      <a href="{% url 'coupons_dashboard:create' %}" class="btn-primary mt-6 inline-flex">Créer un code</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

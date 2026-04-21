@@ -1,0 +1,57 @@
+{% extends "base/shop_base.html" %}
+
+{% block title %}Produits — {{ shop.name }}{% endblock %}
+
+{% block content %}
+<section class="max-w-6xl mx-auto px-4 py-8 sm:py-12">
+
+  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+    <div>
+      <h1 class="font-serif text-3xl sm:text-4xl font-medium text-ink-500">
+        {% if active_category %}{{ active_category.name }}{% else %}Tous nos produits{% endif %}
+      </h1>
+      <p class="mt-1 text-sm text-slate-500">{{ products|length }} produit{{ products|length|pluralize }}</p>
+    </div>
+    <form method="get" class="flex gap-2 items-center">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="search" name="q" value="{{ q }}" placeholder="Rechercher…" class="input pl-9 w-48">
+      </div>
+    </form>
+  </div>
+
+  {# Pills filtre catégorie #}
+  {% if categories %}
+  <div class="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-4 px-4 sm:-mx-0 sm:px-0">
+    <a href="{% url 'products_public:list' %}"
+       class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition
+              {% if not active_category %}shop-bg text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
+      Tous
+    </a>
+    {% for cat in categories %}
+      <a href="?cat={{ cat.slug }}"
+         class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition
+                {% if active_category == cat %}shop-bg text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
+        {{ cat.name }}
+      </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if products %}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      {% for product in products %}
+        {% include "products/_card.html" %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="py-20 text-center text-slate-500">
+      <div class="mx-auto h-20 w-20 rounded-2xl shop-bg-soft flex items-center justify-center">
+        <svg class="h-10 w-10 shop-accent opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/></svg>
+      </div>
+      <h3 class="mt-5 font-serif text-xl font-medium text-ink-500">Aucun produit</h3>
+      <p class="mt-1 text-sm">{% if q or active_category %}Essaie une autre recherche.{% else %}Le catalogue est en préparation.{% endif %}</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

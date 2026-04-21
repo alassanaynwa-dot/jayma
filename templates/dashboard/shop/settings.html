@@ -1,0 +1,115 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Paramètres — Jayma{% endblock %}
+{% block header_title %}Paramètres de la boutique{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="max-w-3xl space-y-6">
+  {% csrf_token %}
+
+  {# Identité #}
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500">Identité</h2>
+    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="sm:col-span-2">
+        <label class="label">{{ form.name.label }}</label>
+        {{ form.name }}
+        {% if form.name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.name.errors.0 }}</p>{% endif %}
+      </div>
+      <div class="sm:col-span-2">
+        <label class="label">{{ form.description.label }}</label>
+        {{ form.description }}
+        <p class="mt-1 text-xs text-slate-500">Présentation qui apparaîtra sur l'accueil de ta boutique.</p>
+      </div>
+      <div>
+        <label class="label">Adresse boutique</label>
+        <div class="input bg-slate-50 font-mono text-sm text-slate-600">{{ shop.slug }}.jayma.sn</div>
+        <p class="mt-1 text-xs text-slate-500">Le slug est fixe (contacte Jayma pour en changer).</p>
+      </div>
+      <div>
+        <label class="label">Commission Jayma</label>
+        <div class="input bg-slate-50 text-sm text-slate-600">{{ shop.commission_rate }}%</div>
+        <p class="mt-1 text-xs text-slate-500">Taux défini par l'équipe Jayma.</p>
+      </div>
+    </div>
+  </div>
+
+  {# Images #}
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500">Apparence</h2>
+    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="label">{{ form.logo.label }}</label>
+        {% if shop.logo %}
+          <div class="mb-2 flex items-center gap-3">
+            <img src="{{ shop.logo.url }}" class="h-16 w-16 rounded-lg object-cover border border-slate-200">
+            <span class="text-xs text-slate-500">Logo actuel</span>
+          </div>
+        {% endif %}
+        {{ form.logo }}
+      </div>
+      <div>
+        <label class="label">{{ form.banner.label }}</label>
+        {% if shop.banner %}
+          <div class="mb-2">
+            <img src="{{ shop.banner.url }}" class="h-20 w-full object-cover rounded-lg border border-slate-200">
+          </div>
+        {% endif %}
+        {{ form.banner }}
+      </div>
+      <div>
+        <label class="label">{{ form.theme_color.label }}</label>
+        <div class="flex items-center gap-3">
+          {{ form.theme_color }}
+          <span class="font-mono text-sm text-slate-500" id="theme-preview">{{ shop.theme_color }}</span>
+        </div>
+        <p class="mt-1 text-xs text-slate-500">{{ form.theme_color.help_text }}</p>
+      </div>
+    </div>
+  </div>
+
+  {# Contact #}
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500">Contact</h2>
+    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="label">{{ form.phone.label }}</label>
+        {{ form.phone }}
+      </div>
+      <div>
+        <label class="label">{{ form.whatsapp.label }}</label>
+        {{ form.whatsapp }}
+        <p class="mt-1 text-xs text-slate-500">{{ form.whatsapp.help_text }}</p>
+      </div>
+      <div>
+        <label class="label">{{ form.email.label }}</label>
+        {{ form.email }}
+      </div>
+      <div>
+        <label class="label">{{ form.city.label }}</label>
+        {{ form.city }}
+      </div>
+      <div class="sm:col-span-2">
+        <label class="label">{{ form.address.label }}</label>
+        {{ form.address }}
+      </div>
+    </div>
+  </div>
+
+  {# Disponibilité #}
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500">Disponibilité</h2>
+    <label class="mt-4 flex items-start gap-3">
+      {{ form.is_active }}
+      <div>
+        <div class="text-sm font-medium text-ink-500">{{ form.is_active.label }}</div>
+        <div class="text-xs text-slate-500">{{ form.is_active.help_text }}</div>
+      </div>
+    </label>
+  </div>
+
+  <div class="sticky bottom-0 -mx-4 sm:-mx-6 lg:-mx-8 bg-white/80 backdrop-blur border-t border-slate-200 px-4 sm:px-6 lg:px-8 py-3 flex gap-3 justify-end">
+    <a href="{% url 'dashboard:home' %}" class="btn-secondary">Annuler</a>
+    <button type="submit" class="btn-primary">Enregistrer</button>
+  </div>
+</form>
+{% endblock %}

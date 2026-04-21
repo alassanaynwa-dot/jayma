@@ -1,0 +1,13 @@
+{% extends "base/shop_base.html" %}
+
+{% block title %}Panier — {{ shop.name }}{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 py-8 sm:py-12">
+  <h1 class="font-serif text-3xl sm:text-4xl font-medium text-ink-500">Ton panier</h1>
+
+  <div id="cart-body" class="mt-8">
+    {% include "cart/_cart_body.html" %}
+  </div>
+</section>
+{% endblock %}

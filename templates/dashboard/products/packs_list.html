@@ -1,0 +1,76 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Packs — Jayma{% endblock %}
+{% block header_title %}Packs de produits{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="flex items-center justify-between gap-3">
+    <p class="text-sm text-slate-600 min-w-0">Crée des packs de plusieurs produits à prix réduit pour booster le panier moyen.</p>
+    <div class="flex gap-2 shrink-0">
+      <a href="{% url 'products_dashboard:list' %}" class="btn-secondary">← Produits</a>
+      <a href="{% url 'products_dashboard:pack_create' %}" class="btn-primary">
+        <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Nouveau pack
+      </a>
+    </div>
+  </div>
+
+  {% if packs %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {% for pack in packs %}
+        <div class="card">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <h3 class="font-serif text-lg font-medium text-ink-500">{{ pack.name }}</h3>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span class="font-serif text-xl font-medium text-jayma-600">{{ pack.price }} XOF</span>
+                {% if pack.compare_at_price %}
+                  <span class="text-sm text-slate-400 line-through">{{ pack.compare_at_price }} XOF</span>
+                  <span class="text-xs font-medium text-emerald-600">économie {{ pack.total_savings }} XOF</span>
+                {% endif %}
+              </div>
+            </div>
+            {% if pack.is_active %}
+              <span class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700 shrink-0">Actif</span>
+            {% else %}
+              <span class="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 shrink-0">Inactif</span>
+            {% endif %}
+          </div>
+
+          <ul class="mt-4 space-y-1.5 text-sm">
+            {% for pi in pack.items_in_pack.all %}
+              <li class="flex items-center justify-between gap-2">
+                <span class="text-slate-700 min-w-0 truncate">{{ pi.item.name }}</span>
+                <span class="text-slate-500 shrink-0 font-mono text-xs">× {{ pi.quantity }}</span>
+              </li>
+            {% empty %}
+              <li class="text-xs text-amber-600">⚠ Ce pack n'a encore aucun produit.</li>
+            {% endfor %}
+          </ul>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div class="text-xs text-slate-500">{{ pack.items_in_pack.count }} produit{{ pack.items_in_pack.count|pluralize }}</div>
+            <div class="flex gap-2">
+              <a href="{% url 'products_dashboard:pack_edit' pack.pk %}" class="text-xs font-medium text-slate-600 hover:text-jayma-600">Modifier</a>
+              <span class="text-slate-300">·</span>
+              <form method="post" action="{% url 'products_dashboard:pack_delete' pack.pk %}" class="inline" onsubmit="return confirm('Supprimer le pack « {{ pack.name|escapejs }} » ?')">
+                {% csrf_token %}
+                <button type="submit" class="text-xs font-medium text-red-600 hover:text-red-700">Supprimer</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card px-6 py-16 text-center">
+      <div class="mx-auto h-16 w-16 rounded-2xl bg-jayma-50 flex items-center justify-center">
+        <svg class="h-8 w-8 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      </div>
+      <h3 class="mt-4 font-serif text-lg text-ink-500">Aucun pack pour l'instant</h3>
+      <p class="mt-1 text-sm text-slate-500 max-w-sm mx-auto">Un pack = plusieurs produits vendus ensemble à prix réduit. Idéal pour booster le panier moyen.</p>
+      <a href="{% url 'products_dashboard:pack_create' %}" class="btn-primary mt-6 inline-flex">Créer mon premier pack</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

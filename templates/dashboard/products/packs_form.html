@@ -1,0 +1,90 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{% if pack %}Modifier{% else %}Nouveau{% endif %} pack — Jayma{% endblock %}
+{% block header_title %}{% if pack %}{{ pack.name }}{% else %}Nouveau pack{% endif %}{% endblock %}
+
+{% block content %}
+<form method="post" class="max-w-2xl space-y-6">
+  {% csrf_token %}
+
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500">Informations</h2>
+    <div class="mt-4 space-y-4">
+      <div>
+        <label class="label">{{ form.name.label }} <span class="text-jayma-500">*</span></label>
+        {{ form.name }}
+        {% if form.name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.name.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="label">{{ form.description.label }}</label>
+        {{ form.description }}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500">Produits inclus</h2>
+    <p class="mt-1 text-xs text-slate-500">Sélectionne les produits qui composent ce pack et leur quantité.</p>
+
+    {{ items_formset.management_form }}
+
+    <div class="mt-4 space-y-2">
+      {% for item_form in items_formset %}
+        <div class="flex items-end gap-2 rounded-lg bg-slate-50 p-3">
+          {% for hidden in item_form.hidden_fields %}{{ hidden }}{% endfor %}
+          <div class="flex-1">
+            <label class="label text-xs">Produit</label>
+            {{ item_form.item }}
+            {% if item_form.item.errors %}<p class="mt-1 text-xs text-red-600">{{ item_form.item.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="label text-xs">Qté</label>
+            {{ item_form.quantity }}
+          </div>
+          {% if item_form.instance.pk %}
+            <label class="inline-flex items-center gap-1 text-xs text-red-600 whitespace-nowrap pb-2">
+              {{ item_form.DELETE }} Retirer
+            </label>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500">Prix & visibilité</h2>
+    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="label">{{ form.price.label }} <span class="text-jayma-500">*</span></label>
+        {{ form.price }}
+        {% if form.price.errors %}<p class="mt-1 text-xs text-red-600">{{ form.price.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="label">{{ form.compare_at_price.label }}</label>
+        {{ form.compare_at_price }}
+        <p class="mt-1 text-xs text-slate-500">{{ form.compare_at_price.help_text }}</p>
+      </div>
+    </div>
+    <div class="mt-4 space-y-2">
+      <label class="flex items-start gap-3">
+        {{ form.is_active }}
+        <div>
+          <div class="text-sm font-medium text-ink-500">{{ form.is_active.label }}</div>
+          <div class="text-xs text-slate-500">Visible sur ta boutique publique.</div>
+        </div>
+      </label>
+      <label class="flex items-start gap-3">
+        {{ form.is_featured }}
+        <div>
+          <div class="text-sm font-medium text-ink-500">{{ form.is_featured.label }}</div>
+          <div class="text-xs text-slate-500">Apparaît sur l'accueil de ta boutique.</div>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div class="sticky bottom-0 -mx-4 sm:-mx-6 lg:-mx-8 bg-white/80 backdrop-blur border-t border-slate-200 px-4 sm:px-6 lg:px-8 py-3 flex gap-3 justify-end">
+    <a href="{% url 'products_dashboard:pack_list' %}" class="btn-secondary">Annuler</a>
+    <button type="submit" class="btn-primary">{% if pack %}Enregistrer{% else %}Créer le pack{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

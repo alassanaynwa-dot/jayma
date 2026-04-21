@@ -1,0 +1,28 @@
+{% extends "base/base.html" %}
+
+{% block title %}Demande envoyée — Jayma{% endblock %}
+
+{% block body %}
+<main class="mx-auto max-w-xl px-4 py-20 text-center">
+
+  <div class="mx-auto h-16 w-16 rounded-full bg-jayma-100 flex items-center justify-center">
+    <svg class="h-8 w-8 text-jayma-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    </svg>
+  </div>
+
+  <h1 class="mt-6 font-serif text-3xl font-medium text-ink-500">Demande envoyée !</h1>
+  <p class="mt-4 text-slate-600">
+    On a bien reçu ta demande de boutique. L'équipe Jayma la valide
+    généralement sous <strong>24 heures</strong>.
+  </p>
+  <p class="mt-2 text-slate-600">
+    Dès que c'est validé, tu reçois un <strong>email</strong> et un <strong>SMS</strong>
+    avec tes identifiants de connexion.
+  </p>
+
+  <div class="mt-10">
+    <a href="{% url 'core:home' %}" class="btn-primary">Retour à l'accueil</a>
+  </div>
+</main>
+{% endblock %}

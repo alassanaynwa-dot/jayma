@@ -1,0 +1,90 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ client_name }} — Jayma{% endblock %}
+{% block header_title %}{{ client_name }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <a href="{% url 'clients_dashboard:list' %}" class="inline-flex items-center text-sm text-slate-500 hover:text-ink-500">← Retour aux clients</a>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <aside class="space-y-6">
+      <div class="card">
+        <div class="flex items-center gap-3">
+          <div class="h-14 w-14 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif text-2xl">
+            {{ client_name|slice:":1"|upper }}
+          </div>
+          <div>
+            <div class="font-serif text-lg font-medium text-ink-500">{{ client_name }}</div>
+            <div class="text-xs text-slate-500">Client depuis le {{ first_order_at|date:"d/m/Y" }}</div>
+          </div>
+        </div>
+
+        <div class="mt-5 space-y-2 text-sm">
+          <div class="flex items-center gap-2 text-slate-600"><span>📞</span>{{ phone }}</div>
+          {% if client_email %}<div class="flex items-center gap-2 text-slate-600"><span>✉</span>{{ client_email }}</div>{% endif %}
+          <div class="flex items-start gap-2 text-slate-600"><span>📍</span><span>{{ client_address }}<br><span class="text-xs text-slate-500">{{ client_city }}</span></span></div>
+        </div>
+
+        <div class="mt-5 flex gap-2">
+          <a href="tel:{{ phone }}" class="btn-secondary flex-1 text-center text-sm py-2">Appeler</a>
+          <a href="https://wa.me/{{ phone|cut:'+'|cut:' ' }}" target="_blank" class="flex-1 text-center text-sm py-2 inline-flex items-center justify-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100">💬 WhatsApp</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Statistiques</h3>
+        <div class="mt-3 space-y-3">
+          <div class="flex justify-between">
+            <span class="text-sm text-slate-600">Total dépensé</span>
+            <span class="font-serif text-lg font-medium text-ink-500">{{ total_spent }} XOF</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-sm text-slate-600">Commandes</span>
+            <span class="font-medium">{{ orders_count }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-sm text-slate-600">Payées</span>
+            <span class="font-medium text-emerald-600">{{ paid_count }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-sm text-slate-600">Dernière commande</span>
+            <span class="text-sm">{{ last_order_at|date:"d/m/Y" }}</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="lg:col-span-2">
+      <h2 class="font-serif text-xl font-medium text-ink-500 mb-4">Historique des commandes</h2>
+      <div class="card p-0 overflow-hidden">
+        <ul class="divide-y divide-slate-100">
+          {% for o in orders %}
+            <li>
+              <a href="{% url 'orders_dashboard:detail' o.reference %}" class="flex items-center justify-between px-5 py-3 hover:bg-slate-50">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono text-xs text-slate-500">{{ o.reference }}</span>
+                    {% include "dashboard/orders/_status_badge.html" with order=o %}
+                  </div>
+                  <div class="mt-1 text-xs text-slate-500">
+                    {{ o.created_at|date:"d/m/Y à H:i" }} · {{ o.items.count }} article{{ o.items.count|pluralize }} · {{ o.get_payment_method_display }}
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="font-semibold text-ink-500">{{ o.total_xof }} XOF</div>
+                  {% if o.payment_status == "paid" %}
+                    <div class="text-xs text-emerald-600">✓ Payée</div>
+                  {% else %}
+                    <div class="text-xs text-slate-500">{{ o.get_payment_status_display }}</div>
+                  {% endif %}
+                </div>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

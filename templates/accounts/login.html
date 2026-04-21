@@ -1,0 +1,119 @@
+{% extends "base/base.html" %}
+
+{% block title %}Connexion — Jayma{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex">
+
+  {# Panneau marketing à gauche — orange pour tous les tenants, contenu adapté #}
+  <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-jayma-500 to-jayma-700 text-white p-12 relative overflow-hidden">
+    <div class="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-white/10"></div>
+    <div class="absolute -right-40 bottom-0 w-[500px] h-[500px] rounded-full bg-white/5"></div>
+    <div class="relative flex flex-col justify-between w-full">
+      <div class="flex items-center gap-3">
+        {% include "partials/logo.html" with variant="dark" size="h-9" %}
+        {% if tenant == "admin" %}
+          <span class="inline-flex rounded-full bg-white/20 backdrop-blur px-3 py-1 text-xs font-semibold uppercase tracking-wider">Admin</span>
+        {% endif %}
+      </div>
+      <div>
+        {% if tenant == "admin" %}
+          <h2 class="font-serif text-4xl font-medium leading-tight">Panneau de pilotage.</h2>
+          <p class="mt-6 text-jayma-100 max-w-md">
+            Supervise toutes les boutiques, valide les demandes, suis les commissions et les reversements.
+          </p>
+        {% else %}
+          <h2 class="font-serif text-4xl font-medium leading-tight">
+            Gère ta boutique,<br>fais grandir tes ventes.
+          </h2>
+          <p class="mt-6 text-jayma-100 max-w-md">
+            Ajoute tes produits, suis tes commandes et tes revenus.
+            Tout depuis ton téléphone.
+          </p>
+        {% endif %}
+      </div>
+      <div class="text-xs text-jayma-200">© {% now "Y" %} Jayma — Dakar, Sénégal</div>
+    </div>
+  </div>
+
+  {# Panneau formulaire #}
+  <div class="flex-1 flex items-center justify-center p-6 sm:p-12 bg-slate-50">
+    <div class="w-full max-w-sm">
+
+      <div class="lg:hidden mb-10 text-center">
+        {% include "partials/logo.html" with size="h-8" %}
+        {% if tenant == "admin" %}
+          <div class="mt-2 inline-flex rounded-full bg-jayma-500 text-white px-3 py-1 text-xs font-semibold uppercase tracking-wider">Admin</div>
+        {% endif %}
+      </div>
+
+      {# Badge tenant explicite en haut du form #}
+      {% if tenant == "admin" %}
+        <div class="mb-3 text-xs font-semibold uppercase tracking-wider text-jayma-600">Espace admin plateforme</div>
+      {% elif tenant == "dashboard" %}
+        <div class="mb-3 text-xs font-semibold uppercase tracking-wider text-jayma-600">Espace commerçant</div>
+      {% endif %}
+
+      <h1 class="font-serif text-3xl font-medium text-ink-500">Connexion</h1>
+      <p class="mt-2 text-sm text-slate-600">
+        {% if tenant == "admin" %}
+          Réservé à l'équipe Jayma. Tu es commerçant ?
+          <a href="{{ dashboard_login_url }}" class="text-jayma-600 font-medium hover:text-jayma-700">Connexion commerçant →</a>
+        {% elif tenant == "dashboard" %}
+          Accède à ton dashboard commerçant.
+        {% else %}
+          Accède à ton compte Jayma.
+        {% endif %}
+      </p>
+
+      {% if messages %}
+        {% for m in messages %}
+          <div class="mt-6 rounded-lg {% if m.tags == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800{% elif m.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-jayma-50 border-jayma-200 text-jayma-800{% endif %} border px-4 py-3 text-sm">
+            {{ m }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" class="mt-8 space-y-5">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            <p>{{ form.non_field_errors.0 }}</p>
+            {% if wrong_tenant_redirect %}
+              <a href="{{ wrong_tenant_redirect }}" class="mt-2 inline-flex items-center gap-1 font-medium text-red-800 hover:underline">
+                Me connecter au bon espace →
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <div>
+          <label for="{{ form.identifier.id_for_label }}" class="label">{{ form.identifier.label }}</label>
+          {{ form.identifier }}
+          {% if form.identifier.errors %}<p class="mt-1 text-xs text-red-600">{{ form.identifier.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.password.id_for_label }}" class="label">{{ form.password.label }}</label>
+          {{ form.password }}
+          {% if form.password.errors %}<p class="mt-1 text-xs text-red-600">{{ form.password.errors.0 }}</p>{% endif %}
+        </div>
+
+        <button type="submit" class="btn-primary w-full">Se connecter</button>
+        <div class="text-center">
+          <a href="{% url 'accounts:password_reset' %}" class="text-xs text-slate-500 hover:text-jayma-600">Mot de passe oublié ?</a>
+        </div>
+      </form>
+
+      {% if tenant != "admin" %}
+        <p class="mt-8 text-center text-sm text-slate-600">
+          Pas encore de boutique ?
+          <a href="{{ public_url }}/demande/" class="text-jayma-600 font-medium hover:text-jayma-700">Crée la tienne</a>
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

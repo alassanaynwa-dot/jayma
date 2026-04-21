@@ -1,0 +1,139 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ courier.name }} — Jayma{% endblock %}
+{% block header_title %}{{ courier.name }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <a href="{% url 'delivery_dashboard:list' %}" class="inline-flex items-center text-sm text-slate-500 hover:text-ink-500">← Retour aux livreurs</a>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <aside class="space-y-4">
+      <div class="card">
+        <div class="flex items-center gap-3">
+          <div class="h-14 w-14 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif text-2xl">
+            {{ courier.name|slice:":1"|upper }}
+          </div>
+          <div>
+            <div class="font-serif text-lg font-medium text-ink-500">{{ courier.name }}</div>
+            <span class="text-xs rounded-md bg-slate-100 px-2 py-0.5">{{ courier.get_vehicle_display }}</span>
+          </div>
+        </div>
+        <div class="mt-4 space-y-2 text-sm">
+          <div class="flex items-center gap-2 text-slate-600">📞 {{ courier.phone }}</div>
+          {% if courier.zones %}<div class="flex items-start gap-2 text-slate-600">📍 <span>{{ courier.zones }}</span></div>{% endif %}
+          {% if courier.notes %}<p class="mt-2 rounded-lg bg-slate-50 p-3 text-xs text-slate-600">{{ courier.notes }}</p>{% endif %}
+        </div>
+        <div class="mt-4 flex gap-2">
+          <a href="tel:{{ courier.phone }}" class="btn-secondary flex-1 text-center text-sm py-2">Appeler</a>
+          <a href="{{ courier.whatsapp_link }}" target="_blank" class="flex-1 text-center text-sm py-2 inline-flex items-center justify-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100">💬 WhatsApp</a>
+        </div>
+        <div class="mt-3 flex gap-2">
+          <a href="{% url 'delivery_dashboard:edit' courier.pk %}" class="flex-1 text-center text-sm py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50">Modifier</a>
+          <form method="post" action="{% url 'delivery_dashboard:delete' courier.pk %}" onsubmit="return confirm('Supprimer ce livreur ?')" class="flex-1">
+            {% csrf_token %}
+            <button type="submit" class="w-full text-sm py-2 rounded-lg border border-red-200 bg-red-50 text-red-700 hover:bg-red-100">Supprimer</button>
+          </form>
+        </div>
+      </div>
+
+      {# === Notation livreur === #}
+      <div class="card">
+        <h3 class="text-sm font-semibold text-ink-500">Note moyenne</h3>
+        {% if rating_stats.total %}
+          <div class="mt-3 flex items-center gap-3">
+            <div class="font-serif text-3xl font-medium text-ink-500">{{ rating_stats.average }}</div>
+            <div>
+              {% include "partials/rating_stars.html" with rating=rating_stats.average|add:"0" %}
+              <div class="text-xs text-slate-500 mt-0.5">{{ rating_stats.total }} note{{ rating_stats.total|pluralize }}</div>
+            </div>
+          </div>
+          {% if recent_ratings %}
+            <div class="mt-4 space-y-2">
+              <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Derniers avis</div>
+              {% for o in recent_ratings %}
+                <div class="rounded-lg bg-slate-50 p-3">
+                  <div class="flex items-center justify-between gap-2">
+                    {% include "partials/rating_stars.html" with rating=o.delivery_rating %}
+                    <span class="text-xs text-slate-400">{{ o.delivery_rated_at|date:"d/m" }}</span>
+                  </div>
+                  <p class="mt-1.5 text-xs text-slate-700">{{ o.delivery_rating_comment }}</p>
+                  <div class="text-[10px] text-slate-400 mt-0.5">— {{ o.client_name|truncatewords:1 }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% else %}
+          <p class="mt-2 text-xs text-slate-500">Pas encore de note. Les clients peuvent noter après livraison.</p>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <h3 class="text-sm font-semibold text-ink-500">Portail livreur</h3>
+        <p class="mt-2 text-xs text-slate-500">Envoie à {{ courier.name }} un lien direct pour voir ses courses depuis son téléphone. Valable 90 jours.</p>
+        <div class="mt-3 rounded-lg bg-slate-50 p-2 font-mono text-[11px] break-all text-slate-600">
+          {{ portal_url }}
+        </div>
+        <form method="post" action="{% url 'delivery_dashboard:send_portal_link' courier.pk %}" class="mt-3">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary w-full text-sm py-2">📲 Envoyer le lien par SMS</button>
+        </form>
+      </div>
+    </aside>
+
+    <div class="lg:col-span-2 space-y-6">
+      {# Courses en cours #}
+      <div class="card p-0 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-100 bg-sky-50 flex items-center justify-between">
+          <h2 class="font-serif text-lg font-medium text-ink-500">En cours</h2>
+          <span class="text-xs text-sky-700 font-medium">{{ in_progress|length }}</span>
+        </div>
+        {% if in_progress %}
+          <ul class="divide-y divide-slate-100">
+            {% for o in in_progress %}
+              <li class="px-5 py-3">
+                <a href="{% url 'orders_dashboard:detail' o.reference %}" class="flex items-center justify-between hover:underline">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-xs text-slate-500">{{ o.reference }}</span>
+                      <span class="text-sm font-medium">{{ o.client_name }}</span>
+                    </div>
+                    <div class="text-xs text-slate-500">{{ o.client_city }} · {{ o.created_at|date:"d/m H:i" }}</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-semibold text-ink-500">{{ o.total_xof }} XOF</div>
+                  </div>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="px-5 py-8 text-center text-sm text-slate-500">Aucune course en cours.</div>
+        {% endif %}
+      </div>
+
+      {# Historique livré #}
+      <div class="card p-0 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-100 bg-emerald-50">
+          <h2 class="font-serif text-lg font-medium text-ink-500">Historique livré ({{ done|length }})</h2>
+        </div>
+        {% if done %}
+          <ul class="divide-y divide-slate-100">
+            {% for o in done %}
+              <li class="px-5 py-3 flex items-center justify-between">
+                <div>
+                  <div class="text-sm">{{ o.client_name }} <span class="font-mono text-xs text-slate-500">{{ o.reference }}</span></div>
+                  <div class="text-xs text-slate-500">Livré le {{ o.delivered_at|date:"d/m H:i"|default:"?" }}</div>
+                </div>
+                <div class="text-sm font-medium">{{ o.total_xof }} XOF</div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="px-5 py-8 text-center text-sm text-slate-500">Pas encore de livraison terminée.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

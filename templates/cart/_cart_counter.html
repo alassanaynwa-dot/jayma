@@ -1,0 +1,6 @@
+{# Compteur panier refresh (cible HTMX via hx-swap-oob sur le header) #}
+<span id="cart-counter"
+      hx-swap-oob="outerHTML"
+      class="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full shop-bg text-white text-[10px] font-bold flex items-center justify-center px-1 {% if count == 0 %}hidden{% endif %}">
+  {{ count }}
+</span>

@@ -1,0 +1,17 @@
+{# Partial HTMX — affiche le frais de livraison pour la ville saisie #}
+<div id="delivery-fee-box">
+  {% if city %}
+    {% if zone %}
+      <div class="rounded-lg shop-bg-soft p-3 text-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">📦 Zone <strong>{{ zone.name }}</strong></span>
+          <span class="font-semibold shop-accent">+{{ fee }} XOF</span>
+        </div>
+      </div>
+    {% else %}
+      <div class="rounded-lg bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
+        ⚠ Pas de zone tarifée pour « {{ city }} ». La boutique te recontactera pour confirmer la livraison.
+      </div>
+    {% endif %}
+  {% endif %}
+</div>

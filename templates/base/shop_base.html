@@ -1,0 +1,50 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+  {# Couleur de la boutique injectée dynamiquement pour les accents #}
+  :root { --shop-accent: {{ shop.theme_color|default:"#C45C2A" }}; }
+  .shop-accent { color: var(--shop-accent); }
+  .shop-bg { background-color: var(--shop-accent); }
+  .shop-bg-soft { background-color: color-mix(in srgb, var(--shop-accent) 8%, white); }
+  .shop-border-soft { border-color: color-mix(in srgb, var(--shop-accent) 20%, white); }
+  .shop-btn {
+    background-color: var(--shop-accent);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: filter 0.15s;
+  }
+  .shop-btn:hover { filter: brightness(0.92); }
+  .shop-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex flex-col bg-white">
+  {% include "shops/partials/header.html" %}
+  <main class="flex-1">
+    {% if messages %}
+      <div class="max-w-6xl mx-auto px-4 pt-4 space-y-2">
+        {% for m in messages %}
+          <div class="rounded-lg border px-4 py-2.5 text-sm
+            {% if m.tags == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800
+            {% elif m.tags == 'error' %}bg-red-50 border-red-200 text-red-800
+            {% else %}bg-slate-50 border-slate-200 text-slate-700{% endif %}">
+            {{ m }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  {% include "shops/partials/footer.html" %}
+</div>
+{% endblock %}

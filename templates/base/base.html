@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{% block title %}Jayma — créez votre boutique en ligne{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Jayma — la plateforme e-commerce des commerçants sénégalais. Ouvrez votre boutique en quelques minutes.{% endblock %}">
+
+  {# Fonts : Inter (sans-serif) + Playfair Display (logo/serif) #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+  {# CSS Tailwind compilée localement — ~74 KB au lieu de 4 MB du CDN #}
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+  {# === PWA (Progressive Web App) === #}
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="{% if tenant_type == 'shop' and shop %}{{ shop.theme_color|default:'#C45C2A' }}{% else %}#C45C2A{% endif %}">
+  <link rel="icon" type="image/png" sizes="64x64" href="{% static 'icons/favicon.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="{% block pwa_name %}Jayma{% endblock %}">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+    }
+  </script>
+
+  {# HTMX + Alpine #}
+  <script src="https://unpkg.com/htmx.org@2.0.3" defer></script>
+  <script src="https://unpkg.com/alpinejs" defer></script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-slate-50 antialiased">
+  {% block body %}{% endblock %}
+</body>
+</html>

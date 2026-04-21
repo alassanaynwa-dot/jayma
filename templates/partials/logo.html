@@ -1,0 +1,29 @@
+{% comment %}
+Logo Jayma réutilisable.
+Usage :
+  {% include "partials/logo.html" %}                        → variante claire (fond clair)
+  {% include "partials/logo.html" with variant="dark" %}    → variante foncée (fond sombre)
+  {% include "partials/logo.html" with size="h-10" %}       → taille custom (classe Tailwind)
+{% endcomment %}
+{% firstof size "h-7" as logo_h %}
+{% if variant == "dark" %}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 32" class="{{ logo_h }} w-auto" aria-label="Jayma">
+  <text y="26"
+        font-family="'Playfair Display', Georgia, serif"
+        font-size="28"
+        font-weight="500"
+        letter-spacing="1">
+    <tspan fill="#F0997B">jay</tspan><tspan fill="#FFFFFF">ma</tspan>
+  </text>
+</svg>
+{% else %}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 32" class="{{ logo_h }} w-auto" aria-label="Jayma">
+  <text y="26"
+        font-family="'Playfair Display', Georgia, serif"
+        font-size="28"
+        font-weight="500"
+        letter-spacing="1">
+    <tspan fill="#C45C2A">jay</tspan><tspan fill="#1C1612">ma</tspan>
+  </text>
+</svg>
+{% endif %}

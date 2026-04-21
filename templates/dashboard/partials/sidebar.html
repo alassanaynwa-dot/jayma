@@ -1,0 +1,67 @@
+{# Sidebar commune desktop + drawer mobile #}
+{% load shop_urls %}
+<div class="h-16 flex items-center px-6 border-b border-slate-200">
+  <a href="{% url 'dashboard:home' %}" class="inline-flex">
+    {% include "partials/logo.html" with size="h-7" %}
+  </a>
+</div>
+
+<nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+  <a href="{% url 'dashboard:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' and request.resolver_match.namespace == 'dashboard' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    Accueil
+  </a>
+  <a href="{% url 'products_dashboard:list' %}" class="nav-link {% if request.resolver_match.namespace == 'products_dashboard' and 'category' not in request.resolver_match.url_name %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+    Produits
+  </a>
+  <a href="{% url 'products_dashboard:category_list' %}" class="nav-link {% if request.resolver_match.namespace == 'products_dashboard' and 'category' in request.resolver_match.url_name %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+    Catégories
+  </a>
+  <a href="{% url 'orders_dashboard:list' %}" class="nav-link {% if request.resolver_match.namespace == 'orders_dashboard' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+    Commandes
+  </a>
+  <a href="{% url 'clients_dashboard:list' %}" class="nav-link {% if request.resolver_match.namespace == 'clients_dashboard' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+    Clients
+  </a>
+  <a href="{% url 'delivery_dashboard:list' %}" class="nav-link {% if request.resolver_match.namespace == 'delivery_dashboard' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+    Livreurs
+  </a>
+  <a href="{% url 'coupons_dashboard:list' %}" class="nav-link {% if request.resolver_match.namespace == 'coupons_dashboard' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+    Codes promo
+  </a>
+  <a href="{% url 'commissions_dashboard:revenues' %}" class="nav-link {% if request.resolver_match.namespace == 'commissions_dashboard' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Revenus
+  </a>
+  <a href="{% url 'shops_dashboard:settings' %}" class="nav-link {% if request.resolver_match.namespace == 'shops_dashboard' %}active{% endif %}">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    Paramètres
+  </a>
+</nav>
+
+<div class="p-4 border-t border-slate-200">
+  {% if shop %}
+  {% shop_public_url shop as shop_url %}
+  {% shop_public_host shop as shop_host %}
+  <a href="{{ shop_url }}" target="_blank" class="flex items-center justify-between rounded-lg bg-jayma-50 hover:bg-jayma-100 px-3 py-2.5 transition group">
+    <div class="flex items-center gap-3 min-w-0">
+      {% if shop.logo %}
+        <img src="{{ shop.logo.url }}" class="h-8 w-8 rounded-md object-cover shrink-0">
+      {% else %}
+        <div class="h-8 w-8 rounded-md bg-jayma-500 flex items-center justify-center text-white text-xs font-semibold shrink-0">{{ shop.name|slice:":1"|upper }}</div>
+      {% endif %}
+      <div class="min-w-0">
+        <div class="text-sm font-medium text-ink-500 truncate">{{ shop.name }}</div>
+        <div class="text-xs text-slate-500 truncate">{{ shop_host }}</div>
+      </div>
+    </div>
+    <svg class="h-4 w-4 text-slate-400 group-hover:text-jayma-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+  </a>
+  {% endif %}
+</div>
