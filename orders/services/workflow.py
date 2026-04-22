@@ -66,14 +66,21 @@ def _notify_client(order: Order) -> None:
     if order.status == Order.Status.DELIVERED and order.courier:
         rating_suffix = f" Note ta livraison : {order.shop.slug}.{root}/commander/{order.reference}/noter/"
 
+    # Pour tous les statuts en cours, on inclut le lien de suivi public
+    tracking_link = (
+        f" Suivi : {order.shop.slug}.{root}/suivi/?ref={order.reference}"
+        f"&phone={order.client_phone}"
+        if order.status in (Order.Status.CONFIRMED, Order.Status.SHIPPED) else ""
+    )
+
     templates = {
         Order.Status.CONFIRMED:
             f"Ta commande {order.reference} chez {order.shop.name} est confirmee ! "
-            f"Total {order.total_xof} XOF. Merci.",
+            f"Total {order.total_xof} XOF. Merci." + tracking_link,
         Order.Status.SHIPPED:
             f"Ta commande {order.reference} est en route ! "
             + (f"Suivi: {order.tracking_number}. " if order.tracking_number else "")
-            + f"Livraison a {order.client_city}.",
+            + f"Livraison a {order.client_city}." + tracking_link,
         Order.Status.DELIVERED:
             f"Ta commande {order.reference} a bien ete livree. "
             f"Merci d'avoir choisi {order.shop.name} !" + rating_suffix,

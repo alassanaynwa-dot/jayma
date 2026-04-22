@@ -1,0 +1,130 @@
+{% extends "base/shop_base.html" %}
+{% block title %}Suivi de commande — {{ shop.name }}{% endblock %}
+
+{% block content %}
+<section class="max-w-2xl mx-auto px-4 py-8 sm:py-12">
+
+  <div class="text-center mb-8">
+    <div class="mx-auto h-16 w-16 rounded-full shop-bg-soft flex items-center justify-center">
+      <svg class="h-8 w-8 shop-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1"/></svg>
+    </div>
+    <h1 class="mt-4 font-serif text-3xl font-medium text-ink-500">Suivre ma commande</h1>
+    <p class="mt-2 text-sm text-slate-600">Entre ta référence et ton numéro pour voir où en est ta commande.</p>
+  </div>
+
+  {# Form de recherche #}
+  <form method="get" class="card grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3">
+    <div>
+      <label class="label">Référence</label>
+      <input type="text" name="ref" value="{{ reference }}" placeholder="F66451EB" class="input font-mono uppercase" required autofocus>
+    </div>
+    <div>
+      <label class="label">Téléphone</label>
+      <input type="tel" name="phone" value="{{ phone }}" placeholder="+221 77 123 45 67" class="input" required>
+    </div>
+    <div class="flex items-end">
+      <button type="submit" class="shop-btn w-full">Suivre</button>
+    </div>
+  </form>
+
+  {% if error %}
+    <div class="mt-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">{{ error }}</div>
+  {% endif %}
+
+  {# Résultat #}
+  {% if order %}
+    <div class="mt-8 card">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div class="font-mono text-xs text-slate-500">{{ order.reference }}</div>
+          <h2 class="mt-1 font-serif text-xl font-medium text-ink-500">{{ order.client_name }}</h2>
+          <div class="text-sm text-slate-500">{{ order.created_at|date:"d F Y à H:i" }}</div>
+        </div>
+        <div class="text-right">
+          <div class="font-serif text-xl font-medium text-ink-500">{{ order.total_xof }} <span class="text-xs font-sans text-slate-500">XOF</span></div>
+          <div class="text-xs text-slate-500">{{ order.items.count }} article{{ order.items.count|pluralize }}</div>
+        </div>
+      </div>
+
+      {# Timeline #}
+      <div class="mt-8 relative">
+        {% for step in timeline %}
+          <div class="relative flex gap-4 pb-8 last:pb-0">
+            {% if not forloop.last %}
+              <div class="absolute left-[19px] top-10 bottom-0 w-0.5
+                {% if step.state == 'done' %}bg-emerald-500{% else %}bg-slate-200{% endif %}"></div>
+            {% endif %}
+            <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-lg
+              {% if step.state == 'done' %}bg-emerald-500 text-white
+              {% elif step.state == 'current' %}shop-bg text-white ring-4 ring-jayma-100 animate-pulse
+              {% elif step.state == 'cancelled' %}bg-red-500 text-white
+              {% else %}bg-slate-200 text-slate-400{% endif %}">
+              {{ step.icon }}
+            </div>
+            <div class="flex-1 pt-1.5">
+              <div class="font-medium
+                {% if step.state == 'pending' %}text-slate-500
+                {% elif step.state == 'cancelled' %}text-red-600
+                {% else %}text-ink-500{% endif %}">
+                {{ step.label }}
+              </div>
+              {% if step.at %}
+                <div class="text-xs text-slate-500 mt-0.5">{{ step.at|date:"d/m/Y à H:i" }}</div>
+              {% elif step.state == 'current' %}
+                <div class="text-xs shop-accent mt-0.5 font-medium">En cours…</div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      {# Courier info si expédiée #}
+      {% if order.courier and order.status == "shipped" %}
+        <div class="mt-6 pt-5 border-t border-slate-100">
+          <div class="text-xs text-slate-500 uppercase font-semibold">Livreur</div>
+          <div class="mt-2 flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif">
+              {{ order.courier.name|slice:":1"|upper }}
+            </div>
+            <div class="flex-1">
+              <div class="font-medium text-ink-500">{{ order.courier.name }}</div>
+              <div class="text-xs text-slate-500">{{ order.courier.get_vehicle_display }}</div>
+            </div>
+            <a href="tel:{{ order.courier.phone }}" class="text-sm shop-accent hover:underline">Appeler</a>
+          </div>
+        </div>
+      {% endif %}
+
+      {# Infos client & paiement #}
+      <div class="mt-6 pt-5 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <div>
+          <div class="text-xs text-slate-500 uppercase font-semibold">Livraison</div>
+          <div class="mt-1 text-slate-700">{{ order.client_address }}</div>
+          <div class="text-slate-500">{{ order.client_city }}</div>
+        </div>
+        <div>
+          <div class="text-xs text-slate-500 uppercase font-semibold">Paiement</div>
+          <div class="mt-1 text-slate-700">{{ order.get_payment_method_display }}</div>
+          <div class="text-xs {% if order.payment_status == 'paid' %}text-emerald-600 font-medium{% else %}text-slate-500{% endif %}">
+            {{ order.get_payment_status_display }}
+          </div>
+        </div>
+      </div>
+
+      {# Contact + notation #}
+      <div class="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+        {% if shop.whatsapp %}
+          <a href="https://wa.me/{{ shop.whatsapp|cut:'+'|cut:' ' }}?text=Bonjour, une question sur ma commande {{ order.reference }}" target="_blank"
+             class="flex-1 text-center text-sm py-2 inline-flex items-center justify-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium">
+            💬 WhatsApp
+          </a>
+        {% endif %}
+        {% if order.status == "delivered" and order.courier and not order.delivery_rating %}
+          <a href="{% url 'orders_public:rate_delivery' order.reference %}" class="flex-1 shop-btn">Noter la livraison</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+</section>
+{% endblock %}

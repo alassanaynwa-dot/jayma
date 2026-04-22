@@ -15,6 +15,7 @@
     <nav class="hidden md:flex items-center gap-6 text-sm">
       <a href="{% url 'shops_public:home' %}" class="text-slate-600 hover:text-ink-500 font-medium">Accueil</a>
       <a href="{% url 'products_public:list' %}" class="text-slate-600 hover:text-ink-500 font-medium">Produits</a>
+      <a href="{% url 'order_tracking' %}" class="text-slate-600 hover:text-ink-500 font-medium">Suivi commande</a>
       {% if shop.whatsapp %}
         <a href="https://wa.me/{{ shop.whatsapp|cut:'+'|cut:' ' }}" class="text-slate-600 hover:text-emerald-600 font-medium" target="_blank">WhatsApp</a>
       {% endif %}

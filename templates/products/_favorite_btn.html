@@ -1,0 +1,16 @@
+{% comment %}
+Bouton cœur favori — partial HTMX.
+Usage : {% include "products/_favorite_btn.html" with product=p is_favorite=... %}
+{% endcomment %}
+<button id="fav-btn-{{ product.pk }}"
+        hx-post="{% url 'products_public:toggle_favorite' product.pk %}"
+        hx-target="this"
+        hx-swap="outerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="inline-flex items-center justify-center h-10 w-10 rounded-full border transition
+               {% if is_favorite %}border-red-300 bg-red-50 text-red-500 hover:bg-red-100{% else %}border-slate-200 bg-white text-slate-400 hover:text-red-500 hover:border-red-200{% endif %}"
+        title="{% if is_favorite %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}">
+  <svg class="h-5 w-5" {% if is_favorite %}fill="currentColor"{% else %}fill="none"{% endif %} stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
+  </svg>
+</button>

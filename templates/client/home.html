@@ -54,6 +54,21 @@
       {% endif %}
     </div>
 
+    <div class="space-y-4">
+
+    <a href="{% url 'client:favorites' %}" class="block card hover:shadow-md transition">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/></svg>
+        </div>
+        <div class="flex-1">
+          <div class="font-medium text-ink-500">Mes favoris</div>
+          <div class="text-xs text-slate-500">{{ request.user.favorites.count }} produit{{ request.user.favorites.count|pluralize }}</div>
+        </div>
+        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
     <div class="card">
       <div class="flex items-center justify-between mb-3">
         <h2 class="font-serif text-lg font-medium text-ink-500">Mes adresses</h2>
@@ -75,6 +90,8 @@
         <p class="text-xs text-slate-500">Aucune adresse enregistrée.</p>
         <a href="{% url 'client:address_create' %}" class="shop-btn text-xs mt-3 w-full py-2">Ajouter</a>
       {% endif %}
+    </div>
+
     </div>
   </div>
 

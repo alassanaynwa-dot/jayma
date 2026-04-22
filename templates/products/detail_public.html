@@ -103,6 +103,21 @@
         </div>
       {% endif %}
 
+      {# Bouton favori — visible si connecté comme client #}
+      {% if request.user.is_authenticated and request.user.is_client %}
+        <div class="mt-6 flex items-center gap-3">
+          {% include "products/_favorite_btn.html" %}
+          <span class="text-sm text-slate-600">{% if is_favorite %}Dans tes favoris{% else %}Ajouter à mes favoris{% endif %}</span>
+        </div>
+      {% endif %}
+
+      {# Alerte retour en stock — si produit track_stock et épuisé #}
+      {% if product.track_stock and product.stock <= 0 and not product.is_pack %}
+        <div class="mt-6">
+          {% include "products/_stock_alert_btn.html" %}
+        </div>
+      {% endif %}
+
       {% if product.is_available %}
         <form class="mt-8 flex flex-col sm:flex-row gap-3"
               hx-post="{% url 'cart:add' product.id %}"
@@ -123,7 +138,13 @@
         <button disabled class="shop-btn mt-8 w-full">Produit indisponible</button>
       {% endif %}
 
-      <div class="mt-8 pt-6 border-t border-slate-100 space-y-2 text-sm text-slate-600">
+      <div class="mt-6">
+        {% with wa_text="Regarde "|add:product.name|add:" chez "|add:shop.name %}
+          {% include "partials/whatsapp_share.html" with text=wa_text url=request.build_absolute_uri label="Partager sur WhatsApp" %}
+        {% endwith %}
+      </div>
+
+      <div class="mt-6 pt-6 border-t border-slate-100 space-y-2 text-sm text-slate-600">
         <div class="flex items-center gap-2">🚚 <span>Livraison dans tout le Sénégal</span></div>
         <div class="flex items-center gap-2">💳 <span>Paiement Wave, Orange Money ou à la livraison</span></div>
         <div class="flex items-center gap-2">📞 <span>Un doute ? Appelle le {{ shop.phone }}</span></div>

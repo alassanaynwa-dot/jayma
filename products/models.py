@@ -4,6 +4,7 @@ Modèles products — catalogue par boutique.
 Chaque Category et chaque Product appartiennent à un Shop (isolation tenant).
 Prix en XOF entiers (PositiveIntegerField), jamais de décimales.
 """
+from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
 
@@ -147,6 +148,16 @@ class Product(models.Model):
             or self.images.first()
         )
 
+    @property
+    def rating_summary(self) -> dict:
+        """Retourne {avg, count} des avis approuvés pour ce produit."""
+        qs = self.reviews.filter(is_approved=True)
+        count = qs.count()
+        if count == 0:
+            return {"avg": None, "count": 0}
+        total = sum(r.rating for r in qs)
+        return {"avg": round(total / count, 1), "count": count}
+
 
 class PackItem(models.Model):
     """Composition d'un pack : tel produit en telle quantité."""
@@ -194,3 +205,98 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"Image #{self.pk} de {self.product.name}"
+
+
+class Favorite(models.Model):
+    """Un produit mis en favori par un user client."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="favorites",
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="favorited_by",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Favori"
+        verbose_name_plural = "Favoris"
+        unique_together = [("user", "product")]
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.user.username} ♥ {self.product.name}"
+
+
+class StockAlert(models.Model):
+    """
+    Alerte « préviens-moi quand ce produit revient en stock ».
+
+    Créée quand un client s'inscrit sur un produit épuisé. Le signal
+    post_save sur Product détecte stock 0 → >0 et envoie les SMS.
+    """
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="stock_alerts",
+    )
+    client_phone = models.CharField(max_length=20, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    notified_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Alerte retour en stock"
+        verbose_name_plural = "Alertes retour en stock"
+        unique_together = [("product", "client_phone")]
+        ordering = ("-created_at",)
+        indexes = [models.Index(fields=["product", "notified_at"])]
+
+    def __str__(self):
+        return f"{self.client_phone} ← {self.product.name}"
+
+
+class ProductReview(models.Model):
+    """
+    Avis d'un client sur un produit.
+
+    Le client n'a pas forcément de compte — on l'identifie par téléphone.
+    Vérification côté vue : le phone doit correspondre à une commande livrée
+    contenant ce produit.
+    """
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+    )
+    order = models.ForeignKey(
+        "orders.Order",
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="product_reviews",
+        help_text="Commande qui prouve l'achat.",
+    )
+    client_phone = models.CharField(max_length=20, db_index=True)
+    client_name = models.CharField(max_length=100)
+
+    rating = models.PositiveSmallIntegerField(help_text="Note de 1 à 5 étoiles.")
+    title = models.CharField(max_length=120, blank=True)
+    comment = models.TextField(blank=True)
+
+    is_approved = models.BooleanField(
+        default=True,
+        help_text="Le commerçant peut modérer les avis depuis son dashboard.",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Avis produit"
+        verbose_name_plural = "Avis produits"
+        ordering = ("-created_at",)
+        unique_together = [("product", "client_phone")]
+        indexes = [models.Index(fields=["product", "is_approved"])]
+
+    def __str__(self):
+        return f"{self.rating}★ — {self.product.name} par {self.client_phone}"

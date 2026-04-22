@@ -1,0 +1,31 @@
+{% comment %}
+Bloc « Préviens-moi du retour en stock » — partial HTMX.
+Usage : {% include "products/_stock_alert_btn.html" with product=p %}
+{% endcomment %}
+<div id="stock-alert-{{ product.pk }}" class="rounded-lg border border-amber-200 bg-amber-50 p-4">
+  {% if registered %}
+    <div class="flex items-center gap-2 text-sm font-medium text-amber-800">
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+      <span>On te préviendra par SMS dès le retour en stock !</span>
+    </div>
+    {% if just_created %}
+      <p class="mt-1 text-xs text-amber-700">C'est noté. Un SMS arrivera sur ton numéro dès que le stock est reconstitué.</p>
+    {% else %}
+      <p class="mt-1 text-xs text-amber-700">Tu es déjà inscrit pour ce produit.</p>
+    {% endif %}
+  {% else %}
+    <div class="text-sm font-medium text-amber-900 mb-2">🔔 Produit épuisé — préviens-moi du retour en stock</div>
+    <form hx-post="{% url 'products_public:register_stock_alert' product.pk %}"
+          hx-target="#stock-alert-{{ product.pk }}"
+          hx-swap="outerHTML"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+          class="flex flex-col sm:flex-row gap-2">
+      {% if not request.user.is_authenticated %}
+        <input type="tel" name="phone" placeholder="+221 77 123 45 67" required
+               class="input bg-white flex-1 text-sm" inputmode="tel" autocomplete="tel">
+      {% endif %}
+      <button type="submit" class="shop-btn text-sm py-2 px-4">M'alerter</button>
+    </form>
+    {% if error %}<p class="mt-2 text-xs text-red-600">{{ error }}</p>{% endif %}
+  {% endif %}
+</div>
