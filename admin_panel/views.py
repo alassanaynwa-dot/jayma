@@ -1,4 +1,4 @@
-"""Vues admin.jayma.sn — dashboard owner de la plateforme."""
+"""Vues admin.djayma.sn — dashboard owner de la plateforme."""
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages

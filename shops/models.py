@@ -70,7 +70,7 @@ class ShopRequest(models.Model):
 
 
 class Shop(models.Model):
-    """Boutique d'un commerçant — accessible sur <slug>.jayma.sn."""
+    """Boutique d'un commerçant — accessible sur <slug>.djayma.sn."""
 
     owner = models.OneToOneField(
         settings.AUTH_USER_MODEL,

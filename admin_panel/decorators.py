@@ -1,4 +1,4 @@
-"""Décorateur pour les vues admin.jayma.sn."""
+"""Décorateur pour les vues admin.djayma.sn."""
 from functools import wraps
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden

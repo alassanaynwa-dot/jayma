@@ -8,7 +8,7 @@ from .tasks import notify_admin_of_new_request
 
 
 def landing_home(request):
-    """Accueil jayma.sn."""
+    """Accueil djayma.sn."""
     return render(request, "core/landing.html")
 
 

@@ -23,9 +23,9 @@ def _tenant_url(request, sub: str) -> str:
 def login_view(request):
     """
     Page de connexion — ses 3 incarnations :
-      - jayma.sn/comptes/login/           : login générique (tenant=public)
-      - dashboard.jayma.sn/comptes/login/ : pour les commerçants
-      - admin.jayma.sn/comptes/login/     : pour l'équipe Jayma
+      - djayma.sn/comptes/login/           : login générique (tenant=public)
+      - dashboard.djayma.sn/comptes/login/ : pour les commerçants
+      - admin.djayma.sn/comptes/login/     : pour l'équipe Jayma
 
     Si on se connecte sur le mauvais tenant (ex : commerçant sur admin),
     on bloque avec un message ET un bouton vers le bon login — ça évite

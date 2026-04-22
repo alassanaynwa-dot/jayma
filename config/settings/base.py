@@ -35,7 +35,7 @@ ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS")
 # ----------------------------------------------------------------
 # Domaine racine Jayma
 # ----------------------------------------------------------------
-JAYMA_ROOT_DOMAIN = env("JAYMA_ROOT_DOMAIN", default="jayma.sn")
+JAYMA_ROOT_DOMAIN = env("JAYMA_ROOT_DOMAIN", default="djayma.sn")
 
 # ----------------------------------------------------------------
 # Applications
@@ -213,12 +213,12 @@ EMAIL_PORT = env.int("EMAIL_PORT", default=1026)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Jayma <noreply@jayma.sn>")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Jayma <noreply@djayma.sn>")
 
 # ----------------------------------------------------------------
 # Cookies (scopés par sous-domaine pour éviter le vol inter-boutiques)
 # ----------------------------------------------------------------
-# IMPORTANT : on NE MET PAS SESSION_COOKIE_DOMAIN = ".jayma.sn"
+# IMPORTANT : on NE MET PAS SESSION_COOKIE_DOMAIN = ".djayma.sn"
 # Chaque sous-domaine (dashboard, admin, boutique X) a sa propre session.
 SESSION_COOKIE_NAME = "jayma_sid"
 CSRF_COOKIE_NAME = "jayma_csrftoken"

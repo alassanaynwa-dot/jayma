@@ -2,10 +2,10 @@
 Middleware multi-tenant Jayma.
 
 Détecte le sous-domaine dans la requête et bascule sur le bon urls.py :
-- jayma.sn                  → config.urls_public       (landing, auth)
-- dashboard.jayma.sn        → config.urls_dashboard    (commerçant)
-- admin.jayma.sn            → config.urls_admin        (plateforme)
-- <slug>.jayma.sn           → config.urls_shop         (boutique + request.shop)
+- djayma.sn                  → config.urls_public       (landing, auth)
+- dashboard.djayma.sn        → config.urls_dashboard    (commerçant)
+- admin.djayma.sn            → config.urls_admin        (plateforme)
+- <slug>.djayma.sn           → config.urls_shop         (boutique + request.shop)
 
 Approche Django idiomatique : on set request.urlconf = "<module>" avant
 que le URL resolver ne s'exécute. Chaque tenant a son propre set d'URLs.
@@ -91,7 +91,7 @@ class TenantMiddleware:
     # Domaines racines reconnus — le middleware accepte tous ceux-ci
     # en parallèle (utile en dev où on switche entre .localhost et
     # .jayma.local selon l'historique des bookmarks).
-    KNOWN_ROOTS = ("localhost", "jayma.local", "jayma.sn")
+    KNOWN_ROOTS = ("localhost", "jayma.local", "djayma.sn")
 
     def _extract_subdomain(self, host: str) -> str:
         """

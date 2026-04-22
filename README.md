@@ -1,7 +1,7 @@
 # Jayma.sn
 
 Plateforme SaaS e-commerce multi-tenant pour commerçants sénégalais.
-Chaque commerçant obtient sa boutique sur `<slug>.jayma.sn`.
+Chaque commerçant obtient sa boutique sur `<slug>.djayma.sn`.
 Modèle : commission de 8% sur les ventes, pas d'abonnement.
 
 ## Stack
@@ -47,7 +47,7 @@ Testé sur Chrome, Firefox, Safari, Edge — aucune config système requise.
 
 ```
 config/          Projet Django (settings, urls, middleware tenant)
-core/            Landing jayma.sn, formulaire demande boutique
+core/            Landing djayma.sn, formulaire demande boutique
 accounts/        User custom (client/commerçant/admin), auth
 shops/           Shop, ShopRequest, context_processor tenant
 products/        Category, Product, ProductImage

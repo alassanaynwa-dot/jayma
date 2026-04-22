@@ -1,4 +1,4 @@
-"""Formulaires publics jayma.sn."""
+"""Formulaires publics djayma.sn."""
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify

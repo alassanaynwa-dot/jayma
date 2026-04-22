@@ -1,5 +1,5 @@
 """
-Vues compte client (côté boutique publique <slug>.jayma.sn).
+Vues compte client (côté boutique publique <slug>.djayma.sn).
 
 Auth par OTP SMS — pas de mot de passe, le client tape son téléphone,
 reçoit un code à 4 chiffres, le saisit, est connecté. Compte créé au

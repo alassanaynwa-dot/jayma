@@ -10,7 +10,7 @@ def shop_public_url(context, shop):
     """
     Retourne l'URL publique d'une boutique en se basant sur le host courant
     (scheme + port dynamiques). En prod ça donnera
-    https://<slug>.jayma.sn, en dev http://<slug>.localhost:8002.
+    https://<slug>.djayma.sn, en dev http://<slug>.localhost:8002.
     """
     request = context.get("request")
     if request is None:
@@ -24,7 +24,7 @@ def shop_public_url(context, shop):
 
 @register.simple_tag(takes_context=True)
 def shop_public_host(context, shop):
-    """Juste le host pour affichage (ex: chez-fatou.jayma.sn ou chez-fatou.localhost:8002)."""
+    """Juste le host pour affichage (ex: chez-fatou.djayma.sn ou chez-fatou.localhost:8002)."""
     request = context.get("request")
     port = ""
     if request is not None:

@@ -28,14 +28,14 @@ Let's Encrypt wildcard exige un challenge DNS (impossible en HTTP-01). Utilise c
 apt install -y python3-certbot-dns-cloudflare
 
 # Créer /root/.secrets/cloudflare.ini :
-#   dns_cloudflare_api_token = <ton token d'API scope DNS:Edit sur jayma.sn>
+#   dns_cloudflare_api_token = <ton token d'API scope DNS:Edit sur djayma.sn>
 chmod 600 /root/.secrets/cloudflare.ini
 
 certbot certonly \
     --dns-cloudflare \
     --dns-cloudflare-credentials /root/.secrets/cloudflare.ini \
-    -d jayma.sn -d '*.jayma.sn' \
-    --agree-tos -m contact@jayma.sn --non-interactive
+    -d djayma.sn -d '*.djayma.sn' \
+    --agree-tos -m contact@djayma.sn --non-interactive
 ```
 
 Le renouvellement auto est géré par le service `certbot` dans docker-compose.prod.yml (renew toutes les 12h).

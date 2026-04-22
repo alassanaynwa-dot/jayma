@@ -40,7 +40,7 @@ def create_payment(order, return_url: str, notify_url: str) -> dict:
         "customer_name": order.client_name[:50],
         "customer_surname": " ",
         "customer_phone_number": order.client_phone,
-        "customer_email": order.client_email or "noreply@jayma.sn",
+        "customer_email": order.client_email or "noreply@djayma.sn",
         "customer_address": order.client_address[:200],
         "customer_city": order.client_city[:50],
         "customer_country": "SN",

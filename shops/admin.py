@@ -49,7 +49,7 @@ class ShopRequestAdmin(ModelAdmin):
 
         self.message_user(
             request,
-            f"Boutique '{shop.name}' créée sur {shop.slug}.jayma.sn. Email + SMS envoyés au commerçant.",
+            f"Boutique '{shop.name}' créée sur {shop.slug}.djayma.sn. Email + SMS envoyés au commerçant.",
             level=messages.SUCCESS,
         )
 
