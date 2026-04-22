@@ -1,0 +1,79 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Journal d'audit — Admin Jayma{% endblock %}
+{% block header_title %}Journal d'audit{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <p class="text-sm text-slate-500 max-w-2xl">
+    Historique immuable de toutes les actions admin effectuées sur la plateforme :
+    approbations, modifications de commission, modérations, réglages.
+  </p>
+
+  <form method="get" class="flex flex-wrap items-center gap-2">
+    <div class="relative flex-1 min-w-[200px] max-w-sm">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="search" name="q" value="{{ q }}" placeholder="Cible (boutique, référence…)" class="input pl-9">
+    </div>
+    <select name="action" class="input max-w-[260px]" onchange="this.form.submit()">
+      <option value="">Toutes les actions</option>
+      {% for val, label in action_choices %}
+        <option value="{{ val }}" {% if action == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <select name="actor" class="input max-w-[200px]" onchange="this.form.submit()">
+      <option value="">Tous les acteurs</option>
+      {% for a in actors %}
+        <option value="{{ a.pk }}" {% if actor_id == a.pk|stringformat:'s' %}selected{% endif %}>{{ a.username }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn-primary">Filtrer</button>
+  </form>
+
+  <div class="card p-0 overflow-hidden">
+    {% if actions %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Date</th>
+            <th class="px-5 py-3">Acteur</th>
+            <th class="px-5 py-3">Action</th>
+            <th class="px-5 py-3">Cible</th>
+            <th class="px-5 py-3">Détails</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for a in actions %}
+            <tr class="hover:bg-slate-50 align-top">
+              <td class="px-5 py-3 text-xs text-slate-500 whitespace-nowrap">{{ a.created_at|date:"d/m/Y H:i:s" }}</td>
+              <td class="px-5 py-3">
+                {% if a.actor %}
+                  <div class="text-sm font-medium text-ink-500">{{ a.actor.username }}</div>
+                  <div class="text-xs text-slate-500">{{ a.actor.email }}</div>
+                {% else %}
+                  <span class="text-xs text-slate-400">— supprimé —</span>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3">
+                <span class="inline-flex rounded-full bg-jayma-50 text-jayma-700 px-2 py-0.5 text-xs font-medium">{{ a.get_action_display }}</span>
+              </td>
+              <td class="px-5 py-3 text-sm">
+                {% if a.target_repr %}<div class="font-medium text-ink-500">{{ a.target_repr }}</div>{% endif %}
+                {% if a.target_type %}<div class="text-xs text-slate-500">{{ a.target_type }}#{{ a.target_id }}</div>{% endif %}
+              </td>
+              <td class="px-5 py-3 text-xs text-slate-600 font-mono max-w-md">
+                {% if a.meta %}
+                  {% for k, v in a.meta.items %}
+                    <div><span class="text-slate-400">{{ k }}:</span> {{ v|stringformat:'s'|truncatechars:80 }}</div>
+                  {% endfor %}
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucune action enregistrée.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
