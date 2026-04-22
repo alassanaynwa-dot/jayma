@@ -52,12 +52,20 @@ def _get_backend() -> BaseSMSBackend:
 
 
 def send_sms(to: str, message: str) -> NotificationLog:
-    """Envoie un SMS et logue le résultat."""
+    """Envoie un SMS et logue le résultat. Respecte le kill-switch PlatformSettings.sms_enabled."""
+    from core.models import PlatformSettings
+
     log = NotificationLog.objects.create(
         channel=NotificationLog.Channel.SMS,
         recipient=to,
         body=message,
     )
+    if not PlatformSettings.load().sms_enabled:
+        log.status = NotificationLog.Status.FAILED
+        log.error = "SMS désactivés globalement (Réglages plateforme)."
+        log.save()
+        logger.warning("[SMS BLOCKED] kill-switch actif → %s", to)
+        return log
     try:
         response = _get_backend().send(to, message)
         log.status = NotificationLog.Status.SENT

@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
 
+from core.models import PlatformSettings
 from shops.models import Shop, ShopRequest
 
 logger = logging.getLogger("jayma")
@@ -65,7 +66,8 @@ def approve_shop_request(shop_request: ShopRequest, reviewed_by) -> tuple[Shop, 
         user.role = User.Role.MERCHANT
         user.save()
 
-    # Créer la boutique
+    # Créer la boutique avec le taux de commission par défaut de la plateforme
+    settings_obj = PlatformSettings.load()
     shop = Shop.objects.create(
         owner=user,
         name=shop_request.shop_name,
@@ -74,6 +76,7 @@ def approve_shop_request(shop_request: ShopRequest, reviewed_by) -> tuple[Shop, 
         phone=shop_request.phone,
         whatsapp=shop_request.phone,
         city=shop_request.city,
+        commission_rate=settings_obj.default_commission_rate,
         is_approved=True,
         is_active=True,
     )
