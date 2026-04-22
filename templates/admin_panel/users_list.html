@@ -1,0 +1,155 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Utilisateurs — Admin Jayma{% endblock %}
+{% block header_title %}Utilisateurs{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Commerçants</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-ink-500">{{ counts.merchants_total }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Actifs</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-emerald-600">{{ counts.merchants_active }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Bloqués</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-red-600">{{ counts.merchants_blocked }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Zombies</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-amber-600">{{ counts.merchants_zombie }}</div>
+      <div class="text-[10px] text-slate-400 mt-0.5">pas de login 30j+</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Admins</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-jayma-600">{{ counts.admins_total }}</div>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <a href="?role=merchant" class="rounded-full px-4 py-1.5 text-sm font-medium {% if role == 'merchant' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Commerçants</a>
+    <a href="?role=admin" class="rounded-full px-4 py-1.5 text-sm font-medium {% if role == 'admin' %}bg-ink-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Admins plateforme</a>
+  </div>
+
+  <form method="get" class="flex flex-wrap items-center gap-2">
+    <input type="hidden" name="role" value="{{ role }}">
+    <div class="relative flex-1 min-w-[200px] max-w-sm">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="search" name="q" value="{{ q }}" placeholder="Nom, email, téléphone…" class="input pl-9">
+    </div>
+    <select name="state" class="input max-w-[200px]" onchange="this.form.submit()">
+      <option value="">Tous les statuts</option>
+      <option value="active" {% if state == 'active' %}selected{% endif %}>Actifs</option>
+      <option value="blocked" {% if state == 'blocked' %}selected{% endif %}>Bloqués</option>
+      {% if role == 'merchant' %}
+        <option value="zombie" {% if state == 'zombie' %}selected{% endif %}>Zombies (inactifs 30j)</option>
+      {% endif %}
+    </select>
+    <button class="btn-primary">Filtrer</button>
+  </form>
+
+  <div class="card p-0 overflow-hidden">
+    {% if users %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Utilisateur</th>
+            <th class="px-5 py-3">Rôle</th>
+            {% if role == 'merchant' %}<th class="px-5 py-3">Boutique</th>{% endif %}
+            <th class="px-5 py-3">Dernier login</th>
+            {% if role == 'merchant' %}<th class="px-5 py-3 text-right">Cdes 30j</th>{% endif %}
+            <th class="px-5 py-3">Créé</th>
+            <th class="px-5 py-3">Statut</th>
+            <th class="px-5 py-3 text-right"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for u in users %}
+            <tr class="hover:bg-slate-50 {% if not u.is_active %}opacity-60{% endif %}">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-9 w-9 rounded-full bg-jayma-100 text-jayma-700 flex items-center justify-center font-serif">{{ u.username|slice:":1"|upper }}</div>
+                  <div>
+                    <div class="text-sm font-medium text-ink-500">{{ u.get_full_name|default:u.username }}</div>
+                    <div class="text-xs text-slate-500">{{ u.email }} · {{ u.phone }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-3">
+                <span class="inline-flex rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 text-xs font-medium">{{ u.get_role_display }}</span>
+                {% if u.is_superuser %}<span class="ml-1 inline-flex rounded-full bg-ink-500 text-white px-2 py-0.5 text-xs font-medium">Superuser</span>{% endif %}
+              </td>
+              {% if role == 'merchant' %}
+                <td class="px-5 py-3">
+                  {% if u.shop %}
+                    <a href="{% url 'admin_panel:shop_detail' u.shop.pk %}" class="text-sm text-jayma-600 hover:underline">{{ u.shop.name }}</a>
+                    <div class="text-xs text-slate-400">@{{ u.shop.slug }}</div>
+                  {% else %}
+                    <span class="text-xs text-slate-400">—</span>
+                  {% endif %}
+                </td>
+              {% endif %}
+              <td class="px-5 py-3 text-sm">
+                {% if u.last_login %}
+                  <div>{{ u.last_login|date:"d/m/Y H:i" }}</div>
+                  {% if u.last_login < zombie_threshold %}
+                    <div class="text-xs text-amber-600">≥ 30 jours</div>
+                  {% endif %}
+                {% else %}
+                  <span class="text-xs text-slate-400">jamais</span>
+                {% endif %}
+              </td>
+              {% if role == 'merchant' %}
+                <td class="px-5 py-3 text-right text-sm">{{ u.orders_30d }}</td>
+              {% endif %}
+              <td class="px-5 py-3 text-xs text-slate-500 whitespace-nowrap">{{ u.created_at|date:"d/m/Y" }}</td>
+              <td class="px-5 py-3">
+                {% if u.is_active %}
+                  <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs">Actif</span>
+                {% else %}
+                  <span class="inline-flex rounded-full bg-red-100 text-red-700 px-2 py-0.5 text-xs">Bloqué</span>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3 text-right">
+                {% if u.pk != request.user.pk %}
+                  <div class="inline-flex gap-1">
+                    {% if role == 'merchant' and u.is_active and u.phone %}
+                      {% if not u.last_login or u.last_login < zombie_threshold %}
+                        <form method="post" action="{% url 'admin_panel:user_send_reengage' u.pk %}" class="inline">
+                          {% csrf_token %}
+                          <button type="submit"
+                                  onclick="return confirm('Envoyer un SMS de relance à {{ u.phone }} ?')"
+                                  class="text-xs font-medium px-3 py-1.5 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100">
+                            📱 Relancer
+                          </button>
+                        </form>
+                      {% endif %}
+                    {% endif %}
+                    <form method="post" action="{% url 'admin_panel:user_toggle_active' u.pk %}" class="inline">
+                      {% csrf_token %}
+                      <button type="submit"
+                              onclick="return confirm('{% if u.is_active %}Bloquer{% else %}Débloquer{% endif %} {{ u.username }} ?')"
+                              class="text-xs font-medium px-3 py-1.5 rounded-lg border
+                              {% if u.is_active %}border-red-200 bg-red-50 text-red-700 hover:bg-red-100
+                              {% else %}border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100{% endif %}">
+                        {% if u.is_active %}Bloquer{% else %}Débloquer{% endif %}
+                      </button>
+                    </form>
+                  </div>
+                {% else %}
+                  <span class="text-xs text-slate-400 italic">toi-même</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucun utilisateur.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

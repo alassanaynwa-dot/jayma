@@ -1,0 +1,93 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Notifications — Admin Jayma{% endblock %}
+{% block header_title %}Notifications envoyées{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Total</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-ink-500">{{ counts.total }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Envoyés</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-emerald-600">{{ counts.sent }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Échoués</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-red-600">{{ counts.failed }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">En attente</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-amber-600">{{ counts.pending }}</div>
+    </div>
+  </div>
+
+  <form method="get" class="flex flex-wrap items-center gap-2">
+    <div class="relative flex-1 min-w-[200px] max-w-sm">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="search" name="q" value="{{ q }}" placeholder="Destinataire ou corps…" class="input pl-9">
+    </div>
+    <select name="channel" class="input max-w-[160px]" onchange="this.form.submit()">
+      <option value="">Tous les canaux</option>
+      <option value="sms" {% if channel == 'sms' %}selected{% endif %}>SMS</option>
+      <option value="email" {% if channel == 'email' %}selected{% endif %}>Email</option>
+    </select>
+    <select name="status" class="input max-w-[180px]" onchange="this.form.submit()">
+      <option value="">Tous les statuts</option>
+      <option value="sent" {% if status == 'sent' %}selected{% endif %}>Envoyé</option>
+      <option value="failed" {% if status == 'failed' %}selected{% endif %}>Échoué</option>
+      <option value="pending" {% if status == 'pending' %}selected{% endif %}>En attente</option>
+    </select>
+    <button class="btn-primary">Filtrer</button>
+  </form>
+
+  <div class="card p-0 overflow-hidden">
+    {% if notifications %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Date</th>
+            <th class="px-5 py-3">Canal</th>
+            <th class="px-5 py-3">Destinataire</th>
+            <th class="px-5 py-3">Message</th>
+            <th class="px-5 py-3">Statut</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for n in notifications %}
+            <tr class="hover:bg-slate-50 align-top">
+              <td class="px-5 py-3 text-xs text-slate-500 whitespace-nowrap">{{ n.created_at|date:"d/m/Y H:i" }}</td>
+              <td class="px-5 py-3">
+                {% if n.channel == 'sms' %}
+                  <span class="inline-flex items-center gap-1 rounded-full bg-jayma-100 text-jayma-700 px-2 py-0.5 text-xs font-medium">📱 SMS</span>
+                {% else %}
+                  <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 text-xs font-medium">✉ Email</span>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3 text-sm font-mono text-slate-700">{{ n.recipient }}</td>
+              <td class="px-5 py-3 text-sm">
+                {% if n.subject %}<div class="font-medium text-ink-500">{{ n.subject }}</div>{% endif %}
+                <div class="text-slate-600 line-clamp-2 max-w-md">{{ n.body }}</div>
+                {% if n.error %}<div class="mt-1 text-xs text-red-600 font-mono">{{ n.error|truncatechars:120 }}</div>{% endif %}
+              </td>
+              <td class="px-5 py-3">
+                {% if n.status == 'sent' %}
+                  <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs">✓ Envoyé</span>
+                {% elif n.status == 'failed' %}
+                  <span class="inline-flex rounded-full bg-red-100 text-red-700 px-2 py-0.5 text-xs">✗ Échoué</span>
+                {% else %}
+                  <span class="inline-flex rounded-full bg-amber-100 text-amber-700 px-2 py-0.5 text-xs">⏳ En attente</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucune notification.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

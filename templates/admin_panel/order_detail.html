@@ -1,0 +1,133 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Commande {{ order.reference }} — Admin Jayma{% endblock %}
+{% block header_title %}Commande {{ order.reference }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <a href="{% url 'admin_panel:orders' %}" class="inline-flex items-center text-sm text-slate-500 hover:text-ink-500">← Toutes les commandes</a>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <div class="lg:col-span-2 space-y-4">
+
+      <div class="card flex items-start justify-between gap-3">
+        <div>
+          <div class="font-mono text-xs text-slate-500">{{ order.reference }}</div>
+          <h1 class="mt-1 font-serif text-2xl font-medium text-ink-500">{{ order.client_name }}</h1>
+          <div class="text-sm text-slate-500 mt-1">{{ order.created_at|date:"d F Y à H:i" }}</div>
+          <div class="mt-2 inline-flex items-center gap-2">
+            <span class="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700">{{ order.get_status_display }}</span>
+            <span class="inline-flex rounded-full px-2 py-0.5 text-xs {% if order.payment_status == 'paid' %}bg-emerald-100 text-emerald-700{% else %}bg-slate-100 text-slate-600{% endif %}">
+              {{ order.get_payment_status_display }} · {{ order.get_payment_method_display }}
+            </span>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="font-serif text-2xl font-medium text-ink-500">{{ order.total_xof }} <span class="text-sm text-slate-500 font-sans">XOF</span></div>
+        </div>
+      </div>
+
+      <div class="card p-0 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-100 bg-slate-50">
+          <h2 class="font-serif text-lg font-medium text-ink-500">Articles</h2>
+        </div>
+        <ul class="divide-y divide-slate-100">
+          {% for item in order.items.all %}
+            <li class="px-5 py-3 flex items-center justify-between">
+              <div>
+                <div class="text-sm font-medium text-ink-500">{{ item.product_name }}</div>
+                <div class="text-xs text-slate-500">{{ item.unit_price_xof }} XOF × {{ item.quantity }}</div>
+              </div>
+              <div class="text-sm font-semibold text-ink-500">{{ item.line_total_xof }} XOF</div>
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 text-sm space-y-1">
+          <div class="flex justify-between"><span class="text-slate-600">Sous-total</span><span>{{ order.subtotal_xof }} XOF</span></div>
+          {% if order.discount_xof %}
+            <div class="flex justify-between text-emerald-600"><span>Remise ({{ order.coupon_code }})</span><span>−{{ order.discount_xof }} XOF</span></div>
+          {% endif %}
+          <div class="flex justify-between"><span class="text-slate-600">Livraison</span><span>{{ order.delivery_xof }} XOF</span></div>
+          <div class="flex justify-between pt-2 border-t text-base font-medium">
+            <span>Total</span><span>{{ order.total_xof }} XOF</span>
+          </div>
+        </div>
+      </div>
+
+      {% if order.payments.exists %}
+        <div class="card p-0 overflow-hidden">
+          <div class="px-5 py-3 border-b border-slate-100 bg-slate-50">
+            <h2 class="font-serif text-lg font-medium text-ink-500">Tentatives de paiement</h2>
+          </div>
+          <ul class="divide-y divide-slate-100">
+            {% for p in order.payments.all %}
+              <li class="px-5 py-3 flex items-center justify-between text-sm">
+                <div>
+                  <div class="font-medium">{{ p.get_provider_display }}</div>
+                  <div class="text-xs text-slate-500 font-mono">{{ p.provider_reference|default:"—" }}</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-medium">{{ p.amount_xof }} XOF</div>
+                  <div class="text-xs">{{ p.get_status_display }}</div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+
+    <aside class="space-y-4">
+      <div class="card">
+        <h3 class="text-sm font-semibold uppercase text-slate-500">Boutique</h3>
+        <div class="mt-2">
+          <a href="{% url 'admin_panel:shop_detail' order.shop.pk %}" class="text-jayma-600 font-medium hover:underline">{{ order.shop.name }}</a>
+          <div class="text-xs text-slate-500">{{ order.shop.slug }}.jayma.sn</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="text-sm font-semibold uppercase text-slate-500">Client</h3>
+        <div class="mt-2 space-y-1 text-sm">
+          <div>{{ order.client_name }}</div>
+          <div class="text-slate-600">📞 {{ order.client_phone }}</div>
+          {% if order.client_email %}<div class="text-slate-600">✉ {{ order.client_email }}</div>{% endif %}
+          <div class="text-slate-600 mt-2">📍 {{ order.client_address }}<br>{{ order.client_city }}</div>
+        </div>
+      </div>
+
+      {% if order.courier %}
+        <div class="card">
+          <h3 class="text-sm font-semibold uppercase text-slate-500">Livreur</h3>
+          <div class="mt-2 text-sm">
+            <div class="font-medium">{{ order.courier.name }}</div>
+            <div class="text-slate-600">{{ order.courier.phone }} · {{ order.courier.get_vehicle_display }}</div>
+            {% if order.delivery_rating %}
+              <div class="mt-2">{% include "partials/rating_stars.html" with rating=order.delivery_rating %}</div>
+              {% if order.delivery_rating_comment %}<div class="mt-1 text-xs italic text-slate-600">{{ order.delivery_rating_comment }}</div>{% endif %}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if commission %}
+        <div class="card">
+          <h3 class="text-sm font-semibold uppercase text-slate-500">Commission</h3>
+          <div class="mt-2 text-sm space-y-1">
+            <div class="flex justify-between"><span class="text-slate-600">Vente</span><span>{{ commission.sale_amount_xof }} XOF</span></div>
+            <div class="flex justify-between"><span class="text-slate-600">Commission ({{ commission.rate }}%)</span><span class="text-jayma-600">{{ commission.commission_xof }} XOF</span></div>
+            <div class="flex justify-between font-medium"><span>À reverser</span><span>{{ commission.merchant_amount_xof }} XOF</span></div>
+            <div class="pt-2 text-xs">
+              {% if commission.is_paid %}
+                <span class="text-emerald-600">✓ Reversé {{ commission.paid_at|date:"d/m" }}</span>
+              {% else %}
+                <span class="text-amber-600">⏳ À reverser</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

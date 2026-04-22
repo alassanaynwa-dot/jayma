@@ -1,0 +1,92 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Webhooks — Admin Jayma{% endblock %}
+{% block header_title %}Événements webhooks{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Total</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-ink-500">{{ counts.total }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Traités</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-emerald-600">{{ counts.processed }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">En attente</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-amber-600">{{ counts.unprocessed }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Signatures invalides</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-red-600">{{ counts.invalid }}</div>
+    </div>
+  </div>
+
+  <form method="get" class="flex flex-wrap items-center gap-2">
+    <select name="provider" class="input max-w-[180px]" onchange="this.form.submit()">
+      <option value="">Tous les providers</option>
+      {% for p in providers %}
+        <option value="{{ p }}" {% if p == provider %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+    <select name="state" class="input max-w-[200px]" onchange="this.form.submit()">
+      <option value="">Tous les états</option>
+      <option value="processed" {% if state == 'processed' %}selected{% endif %}>Traités</option>
+      <option value="unprocessed" {% if state == 'unprocessed' %}selected{% endif %}>Non traités</option>
+      <option value="invalid_signature" {% if state == 'invalid_signature' %}selected{% endif %}>Signature invalide</option>
+      <option value="errored" {% if state == 'errored' %}selected{% endif %}>En erreur</option>
+    </select>
+  </form>
+
+  <div class="card p-0 overflow-hidden">
+    {% if webhooks %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Date</th>
+            <th class="px-5 py-3">Provider</th>
+            <th class="px-5 py-3">Event ID</th>
+            <th class="px-5 py-3">Signature</th>
+            <th class="px-5 py-3">Statut</th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for w in webhooks %}
+            <tr class="hover:bg-slate-50">
+              <td class="px-5 py-3 text-xs text-slate-500 whitespace-nowrap">{{ w.received_at|date:"d/m/Y H:i:s" }}</td>
+              <td class="px-5 py-3">
+                <span class="inline-flex rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 text-xs font-medium">{{ w.provider }}</span>
+              </td>
+              <td class="px-5 py-3 text-xs font-mono text-slate-700">{{ w.event_id|truncatechars:32 }}</td>
+              <td class="px-5 py-3">
+                {% if w.signature_valid %}
+                  <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs">✓ valide</span>
+                {% else %}
+                  <span class="inline-flex rounded-full bg-red-100 text-red-700 px-2 py-0.5 text-xs">✗ invalide</span>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3">
+                {% if w.processed %}
+                  <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs">Traité {{ w.processed_at|date:"d/m H:i" }}</span>
+                {% elif w.error %}
+                  <span class="inline-flex rounded-full bg-red-100 text-red-700 px-2 py-0.5 text-xs">⚠ Erreur</span>
+                {% else %}
+                  <span class="inline-flex rounded-full bg-amber-100 text-amber-700 px-2 py-0.5 text-xs">⏳ En attente</span>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3 text-right">
+                <a href="{% url 'admin_panel:webhook_detail' w.pk %}" class="text-xs text-jayma-600 hover:underline">Détails →</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucun webhook reçu.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

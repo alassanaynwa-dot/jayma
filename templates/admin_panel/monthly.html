@@ -1,0 +1,125 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Récap mensuel — Admin Jayma{% endblock %}
+{% block header_title %}Récap mensuel{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <a href="{% url 'admin_panel:home' %}" class="inline-flex items-center text-sm text-slate-500 hover:text-ink-500">← Vue d'ensemble</a>
+
+  {# Graphique mensuel #}
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500 mb-4">Évolution sur 12 mois</h2>
+    <canvas id="monthlyChart" height="70"></canvas>
+  </div>
+
+  {# Table mois → GMV, commission, commandes, boutiques actives #}
+  <div class="card p-0 overflow-hidden">
+    <table class="min-w-full divide-y divide-slate-100">
+      <thead class="bg-slate-50">
+        <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+          <th class="px-5 py-3">Mois</th>
+          <th class="px-5 py-3 text-right">GMV</th>
+          <th class="px-5 py-3 text-right">Commission Jayma</th>
+          <th class="px-5 py-3 text-right">Commandes</th>
+          <th class="px-5 py-3 text-right">Boutiques actives</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for m in months %}
+          <tr class="hover:bg-slate-50">
+            <td class="px-5 py-3 font-medium text-ink-500">{{ m.label|capfirst }}</td>
+            <td class="px-5 py-3 text-right">{{ m.gmv }} XOF</td>
+            <td class="px-5 py-3 text-right text-jayma-600">{{ m.commission }} XOF</td>
+            <td class="px-5 py-3 text-right">{{ m.orders }}</td>
+            <td class="px-5 py-3 text-right">{{ m.active_shops }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# Drill-down boutiques pour le mois courant #}
+  <div class="card p-0 overflow-hidden">
+    <div class="px-5 py-4 border-b border-slate-100">
+      <h2 class="font-serif text-lg font-medium text-ink-500">Boutiques actives en {{ current_month_label|capfirst }}</h2>
+      <p class="text-xs text-slate-500">Classement par GMV du mois en cours.</p>
+    </div>
+    {% if shops_month %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Boutique</th>
+            <th class="px-5 py-3 text-right">Commandes</th>
+            <th class="px-5 py-3 text-right">GMV</th>
+            <th class="px-5 py-3 text-right">Commission</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for s in shops_month %}
+            <tr class="hover:bg-slate-50 cursor-pointer" onclick="window.location='{% url 'admin_panel:shop_detail' s.pk %}'">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-2">
+                  {% if s.logo %}
+                    <img src="{{ s.logo.url }}" class="h-7 w-7 rounded-lg object-cover">
+                  {% else %}
+                    <div class="h-7 w-7 rounded-lg bg-jayma-500 flex items-center justify-center text-white text-xs font-semibold">{{ s.name|slice:":1"|upper }}</div>
+                  {% endif %}
+                  <span class="font-medium text-ink-500">{{ s.name }}</span>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-right text-sm">{{ s.orders_count }}</td>
+              <td class="px-5 py-3 text-right text-sm font-semibold">{{ s.gmv_month }} XOF</td>
+              <td class="px-5 py-3 text-right text-sm text-jayma-600">{{ s.commission_month }} XOF</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-10 text-center text-sm text-slate-500">Aucune vente ce mois.</div>
+    {% endif %}
+  </div>
+</div>
+
+{{ months|json_script:"monthly-data" }}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const raw = JSON.parse(document.getElementById("monthly-data").textContent);
+  const data = [...raw].reverse();  // chronologique
+  const ctx = document.getElementById("monthlyChart");
+  if (!ctx || !window.Chart) return;
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: data.map(m => m.label),
+      datasets: [
+        { label: "GMV (XOF)", data: data.map(m => m.gmv),
+          backgroundColor: "rgba(196, 92, 42, 0.7)" },
+        { label: "Commission (XOF)", data: data.map(m => m.commission),
+          backgroundColor: "rgba(132, 57, 26, 0.7)" },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "top", align: "end", labels: { usePointStyle: true } },
+        tooltip: {
+          callbacks: {
+            label: (c) => `${c.dataset.label}: ${c.parsed.y.toLocaleString("fr-FR")} XOF`,
+          },
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: (v) => v >= 1000 ? (v / 1000) + "k" : v },
+        },
+      },
+    },
+  });
+});
+</script>
+{% endblock %}

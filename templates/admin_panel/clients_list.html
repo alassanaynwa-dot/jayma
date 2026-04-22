@@ -1,0 +1,52 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Clients — Admin Jayma{% endblock %}
+{% block header_title %}Clients ({{ clients|length }}){% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <form method="get" class="relative max-w-md">
+    <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    <input type="search" name="q" value="{{ q }}" placeholder="Nom, téléphone, email…" class="input pl-9">
+  </form>
+
+  <div class="card p-0 overflow-hidden">
+    {% if clients %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Client</th>
+            <th class="px-5 py-3 text-right">Commandes</th>
+            <th class="px-5 py-3 text-right">Boutiques</th>
+            <th class="px-5 py-3 text-right">Total dépensé</th>
+            <th class="px-5 py-3">Dernière commande</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for c in clients %}
+            <tr class="hover:bg-slate-50">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-8 w-8 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif">{{ c.name|slice:":1"|upper|default:"?" }}</div>
+                  <div>
+                    <div class="text-sm font-medium text-ink-500">{{ c.name }}</div>
+                    <div class="text-xs text-slate-500">{{ c.phone }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-right text-sm">
+                <span class="font-medium">{{ c.orders_count }}</span>
+                <span class="text-xs text-slate-500">({{ c.paid_count }} payée{{ c.paid_count|pluralize }})</span>
+              </td>
+              <td class="px-5 py-3 text-right text-sm">{{ c.shops_count }}</td>
+              <td class="px-5 py-3 text-right text-sm font-semibold">{{ c.total_spent }} XOF</td>
+              <td class="px-5 py-3 text-sm text-slate-600">{{ c.last_at|date:"d/m/Y" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucun client.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

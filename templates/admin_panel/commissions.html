@@ -16,10 +16,17 @@
     </div>
   </div>
 
-  <div class="flex gap-2">
-    <a href="?state=unpaid" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'unpaid' %}bg-amber-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">À reverser</a>
-    <a href="?state=paid" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'paid' %}bg-emerald-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Reversées</a>
-    <a href="?state=" class="rounded-full px-4 py-1.5 text-sm font-medium {% if not state %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Toutes</a>
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <div class="flex gap-2">
+      <a href="?state=unpaid" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'unpaid' %}bg-amber-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">À reverser</a>
+      <a href="?state=paid" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'paid' %}bg-emerald-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Reversées</a>
+      <a href="?state=" class="rounded-full px-4 py-1.5 text-sm font-medium {% if not state %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Toutes</a>
+    </div>
+    <a href="{% url 'admin_panel:commissions_export_csv' %}?state={{ state }}"
+       class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+      Exporter CSV
+    </a>
   </div>
 
   <div class="card p-0 overflow-hidden">

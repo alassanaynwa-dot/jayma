@@ -1,0 +1,58 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Webhook {{ event.provider }}/{{ event.event_id }} — Admin Jayma{% endblock %}
+{% block header_title %}Webhook {{ event.provider }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <a href="{% url 'admin_panel:webhooks' %}" class="inline-flex items-center text-sm text-slate-500 hover:text-ink-500">← Tous les webhooks</a>
+
+  <div class="card">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500">Provider</div>
+        <div class="mt-1 font-medium text-ink-500">{{ event.provider }}</div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500">Event ID</div>
+        <div class="mt-1 font-mono text-xs text-slate-700 break-all">{{ event.event_id }}</div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500">Reçu le</div>
+        <div class="mt-1">{{ event.received_at|date:"d/m/Y H:i:s" }}</div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500">Traité</div>
+        <div class="mt-1">
+          {% if event.processed %}
+            <span class="text-emerald-600">✓ {{ event.processed_at|date:"d/m/Y H:i:s" }}</span>
+          {% else %}
+            <span class="text-amber-600">⏳ En attente</span>
+          {% endif %}
+        </div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500">Signature</div>
+        <div class="mt-1">
+          {% if event.signature_valid %}
+            <span class="text-emerald-600">✓ Valide</span>
+          {% else %}
+            <span class="text-red-600">✗ Invalide</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if event.error %}
+    <div class="card border border-red-200 bg-red-50">
+      <div class="text-xs uppercase tracking-wide text-red-700 font-semibold">Erreur de traitement</div>
+      <pre class="mt-2 text-xs text-red-900 font-mono whitespace-pre-wrap break-all">{{ event.error }}</pre>
+    </div>
+  {% endif %}
+
+  <div class="card">
+    <div class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Payload brut</div>
+    <pre class="mt-2 bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-xs font-mono">{{ event.payload|pprint }}</pre>
+  </div>
+</div>
+{% endblock %}

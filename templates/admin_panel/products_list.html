@@ -1,0 +1,130 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Catalogue — Admin Jayma{% endblock %}
+{% block header_title %}Catalogue (toutes boutiques){% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="grid grid-cols-3 gap-3">
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Produits</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-ink-500">{{ counts.total }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Actifs</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-emerald-600">{{ counts.active }}</div>
+    </div>
+    <div class="card">
+      <div class="text-xs uppercase tracking-wide text-slate-500">Rupture de stock</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-red-600">{{ counts.out_of_stock }}</div>
+    </div>
+  </div>
+
+  <form method="get" class="flex flex-wrap items-center gap-2">
+    <div class="relative flex-1 min-w-[200px] max-w-sm">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="search" name="q" value="{{ q }}" placeholder="Nom ou slug…" class="input pl-9">
+    </div>
+    <select name="shop" class="input max-w-[220px]" onchange="this.form.submit()">
+      <option value="">Toutes les boutiques</option>
+      {% for s in shops %}
+        <option value="{{ s.slug }}" {% if s.slug == shop_slug %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+    <select name="category" class="input max-w-[220px]" onchange="this.form.submit()">
+      <option value="">Toutes les catégories</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {% if c == category_name %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+    <select name="active" class="input max-w-[140px]" onchange="this.form.submit()">
+      <option value="">Tous</option>
+      <option value="yes" {% if active == 'yes' %}selected{% endif %}>Actifs</option>
+      <option value="no" {% if active == 'no' %}selected{% endif %}>Masqués</option>
+    </select>
+    <select name="stock" class="input max-w-[160px]" onchange="this.form.submit()">
+      <option value="">Tout stock</option>
+      <option value="out" {% if stock_state == 'out' %}selected{% endif %}>Rupture</option>
+      <option value="low" {% if stock_state == 'low' %}selected{% endif %}>Faible (≤ 5)</option>
+    </select>
+    <button class="btn-primary">Filtrer</button>
+  </form>
+
+  <div class="card p-0 overflow-hidden">
+    {% if products %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Produit</th>
+            <th class="px-5 py-3">Boutique</th>
+            <th class="px-5 py-3">Catégorie</th>
+            <th class="px-5 py-3 text-right">Prix</th>
+            <th class="px-5 py-3 text-right">Stock</th>
+            <th class="px-5 py-3">Statut</th>
+            <th class="px-5 py-3 text-right"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for p in products %}
+            <tr class="hover:bg-slate-50 {% if not p.is_active %}opacity-60{% endif %}">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  {% with img=p.primary_image %}
+                    {% if img %}
+                      <img src="{{ img.image.url }}" class="h-10 w-10 rounded-lg object-cover shrink-0">
+                    {% else %}
+                      <div class="h-10 w-10 rounded-lg bg-jayma-100 text-jayma-700 flex items-center justify-center font-serif shrink-0">{{ p.name|slice:":1"|upper }}</div>
+                    {% endif %}
+                  {% endwith %}
+                  <div class="min-w-0">
+                    <div class="text-sm font-medium text-ink-500 truncate">{{ p.name }}</div>
+                    <div class="text-xs text-slate-500 font-mono">{{ p.slug }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-3">
+                <a href="{% url 'admin_panel:shop_detail' p.shop.pk %}" class="text-sm text-jayma-600 hover:underline">{{ p.shop.name }}</a>
+              </td>
+              <td class="px-5 py-3 text-sm text-slate-600">{{ p.category.name|default:"—" }}</td>
+              <td class="px-5 py-3 text-right text-sm font-medium">{{ p.price }} <span class="text-xs text-slate-500">XOF</span></td>
+              <td class="px-5 py-3 text-right text-sm">
+                {% if p.kind == 'pack' %}
+                  <span class="text-xs text-slate-500">Pack</span>
+                {% elif not p.track_stock %}
+                  <span class="text-xs text-slate-500">∞</span>
+                {% elif p.stock == 0 %}
+                  <span class="text-red-600 font-medium">0</span>
+                {% elif p.stock <= 5 %}
+                  <span class="text-amber-600 font-medium">{{ p.stock }}</span>
+                {% else %}
+                  <span>{{ p.stock }}</span>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3">
+                {% if p.is_active %}
+                  <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs">Actif</span>
+                {% else %}
+                  <span class="inline-flex rounded-full bg-slate-200 text-slate-600 px-2 py-0.5 text-xs">Masqué</span>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3 text-right">
+                <form method="post" action="{% url 'admin_panel:product_toggle_active' p.pk %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="text-xs font-medium px-3 py-1.5 rounded-lg border
+                          {% if p.is_active %}border-red-200 bg-red-50 text-red-700 hover:bg-red-100
+                          {% else %}border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100{% endif %}">
+                    {% if p.is_active %}Masquer{% else %}Activer{% endif %}
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucun produit.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

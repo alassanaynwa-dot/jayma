@@ -1,0 +1,48 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Catégories — Admin Jayma{% endblock %}
+{% block header_title %}Catégories (cross-boutique){% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <p class="text-sm text-slate-500 max-w-2xl">
+    Agrégation des catégories par nom (insensible à la casse). Les catégories sont définies par boutique,
+    mais regroupées ici pour mesurer les tendances plateforme.
+  </p>
+
+  <div class="card p-0 overflow-hidden">
+    {% if categories %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Catégorie</th>
+            <th class="px-5 py-3 text-right">Boutiques</th>
+            <th class="px-5 py-3 text-right">Produits</th>
+            <th class="px-5 py-3 text-right">Actifs</th>
+            <th class="px-5 py-3 text-right">Unités vendues</th>
+            <th class="px-5 py-3 text-right">Revenus</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for c in categories %}
+            <tr class="hover:bg-slate-50">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-8 w-8 rounded-lg bg-jayma-50 text-jayma-700 flex items-center justify-center font-serif">{{ c.name|slice:":1"|upper }}</div>
+                  <a href="{% url 'admin_panel:products' %}?category={{ c.name|urlencode }}" class="text-sm font-medium text-ink-500 hover:text-jayma-600">{{ c.name }}</a>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-right text-sm">{{ c.shops_count }}</td>
+              <td class="px-5 py-3 text-right text-sm">{{ c.products_count }}</td>
+              <td class="px-5 py-3 text-right text-sm">{{ c.active_products }}</td>
+              <td class="px-5 py-3 text-right text-sm">{{ c.units_sold }}</td>
+              <td class="px-5 py-3 text-right text-sm font-semibold">{{ c.revenue }} <span class="text-xs text-slate-500">XOF</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucune catégorie définie.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

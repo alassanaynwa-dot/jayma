@@ -1,0 +1,70 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Livreurs — Admin Jayma{% endblock %}
+{% block header_title %}Livreurs (toutes boutiques){% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <form method="get" class="flex flex-wrap items-center gap-2">
+    <div class="relative flex-1 min-w-[200px] max-w-sm">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="search" name="q" value="{{ q }}" placeholder="Nom ou téléphone…" class="input pl-9">
+    </div>
+    <select name="shop" class="input max-w-[220px]" onchange="this.form.submit()">
+      <option value="">Toutes les boutiques</option>
+      {% for s in shops %}
+        <option value="{{ s.slug }}" {% if s.slug == shop_slug %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+    <select name="active" class="input max-w-[150px]" onchange="this.form.submit()">
+      <option value="">Tous</option>
+      <option value="yes" {% if active == 'yes' %}selected{% endif %}>Actifs</option>
+      <option value="no" {% if active == 'no' %}selected{% endif %}>Inactifs</option>
+    </select>
+    <button class="btn-primary">Filtrer</button>
+  </form>
+
+  <div class="card p-0 overflow-hidden">
+    {% if couriers %}
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-5 py-3">Livreur</th>
+            <th class="px-5 py-3">Boutique</th>
+            <th class="px-5 py-3">Véhicule</th>
+            <th class="px-5 py-3">Zones</th>
+            <th class="px-5 py-3 text-right">Livraisons</th>
+            <th class="px-5 py-3">Statut</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for c in couriers %}
+            <tr class="hover:bg-slate-50">
+              <td class="px-5 py-3">
+                <div class="text-sm font-medium text-ink-500">{{ c.name }}</div>
+                <div class="text-xs text-slate-500">{{ c.phone }}</div>
+              </td>
+              <td class="px-5 py-3">
+                <a href="{% url 'admin_panel:shop_detail' c.shop.pk %}" class="text-sm text-jayma-600 hover:underline">{{ c.shop.name }}</a>
+                <div class="text-xs text-slate-400">@{{ c.shop.slug }}</div>
+              </td>
+              <td class="px-5 py-3 text-sm">{{ c.get_vehicle_display }}</td>
+              <td class="px-5 py-3 text-xs text-slate-600 max-w-xs">{{ c.zones|default:"—"|truncatechars:60 }}</td>
+              <td class="px-5 py-3 text-right text-sm font-medium">{{ c.deliveries_count }}</td>
+              <td class="px-5 py-3">
+                {% if c.is_active %}
+                  <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs">Actif</span>
+                {% else %}
+                  <span class="inline-flex rounded-full bg-slate-200 text-slate-600 px-2 py-0.5 text-xs">Inactif</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="px-6 py-16 text-center text-sm text-slate-500">Aucun livreur.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

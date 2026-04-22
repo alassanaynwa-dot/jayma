@@ -1,0 +1,76 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Réglages — Admin Jayma{% endblock %}
+{% block header_title %}Réglages plateforme{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl space-y-6">
+  <form method="post" action="{% url 'admin_panel:settings_update' %}" class="space-y-6">
+    {% csrf_token %}
+
+    <div class="card space-y-4">
+      <div>
+        <h2 class="font-serif text-lg font-medium text-ink-500">Commission</h2>
+        <p class="text-xs text-slate-500 mt-1">Appliquée à toute nouvelle boutique approuvée.</p>
+      </div>
+      <div>
+        <label class="label">Taux par défaut (%)</label>
+        <input type="number" step="0.01" min="0" max="50"
+               name="default_commission_rate"
+               value="{{ settings.default_commission_rate }}"
+               class="input max-w-[160px]" required>
+        <p class="mt-1 text-xs text-slate-500">Valeur actuelle : <span class="font-medium">{{ settings.default_commission_rate }}%</span>. Pour ajuster une boutique existante, va sur sa fiche.</p>
+      </div>
+    </div>
+
+    <div class="card space-y-4">
+      <div>
+        <h2 class="font-serif text-lg font-medium text-ink-500">Canaux de notification</h2>
+        <p class="text-xs text-slate-500 mt-1">Coupe-circuits globaux. Décocher bloque instantanément tous les envois du canal.</p>
+      </div>
+      <label class="flex items-center gap-3 cursor-pointer">
+        <input type="checkbox" name="sms_enabled" {% if settings.sms_enabled %}checked{% endif %}
+               class="h-4 w-4 rounded border-slate-300 text-jayma-600 focus:ring-jayma-500">
+        <span class="text-sm">SMS activés (AfricasTalking)</span>
+      </label>
+      <label class="flex items-center gap-3 cursor-pointer">
+        <input type="checkbox" name="email_enabled" {% if settings.email_enabled %}checked{% endif %}
+               class="h-4 w-4 rounded border-slate-300 text-jayma-600 focus:ring-jayma-500">
+        <span class="text-sm">Emails activés <span class="ml-1 text-[10px] uppercase text-slate-400">(non câblé)</span></span>
+      </label>
+    </div>
+
+    <div class="card space-y-4">
+      <div>
+        <h2 class="font-serif text-lg font-medium text-ink-500">Support client</h2>
+        <p class="text-xs text-slate-500 mt-1">Affichés dans le pied de page des boutiques et dans les emails transactionnels.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="label">Téléphone support</label>
+          <input type="text" name="support_phone" value="{{ settings.support_phone }}"
+                 class="input" placeholder="+221 77 000 00 00">
+        </div>
+        <div>
+          <label class="label">Email support</label>
+          <input type="email" name="support_email" value="{{ settings.support_email }}"
+                 class="input" placeholder="support@jayma.sn">
+        </div>
+      </div>
+    </div>
+
+    <div class="card space-y-4">
+      <div>
+        <h2 class="font-serif text-lg font-medium text-ink-500">Message de maintenance</h2>
+        <p class="text-xs text-slate-500 mt-1">Si renseigné, affiché en bannière sur toutes les boutiques. Laisser vide pour masquer.</p>
+      </div>
+      <textarea name="maintenance_message" rows="3" class="input"
+                placeholder="Ex. : Livraisons suspendues ce week-end, reprise lundi.">{{ settings.maintenance_message }}</textarea>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <p class="text-xs text-slate-500">Dernière mise à jour : {{ settings.updated_at|date:"d/m/Y H:i" }}</p>
+      <button class="btn-primary">Enregistrer</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

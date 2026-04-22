@@ -1,0 +1,45 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Avis produits — Admin Jayma{% endblock %}
+{% block header_title %}Avis produits{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="flex gap-2">
+    <a href="?state=all" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'all' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Tous</a>
+    <a href="?state=approved" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'approved' %}bg-emerald-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Affichés</a>
+    <a href="?state=hidden" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'hidden' %}bg-red-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Masqués</a>
+  </div>
+
+  {% if reviews %}
+    <div class="space-y-3">
+      {% for r in reviews %}
+        <div class="card {% if not r.is_approved %}opacity-60{% endif %}">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                {% include "partials/rating_stars.html" with rating=r.rating %}
+                <span class="text-sm font-medium text-ink-500">{{ r.product.name }}</span>
+                <a href="{% url 'admin_panel:shop_detail' r.product.shop.pk %}" class="text-xs text-jayma-600 hover:underline">@{{ r.product.shop.slug }}</a>
+              </div>
+              {% if r.comment %}<p class="mt-2 text-sm text-slate-700">{{ r.comment }}</p>{% endif %}
+              <div class="mt-2 text-xs text-slate-500">
+                Par {{ r.client_name }} · {{ r.client_phone }} · {{ r.created_at|date:"d/m/Y H:i" }}
+              </div>
+            </div>
+            <form method="post" action="{% url 'admin_panel:review_toggle_approved' r.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="text-xs font-medium px-3 py-1.5 rounded-lg border
+                {% if r.is_approved %}border-red-200 bg-red-50 text-red-700 hover:bg-red-100
+                {% else %}border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100{% endif %}">
+                {% if r.is_approved %}Masquer{% else %}Afficher{% endif %}
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card text-center py-16 text-sm text-slate-500">Aucun avis.</div>
+  {% endif %}
+</div>
+{% endblock %}
