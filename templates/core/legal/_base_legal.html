@@ -1,0 +1,22 @@
+{% extends "base/base.html" %}
+{% block body %}
+<main class="max-w-3xl mx-auto px-4 py-12 prose prose-slate prose-headings:font-serif prose-headings:text-ink-500 prose-a:text-jayma-600">
+  <nav class="mb-6 text-xs uppercase tracking-wide text-slate-500">
+    <a href="{% url 'core:home' %}" class="hover:text-ink-500">Accueil</a>
+    <span class="mx-2">/</span>
+    <a href="{% url 'core:legal_mentions' %}" class="hover:text-ink-500">Mentions</a>
+    <span class="mx-2">·</span>
+    <a href="{% url 'core:legal_cgu' %}" class="hover:text-ink-500">CGU</a>
+    <span class="mx-2">·</span>
+    <a href="{% url 'core:legal_cgv' %}" class="hover:text-ink-500">CGV</a>
+    <span class="mx-2">·</span>
+    <a href="{% url 'core:legal_confidentialite' %}" class="hover:text-ink-500">Confidentialité</a>
+  </nav>
+
+  {% block legal_content %}{% endblock %}
+
+  <div class="mt-12 pt-6 border-t border-slate-200 text-xs text-slate-500">
+    <p>Ce document est un modèle minimaliste à faire valider par un juriste avant mise en ligne définitive. Dernière mise à jour : {% now "F Y" %}.</p>
+  </div>
+</main>
+{% endblock %}

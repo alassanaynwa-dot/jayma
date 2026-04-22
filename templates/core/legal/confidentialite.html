@@ -1,0 +1,98 @@
+{% extends "core/legal/_base_legal.html" %}
+{% block title %}Politique de confidentialité — Jayma{% endblock %}
+
+{% block legal_content %}
+<h1>Politique de confidentialité</h1>
+
+<p class="text-sm text-slate-500 italic">
+  Conforme à la loi sénégalaise n° 2008-12 du 25 janvier 2008 portant sur la
+  protection des données à caractère personnel (LPDP).
+</p>
+
+<h2>1. Responsable du traitement</h2>
+<p>
+  <strong>[RAISON SOCIALE]</strong>, dont le siège est à [adresse], Sénégal,
+  est responsable du traitement des données personnelles collectées sur
+  jayma.sn et les boutiques associées.
+</p>
+
+<h2>2. Données collectées</h2>
+
+<h3>2.1 Clients (acheteurs)</h3>
+<ul>
+  <li><strong>Identité</strong> : nom, prénom</li>
+  <li><strong>Contact</strong> : numéro de téléphone, adresse email (facultative)</li>
+  <li><strong>Livraison</strong> : adresse, ville</li>
+  <li><strong>Commandes</strong> : historique, montants, modes de paiement utilisés</li>
+  <li><strong>Techniques</strong> : cookies de session, logs serveur (IP, user-agent) pour la sécurité</li>
+</ul>
+
+<h3>2.2 Commerçants</h3>
+<ul>
+  <li>Identité + pièce d'identité pour vérification KYC</li>
+  <li>Coordonnées bancaires / Wave / Orange Money pour le reversement</li>
+  <li>NINEA / RCCM si applicables</li>
+</ul>
+
+<h2>3. Finalités</h2>
+<ul>
+  <li>Exécution de la commande (livraison, paiement)</li>
+  <li>Service client (suivi, SAV)</li>
+  <li>Notifications transactionnelles SMS (OTP, confirmation, expédition)</li>
+  <li>Obligations légales et comptables (factures, TVA)</li>
+  <li>Lutte contre la fraude et abus de service</li>
+  <li>Améliorations du service (statistiques agrégées, non nominatives)</li>
+</ul>
+
+<p>
+  <strong>Pas de marketing non sollicité.</strong> Aucun envoi commercial
+  tiers. Les données clients ne sont jamais revendues.
+</p>
+
+<h2>4. Partage des données</h2>
+<p>
+  Les données sont partagées uniquement avec :
+</p>
+<ul>
+  <li>Le <strong>commerçant</strong> concerné par la commande (nom, téléphone, adresse, articles)</li>
+  <li>Les <strong>providers de paiement</strong> (Wave, Orange Money, CinetPay) pour exécuter la transaction</li>
+  <li>Le <strong>provider SMS</strong> (AfricasTalking) pour envoyer les notifications</li>
+  <li>Les <strong>autorités compétentes</strong> uniquement sur réquisition judiciaire</li>
+</ul>
+
+<h2>5. Durées de conservation</h2>
+<ul>
+  <li>Données de commande : <strong>10 ans</strong> (obligation comptable)</li>
+  <li>Logs techniques : <strong>12 mois</strong> glissants</li>
+  <li>Comptes clients inactifs : suppression automatique après <strong>3 ans</strong> sans activité</li>
+</ul>
+
+<h2>6. Vos droits</h2>
+<p>
+  Conformément à la LPDP, vous disposez d'un droit d'accès, de rectification,
+  d'opposition, d'effacement et de portabilité de vos données personnelles.
+  Pour exercer ces droits, écrivez à
+  <a href="mailto:privacy@jayma.sn">privacy@jayma.sn</a> en joignant une copie
+  d'une pièce d'identité. Réponse sous 30 jours.
+</p>
+<p>
+  Vous pouvez également saisir la <strong>Commission de Protection des
+  Données Personnelles (CDP)</strong> du Sénégal :
+  <a href="https://www.cdp.sn" target="_blank" rel="noopener">www.cdp.sn</a>.
+</p>
+
+<h2>7. Sécurité</h2>
+<p>
+  Les données sont stockées sur serveurs sécurisés, chiffrées en transit
+  (HTTPS/TLS), avec sauvegardes quotidiennes. Les mots de passe commerçants
+  sont hachés (Argon2). Les données bancaires ne transitent jamais par nos
+  serveurs : elles sont traitées directement par les providers de paiement.
+</p>
+
+<h2>8. Cookies</h2>
+<p>
+  Jayma utilise uniquement des cookies techniques indispensables (session,
+  panier, CSRF). Aucun cookie tiers de tracking ou publicitaire. Le
+  consentement n'est pas requis pour ces cookies strictement nécessaires.
+</p>
+{% endblock %}

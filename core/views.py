@@ -37,3 +37,19 @@ def shop_request(request):
 def shop_request_confirmation(request):
     """Page de confirmation après soumission."""
     return render(request, "core/shop_request_confirmation.html")
+
+
+def legal_cgu(request):
+    return render(request, "core/legal/cgu.html")
+
+
+def legal_cgv(request):
+    return render(request, "core/legal/cgv.html")
+
+
+def legal_mentions(request):
+    return render(request, "core/legal/mentions.html")
+
+
+def legal_confidentialite(request):
+    return render(request, "core/legal/confidentialite.html")

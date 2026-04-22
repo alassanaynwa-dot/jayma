@@ -1,0 +1,100 @@
+{% extends "core/legal/_base_legal.html" %}
+{% block title %}CGV — Jayma{% endblock %}
+
+{% block legal_content %}
+<h1>Conditions Générales de Service (Commerçants)</h1>
+
+<p class="text-sm text-slate-500 italic">
+  Ces CGV régissent la relation entre <strong>[RAISON SOCIALE]</strong> (ci-après
+  « Jayma ») et le commerçant utilisant la plateforme pour vendre en ligne.
+  Pour la vente B2C (commerçant ↔ client final), le commerçant doit publier
+  ses propres conditions de vente sur sa boutique.
+</p>
+
+<h2>1. Objet du service</h2>
+<p>
+  Jayma met à disposition du commerçant une boutique en ligne sur un
+  sous-domaine <code>[slug].jayma.sn</code>, comprenant : hébergement,
+  catalogue produits, gestion commandes, intégration paiements mobiles
+  (Wave, Orange Money, CinetPay), SMS transactionnels, support.
+</p>
+
+<h2>2. Approbation et accès</h2>
+<p>
+  Le commerçant soumet une demande en ligne. Après vérification (identité,
+  conformité de l'activité, disponibilité du slug), Jayma crée la boutique
+  et communique les identifiants par email + SMS. L'approbation est
+  discrétionnaire ; un refus peut intervenir sans motif détaillé.
+</p>
+
+<h2>3. Commission</h2>
+<p>
+  Jayma perçoit une <strong>commission de 8 %</strong> (modifiable par
+  accord écrit) sur chaque commande effectivement payée. La commission
+  est calculée sur le total TTC de la commande, hors frais de livraison.
+</p>
+
+<h2>4. Reversement des fonds</h2>
+<p>
+  Les paiements clients sont encaissés via les providers (Wave / Orange
+  Money / CinetPay) puis transférés au commerçant, <strong>déduction faite
+  de la commission Jayma</strong>. Les modalités de reversement sont :
+</p>
+<ul>
+  <li>Fréquence : <strong>hebdomadaire</strong> par défaut (tous les lundis, commandes J-7 → J-1).</li>
+  <li>Méthode : virement bancaire ou Wave, selon ce qui a été convenu à l'onboarding.</li>
+  <li>Montant minimum : 10 000 XOF — en deçà, le solde est reporté sur la semaine suivante.</li>
+  <li>Aucun reversement ne peut avoir lieu si l'identité et le compte de reversement ne sont pas vérifiés.</li>
+</ul>
+
+<h2>5. Obligations du commerçant</h2>
+<ul>
+  <li>Vendre des produits licites, conformes à leur description, et respectant la réglementation sénégalaise.</li>
+  <li>Honorer les commandes payées (préparation + livraison) dans les délais annoncés sur la boutique.</li>
+  <li>Fournir un service client réactif (répondre sous 48h aux messages clients via WhatsApp / SMS).</li>
+  <li>Ne pas contourner la plateforme pour finaliser une vente hors Jayma afin d'éviter la commission.</li>
+  <li>Tenir à jour son catalogue, ses stocks et ses informations de contact.</li>
+</ul>
+
+<h2>6. Remboursements et litiges</h2>
+<p>
+  Le commerçant est seul responsable du traitement des remboursements
+  clients. En cas de remboursement intégral, la commission Jayma associée
+  est créditée au commerçant sur le reversement suivant.
+</p>
+<p>
+  En cas de litige client → commerçant non résolu, Jayma peut, à sa
+  discrétion, geler les fonds en attendant résolution, et rembourser le
+  client si le commerçant est manifestement fautif (produit non reçu,
+  totalement non conforme, fraude avérée).
+</p>
+
+<h2>7. Suspension et résiliation</h2>
+<p>
+  Jayma peut suspendre une boutique en cas de : manquements répétés aux
+  présentes CGV, signalements clients convergents, activité frauduleuse,
+  non-paiement d'une commission due. Le commerçant peut fermer sa
+  boutique à tout moment, sous réserve d'honorer les commandes en cours
+  et les commissions dues.
+</p>
+
+<h2>8. Données</h2>
+<p>
+  Le commerçant est propriétaire des données de sa boutique (catalogue,
+  commandes, clients). Sur demande écrite, Jayma fournit un export CSV
+  dans un délai de 30 jours. Les données clients restent soumises à la
+  politique de confidentialité (voir page dédiée).
+</p>
+
+<h2>9. Modifications</h2>
+<p>
+  Jayma peut faire évoluer les CGV (tarifs, modalités). Toute modification
+  est notifiée par email au moins 30 jours avant entrée en vigueur. Le
+  commerçant peut refuser et résilier sans frais pendant cette période.
+</p>
+
+<h2>10. Droit applicable</h2>
+<p>
+  Droit sénégalais. Tribunaux de Dakar compétents.
+</p>
+{% endblock %}
