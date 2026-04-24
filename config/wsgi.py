@@ -1,4 +1,4 @@
-"""Entrée WSGI pour Jayma (gunicorn en prod)."""
+"""Entrée WSGI pour Jappesi (gunicorn en prod)."""
 import os
 from django.core.wsgi import get_wsgi_application
 

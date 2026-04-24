@@ -70,7 +70,7 @@ class ShopRequest(models.Model):
 
 
 class Shop(models.Model):
-    """Boutique d'un commerçant — accessible sur <slug>.djayma.sn."""
+    """Boutique d'un commerçant — accessible sur <slug>.jappesi.sn."""
 
     owner = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -98,7 +98,7 @@ class Shop(models.Model):
     # État
     is_approved = models.BooleanField(
         default=False,
-        help_text="Validé par l'admin Jayma.",
+        help_text="Validé par l'admin Jappesi.",
     )
     is_active = models.BooleanField(
         default=True,
@@ -109,7 +109,7 @@ class Shop(models.Model):
     commission_rate = models.DecimalField(
         max_digits=5, decimal_places=2,
         default=8.00,
-        help_text="Pourcentage prélevé par Jayma sur chaque vente (ex: 8.00 = 8%).",
+        help_text="Pourcentage prélevé par Jappesi sur chaque vente (ex: 8.00 = 8%).",
     )
 
     # Theme (extensible plus tard)

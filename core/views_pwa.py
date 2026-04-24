@@ -1,8 +1,8 @@
 """
 Vues PWA — manifest dynamique et service worker.
 
-Le manifest est généré selon le tenant (dashboard = "Jayma Dashboard",
-boutique = nom de la boutique, portail livreur = "Jayma Livreur").
+Le manifest est généré selon le tenant (dashboard = "Jappesi Dashboard",
+boutique = nom de la boutique, portail livreur = "Jappesi Livreur").
 """
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -32,22 +32,22 @@ def manifest(request):
     ]
 
     # Défauts
-    name = "Jayma"
-    short_name = "Jayma"
+    name = "Jappesi"
+    short_name = "Jappesi"
     description = "Plateforme e-commerce pour les commerçants sénégalais."
     start_url = "/"
     theme_color = "#C45C2A"
     background_color = "#FFFFFF"
 
     if tenant == "dashboard":
-        name = "Jayma — Dashboard commerçant"
-        short_name = "Jayma Dash"
+        name = "Jappesi — Dashboard commerçant"
+        short_name = "Jappesi Dash"
         description = "Gère ta boutique, tes produits et tes commandes en temps réel."
         start_url = "/"
     elif tenant == "admin":
-        name = "Jayma — Admin plateforme"
-        short_name = "Jayma Admin"
-        description = "Panneau de pilotage Jayma."
+        name = "Jappesi — Admin plateforme"
+        short_name = "Jappesi Admin"
+        description = "Panneau de pilotage Jappesi."
         start_url = "/"
         background_color = "#1C1612"
     elif tenant == "shop" and shop:
@@ -83,7 +83,7 @@ def service_worker(request):
     - offline → fallback sur une page simple "Pas de connexion"
     """
     sw_js = f"""
-// Jayma Service Worker v2
+// Jappesi Service Worker v2
 const CACHE_NAME = 'jayma-v2';
 const STATIC_ASSETS = [
   '/static/css/main.css',

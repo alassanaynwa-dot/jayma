@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
 
-{% block title %}Connexion — Jayma{% endblock %}
+{% block title %}Connexion — Jappesi{% endblock %}
 
 {% block body %}
 <div class="min-h-screen flex">
@@ -32,7 +32,7 @@
           </p>
         {% endif %}
       </div>
-      <div class="text-xs text-jayma-200">© {% now "Y" %} Jayma — Dakar, Sénégal</div>
+      <div class="text-xs text-jayma-200">© {% now "Y" %} Jappesi — Dakar, Sénégal</div>
     </div>
   </div>
 
@@ -57,12 +57,12 @@
       <h1 class="font-serif text-3xl font-medium text-ink-500">Connexion</h1>
       <p class="mt-2 text-sm text-slate-600">
         {% if tenant == "admin" %}
-          Réservé à l'équipe Jayma. Tu es commerçant ?
+          Réservé à l'équipe Jappesi. Tu es commerçant ?
           <a href="{{ dashboard_login_url }}" class="text-jayma-600 font-medium hover:text-jayma-700">Connexion commerçant →</a>
         {% elif tenant == "dashboard" %}
           Accède à ton dashboard commerçant.
         {% else %}
-          Accède à ton compte Jayma.
+          Accède à ton compte Jappesi.
         {% endif %}
       </p>
 

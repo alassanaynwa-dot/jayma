@@ -1,5 +1,5 @@
 {% extends "dashboard/base.html" %}
-{% block title %}Commande {{ order.reference }} — Jayma{% endblock %}
+{% block title %}Commande {{ order.reference }} — Jappesi{% endblock %}
 {% block header_title %}Commande {{ order.reference }}{% endblock %}
 
 {% block content %}
@@ -53,7 +53,7 @@
         <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 text-sm space-y-1">
           <div class="flex justify-between"><span class="text-slate-600">Sous-total</span><span>{{ order.subtotal_xof }} XOF</span></div>
           <div class="flex justify-between"><span class="text-slate-600">Livraison</span><span>{{ order.delivery_xof }} XOF</span></div>
-          <div class="flex justify-between text-slate-500 text-xs italic"><span>Commission Jayma ({{ order.commission_rate }}%)</span><span>−{{ order.commission_xof }} XOF</span></div>
+          <div class="flex justify-between text-slate-500 text-xs italic"><span>Commission Jappesi ({{ order.commission_rate }}%)</span><span>−{{ order.commission_xof }} XOF</span></div>
           <div class="flex justify-between pt-2 border-t border-slate-200 text-base font-medium">
             <span>À recevoir</span>
             <span class="text-emerald-600">{{ order.merchant_amount_xof }} XOF</span>

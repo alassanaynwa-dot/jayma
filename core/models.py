@@ -6,7 +6,7 @@ from django.db import models
 
 
 class PlatformSettings(models.Model):
-    """Réglages plateforme Jayma — singleton (pk=1 toujours)."""
+    """Réglages plateforme Jappesi — singleton (pk=1 toujours)."""
 
     default_commission_rate = models.DecimalField(
         "Taux de commission par défaut (%)",

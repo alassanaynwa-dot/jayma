@@ -1,4 +1,4 @@
-"""Configuration Celery pour Jayma."""
+"""Configuration Celery pour Jappesi."""
 import os
 from celery import Celery
 

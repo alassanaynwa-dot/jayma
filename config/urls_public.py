@@ -1,4 +1,4 @@
-"""URLs pour djayma.sn (landing, auth publique)."""
+"""URLs pour jappesi.sn (landing, auth publique)."""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path

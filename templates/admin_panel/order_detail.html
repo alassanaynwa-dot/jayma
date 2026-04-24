@@ -1,5 +1,5 @@
 {% extends "admin_panel/base.html" %}
-{% block title %}Commande {{ order.reference }} — Admin Jayma{% endblock %}
+{% block title %}Commande {{ order.reference }} — Admin Jappesi{% endblock %}
 {% block header_title %}Commande {{ order.reference }}{% endblock %}
 
 {% block content %}
@@ -82,7 +82,7 @@
         <h3 class="text-sm font-semibold uppercase text-slate-500">Boutique</h3>
         <div class="mt-2">
           <a href="{% url 'admin_panel:shop_detail' order.shop.pk %}" class="text-jayma-600 font-medium hover:underline">{{ order.shop.name }}</a>
-          <div class="text-xs text-slate-500">{{ order.shop.slug }}.djayma.sn</div>
+          <div class="text-xs text-slate-500">{{ order.shop.slug }}.jappesi.sn</div>
         </div>
       </div>
 

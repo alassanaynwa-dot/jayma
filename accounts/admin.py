@@ -12,8 +12,8 @@ class UserAdmin(DjangoUserAdmin, ModelAdmin):
     search_fields = ("username", "email", "phone", "first_name", "last_name")
 
     fieldsets = DjangoUserAdmin.fieldsets + (
-        ("Infos Jayma", {"fields": ("role", "phone", "city", "phone_verified")}),
+        ("Infos Jappesi", {"fields": ("role", "phone", "city", "phone_verified")}),
     )
     add_fieldsets = DjangoUserAdmin.add_fieldsets + (
-        ("Infos Jayma", {"fields": ("role", "phone", "city")}),
+        ("Infos Jappesi", {"fields": ("role", "phone", "city")}),
     )

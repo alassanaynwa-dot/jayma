@@ -28,7 +28,7 @@ def merchant_required(view_func):
         if not user.is_merchant:
             return render(request, "accounts/403_wrong_tenant.html", {
                 "title": "Espace commerçant réservé",
-                "message": "Cet espace est réservé aux commerçants Jayma.",
+                "message": "Cet espace est réservé aux commerçants Jappesi.",
                 "redirect_url": f"//{root}{port}/",
                 "redirect_label": "Retour à l'accueil",
             }, status=403)

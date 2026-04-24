@@ -1,4 +1,4 @@
-"""Formulaires publics djayma.sn."""
+"""Formulaires publics jappesi.sn."""
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
@@ -28,7 +28,7 @@ class ShopRequestForm(forms.ModelForm):
     # On rajoute une case à cocher pour l'acceptation des conditions
     terms_accepted = forms.BooleanField(
         required=True,
-        label="J'accepte les conditions de Jayma (commission 8%).",
+        label="J'accepte les conditions de Jappesi (commission 8%).",
     )
 
     class Meta:
@@ -90,7 +90,7 @@ class ShopRequestForm(forms.ModelForm):
 
         if slug in RESERVED_SUBDOMAINS:
             raise ValidationError(
-                f"L'adresse « {slug} » est réservée par Jayma. Choisis-en une autre."
+                f"L'adresse « {slug} » est réservée par Jappesi. Choisis-en une autre."
             )
 
         if Shop.objects.filter(slug=slug).exists():

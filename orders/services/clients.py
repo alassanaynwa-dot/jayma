@@ -1,7 +1,7 @@
 """
 Agrégation des clients d'une boutique.
 
-Dans Jayma, un "client" n'a pas de compte. On les identifie par leur
+Dans Jappesi, un "client" n'a pas de compte. On les identifie par leur
 numéro de téléphone (client_phone), qui est obligatoire au checkout.
 On agrège donc les Orders par client_phone pour obtenir une vue client.
 """

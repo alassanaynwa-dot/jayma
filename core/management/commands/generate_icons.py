@@ -16,7 +16,7 @@ class Command(BaseCommand):
         out = Path(settings.BASE_DIR) / "static" / "icons"
         out.mkdir(parents=True, exist_ok=True)
 
-        # Palette Jayma
+        # Palette Jappesi
         BG = (196, 92, 42)       # jayma-500 orange brique
         FG = (255, 255, 255)     # blanc
         MASKABLE_SCALE = 0.68    # safe area pour maskable

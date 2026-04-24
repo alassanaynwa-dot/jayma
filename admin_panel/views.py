@@ -1,4 +1,4 @@
-"""Vues admin.djayma.sn — dashboard owner de la plateforme."""
+"""Vues admin.jappesi.sn — dashboard owner de la plateforme."""
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
@@ -908,9 +908,9 @@ def admin_user_send_reengage(request, pk):
     first_name = user.first_name or user.username
     message = (
         f"Bonjour {first_name}, on remarque que tu ne t'es pas connecté à "
-        f"Jayma ({shop_name}) depuis un moment. Tout va bien ? "
+        f"Jappesi ({shop_name}) depuis un moment. Tout va bien ? "
         f"Besoin d'aide pour relancer les ventes ? Réponds à ce SMS ou "
-        f"appelle-nous. — L'équipe Jayma"
+        f"appelle-nous. — L'équipe Jappesi"
     )
 
     log = send_sms(user.phone, message)

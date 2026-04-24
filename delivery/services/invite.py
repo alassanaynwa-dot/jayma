@@ -15,7 +15,7 @@ def send_portal_link(courier: Courier) -> None:
     url = f"{base}/livreur/{token}/"
 
     text = (
-        f"{courier.shop.name} te donne acces a tes courses sur Jayma. "
+        f"{courier.shop.name} te donne acces a tes courses sur Jappesi. "
         f"Ouvre : {url} (lien valable 90 jours)"
     )
     try:

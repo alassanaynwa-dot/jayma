@@ -1,4 +1,4 @@
-"""Fixtures globales pytest pour les tests Jayma."""
+"""Fixtures globales pytest pour les tests Jappesi."""
 import pytest
 from django.contrib.auth import get_user_model
 

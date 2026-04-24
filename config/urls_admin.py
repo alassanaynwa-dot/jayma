@@ -1,4 +1,4 @@
-"""URLs pour admin.djayma.sn — panneau owner plateforme Jayma."""
+"""URLs pour admin.jappesi.sn — panneau owner plateforme Jappesi."""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin

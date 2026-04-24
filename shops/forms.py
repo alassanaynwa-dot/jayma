@@ -10,7 +10,7 @@ class ShopSettingsForm(forms.ModelForm):
     class Meta:
         model = Shop
         # Note : slug et commission_rate NON modifiables par le commerçant
-        # (slug → identité boutique ; commission → admin Jayma uniquement).
+        # (slug → identité boutique ; commission → admin Jappesi uniquement).
         fields = [
             "name", "description",
             "logo", "banner",

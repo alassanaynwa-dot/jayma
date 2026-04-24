@@ -1,6 +1,6 @@
 {% extends "admin_panel/base.html" %}
 {% load static %}
-{% block title %}Admin Jayma — Vue d'ensemble{% endblock %}
+{% block title %}Admin Jappesi — Vue d'ensemble{% endblock %}
 {% block header_title %}Vue d'ensemble{% endblock %}
 
 {% block extra_head %}
@@ -39,7 +39,7 @@
     <div class="flex items-center justify-between mb-4">
       <div>
         <h2 class="font-serif text-lg font-medium text-ink-500">GMV sur 30 jours</h2>
-        <p class="text-xs text-slate-500">Ventes payées + commissions Jayma, cross-boutiques.</p>
+        <p class="text-xs text-slate-500">Ventes payées + commissions Jappesi, cross-boutiques.</p>
       </div>
       <a href="{% url 'admin_panel:monthly' %}" class="text-sm text-jayma-600 hover:underline">Récap mensuel →</a>
     </div>
@@ -129,7 +129,7 @@
                 {% endif %}
                 <div>
                   <div class="text-sm font-medium">{{ shop.name }}</div>
-                  <div class="text-xs text-slate-500">{{ shop.city }} · {{ shop.slug }}.djayma.sn</div>
+                  <div class="text-xs text-slate-500">{{ shop.city }} · {{ shop.slug }}.jappesi.sn</div>
                 </div>
               </div>
               <div class="text-right">
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
           yAxisID: "y",
         },
         {
-          label: "Commission Jayma (XOF)",
+          label: "Commission Jappesi (XOF)",
           data: data.map(d => d.commission),
           borderColor: "#84391A",
           backgroundColor: "rgba(132, 57, 26, 0.08)",

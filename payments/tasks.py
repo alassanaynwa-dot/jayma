@@ -30,10 +30,10 @@ def notify_merchant_payment_received(order_id: int) -> None:
                 f"  Client     : {order.client_name} ({order.client_phone})\n"
                 f"  Méthode    : {order.get_payment_method_display()}\n"
                 f"  Montant    : {order.total_xof} XOF\n"
-                f"  À recevoir : {order.merchant_amount_xof} XOF (après commission Jayma)\n\n"
+                f"  À recevoir : {order.merchant_amount_xof} XOF (après commission Jappesi)\n\n"
                 f"Tu peux la traiter depuis ton dashboard :\n"
                 f"https://dashboard.{settings.JAYMA_ROOT_DOMAIN}/commandes/{order.reference}/\n\n"
-                f"— L'équipe Jayma"
+                f"— L'équipe Jappesi"
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[owner.email],
@@ -47,7 +47,7 @@ def notify_merchant_payment_received(order_id: int) -> None:
         from notifications.services.sms import send_sms
         send_sms(
             owner.phone,
-            f"Jayma : commande {order.reference} payee ({order.total_xof} XOF). "
+            f"Jappesi : commande {order.reference} payee ({order.total_xof} XOF). "
             f"Traite-la sur dashboard.{settings.JAYMA_ROOT_DOMAIN}"
         )
     except Exception:

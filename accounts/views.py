@@ -23,9 +23,9 @@ def _tenant_url(request, sub: str) -> str:
 def login_view(request):
     """
     Page de connexion — ses 3 incarnations :
-      - djayma.sn/comptes/login/           : login générique (tenant=public)
-      - dashboard.djayma.sn/comptes/login/ : pour les commerçants
-      - admin.djayma.sn/comptes/login/     : pour l'équipe Jayma
+      - jappesi.sn/comptes/login/           : login générique (tenant=public)
+      - dashboard.jappesi.sn/comptes/login/ : pour les commerçants
+      - admin.jappesi.sn/comptes/login/     : pour l'équipe Jappesi
 
     Si on se connecte sur le mauvais tenant (ex : commerçant sur admin),
     on bloque avec un message ET un bouton vers le bon login — ça évite
@@ -45,7 +45,7 @@ def login_view(request):
 
             # Validation tenant <-> rôle (uniquement pour dashboard/admin)
             if tenant == "admin" and not user.is_platform_admin:
-                form.add_error(None, "Cet espace est réservé à l'équipe Jayma.")
+                form.add_error(None, "Cet espace est réservé à l'équipe Jappesi.")
                 wrong_tenant_redirect = _tenant_url(request, "dashboard")
             elif tenant == "dashboard" and not user.is_merchant:
                 form.add_error(None, "Cet espace est réservé aux commerçants.")

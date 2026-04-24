@@ -17,7 +17,7 @@ phone_validator = RegexValidator(
 
 
 class User(AbstractUser):
-    """Utilisateur Jayma — peut être client, commerçant ou admin."""
+    """Utilisateur Jappesi — peut être client, commerçant ou admin."""
 
     class Role(models.TextChoices):
         CLIENT = "client", "Client"

@@ -33,15 +33,15 @@ DEBUG = env("DJANGO_DEBUG")
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS")
 
 # ----------------------------------------------------------------
-# Domaine racine Jayma
+# Domaine racine Jappesi
 # ----------------------------------------------------------------
-JAYMA_ROOT_DOMAIN = env("JAYMA_ROOT_DOMAIN", default="djayma.sn")
+JAYMA_ROOT_DOMAIN = env("JAYMA_ROOT_DOMAIN", default="jappesi.sn")
 
 # ----------------------------------------------------------------
 # Applications
 # ----------------------------------------------------------------
 DJANGO_APPS = [
-    "unfold",           # admin Jayma — doit être AVANT django.contrib.admin
+    "unfold",           # admin Jappesi — doit être AVANT django.contrib.admin
     "unfold.contrib.filters",
     "unfold.contrib.forms",
     "django.contrib.admin",
@@ -113,7 +113,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 # Expose le shop courant dans tous les templates
                 "shops.context_processors.current_shop",
-                # Expose les URLs Jayma (root, dashboard, admin) dynamiquement
+                # Expose les URLs Jappesi (root, dashboard, admin) dynamiquement
                 "shops.context_processors.jayma_urls",
             ],
         },
@@ -213,12 +213,12 @@ EMAIL_PORT = env.int("EMAIL_PORT", default=1026)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Jayma <noreply@djayma.sn>")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Jappesi <noreply@jappesi.sn>")
 
 # ----------------------------------------------------------------
 # Cookies (scopés par sous-domaine pour éviter le vol inter-boutiques)
 # ----------------------------------------------------------------
-# IMPORTANT : on NE MET PAS SESSION_COOKIE_DOMAIN = ".djayma.sn"
+# IMPORTANT : on NE MET PAS SESSION_COOKIE_DOMAIN = ".jappesi.sn"
 # Chaque sous-domaine (dashboard, admin, boutique X) a sa propre session.
 SESSION_COOKIE_NAME = "jayma_sid"
 CSRF_COOKIE_NAME = "jayma_csrftoken"

@@ -1,4 +1,4 @@
-"""URLs pour <slug>.djayma.sn (boutique publique d'un commerçant)."""
+"""URLs pour <slug>.jappesi.sn (boutique publique d'un commerçant)."""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path

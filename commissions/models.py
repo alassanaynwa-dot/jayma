@@ -1,11 +1,11 @@
 """
-Modèles commissions — suivi de ce que Jayma doit reverser au commerçant.
+Modèles commissions — suivi de ce que Jappesi doit reverser au commerçant.
 """
 from django.db import models
 
 
 class Commission(models.Model):
-    """Commission Jayma + montant à reverser au commerçant pour UNE commande."""
+    """Commission Jappesi + montant à reverser au commerçant pour UNE commande."""
 
     order = models.OneToOneField(
         "orders.Order",

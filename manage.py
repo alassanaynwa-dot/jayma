@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Utilitaire de ligne de commande Django pour Jayma."""
+"""Utilitaire de ligne de commande Django pour Jappesi."""
 import os
 import sys
 

@@ -26,7 +26,7 @@ def reset_merchant_password(user) -> str:
         from notifications.services.sms import send_sms
         send_sms(
             user.phone,
-            f"Jayma : ton mot de passe a ete reinitialise. "
+            f"Jappesi : ton mot de passe a ete reinitialise. "
             f"Nouveau mdp : {new_pw}. Connexion : dashboard.{root}"
         )
     except Exception:
@@ -35,15 +35,15 @@ def reset_merchant_password(user) -> str:
     # Email
     try:
         send_mail(
-            subject="Ton mot de passe Jayma a été réinitialisé",
+            subject="Ton mot de passe Jappesi a été réinitialisé",
             message=(
                 f"Bonjour {user.first_name or user.username},\n\n"
-                f"L'équipe Jayma a réinitialisé ton mot de passe.\n\n"
+                f"L'équipe Jappesi a réinitialisé ton mot de passe.\n\n"
                 f"  Identifiant           : {user.username}\n"
                 f"  Nouveau mot de passe  : {new_pw}\n\n"
                 f"Connecte-toi sur https://dashboard.{root} et change-le immédiatement "
                 f"depuis Paramètres → Mot de passe.\n\n"
-                f"— L'équipe Jayma"
+                f"— L'équipe Jappesi"
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email] if user.email else [],

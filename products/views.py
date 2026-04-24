@@ -17,7 +17,7 @@ from .models import Category, Product
 # ======================== BOUTIQUE PUBLIQUE ========================
 
 def product_list_public(request):
-    """Catalogue d'une boutique sur <slug>.djayma.sn."""
+    """Catalogue d'une boutique sur <slug>.jappesi.sn."""
     if not request.shop:
         raise Http404()
     shop = request.shop

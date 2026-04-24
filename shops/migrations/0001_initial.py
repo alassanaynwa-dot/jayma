@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 (
                     "is_approved",
                     models.BooleanField(
-                        default=False, help_text="Validé par l'admin Jayma."
+                        default=False, help_text="Validé par l'admin Jappesi."
                     ),
                 ),
                 (
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
                     models.DecimalField(
                         decimal_places=2,
                         default=8.0,
-                        help_text="Pourcentage prélevé par Jayma sur chaque vente (ex: 8.00 = 8%).",
+                        help_text="Pourcentage prélevé par Jappesi sur chaque vente (ex: 8.00 = 8%).",
                         max_digits=5,
                     ),
                 ),

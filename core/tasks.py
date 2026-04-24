@@ -20,10 +20,10 @@ def notify_admin_of_new_request(request_id: int) -> None:
 
     admin_url = f"https://admin.{settings.JAYMA_ROOT_DOMAIN}/shops/shoprequest/{sr.pk}/change/"
 
-    subject = f"[Jayma] Nouvelle demande de boutique : {sr.shop_name}"
+    subject = f"[Jappesi] Nouvelle demande de boutique : {sr.shop_name}"
     body = f"""Bonjour,
 
-Une nouvelle demande de boutique vient d'être reçue sur Jayma.
+Une nouvelle demande de boutique vient d'être reçue sur Jappesi.
 
   Nom          : {sr.full_name}
   Email        : {sr.email}
@@ -40,7 +40,7 @@ Valider ou rejeter dans l'admin :
         subject=subject,
         message=body,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[settings.DEFAULT_FROM_EMAIL],  # envoie à l'adresse Jayma par défaut
+        recipient_list=[settings.DEFAULT_FROM_EMAIL],  # envoie à l'adresse Jappesi par défaut
         fail_silently=False,
     )
     logger.info("Notification admin envoyée pour demande %s.", request_id)
@@ -67,7 +67,7 @@ def send_merchant_welcome(shop_id: int, temp_password: str | None = None) -> Non
         )
 
     # --- Email ---
-    subject = f"Bienvenue sur Jayma — ta boutique {shop.name} est prête !"
+    subject = f"Bienvenue sur Jappesi — ta boutique {shop.name} est prête !"
     body = f"""Bonjour {owner.first_name or owner.username},
 
 Bonne nouvelle : ta boutique {shop.name} est approuvée et en ligne !
@@ -80,7 +80,7 @@ Tu peux maintenant ajouter tes produits, configurer ta boutique,
 et partager ton lien sur WhatsApp.
 
 À très vite,
-L'équipe Jayma
+L'équipe Jappesi
 """
     send_mail(
         subject=subject,
@@ -94,7 +94,7 @@ L'équipe Jayma
     try:
         from notifications.services.sms import send_sms
         sms_text = (
-            f"Felicitations ! Ta boutique Jayma est en ligne sur "
+            f"Felicitations ! Ta boutique Jappesi est en ligne sur "
             f"{shop.slug}.{settings.JAYMA_ROOT_DOMAIN}. "
             f"Connecte-toi sur dashboard.{settings.JAYMA_ROOT_DOMAIN}"
         )

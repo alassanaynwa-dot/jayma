@@ -71,7 +71,7 @@ def send_otp(phone: str) -> OTPResult:
     cache.set(key, sent_count + 1, timeout=RATE_LIMIT_WINDOW_SEC)
 
     # Envoi SMS (best-effort, n'échoue pas le flow)
-    text = f"Ton code Jayma : {code} (valable {OTP_LIFETIME_MIN} min). Ne le partage avec personne."
+    text = f"Ton code Jappesi : {code} (valable {OTP_LIFETIME_MIN} min). Ne le partage avec personne."
     try:
         from notifications.services.sms import send_sms
         send_sms(phone, text)
