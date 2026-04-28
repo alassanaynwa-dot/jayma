@@ -16,7 +16,7 @@ STAMP=$(date +%Y%m%d_%H%M)
 FILE="$BACKUP_DIR/jayma_$STAMP.sql.gz"
 
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.production \
-    exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" | gzip > "$FILE"
+    exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' | gzip > "$FILE"
 
 # Garder les 14 derniers jours de backup
 find "$BACKUP_DIR" -name "jayma_*.sql.gz" -mtime +14 -delete
