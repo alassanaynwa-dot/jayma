@@ -1,7 +1,6 @@
 """Formulaires produits (dashboard commerçant)."""
 from django import forms
 from django.forms import inlineformset_factory
-from django.utils.text import slugify
 
 from .models import Category, PackItem, Product, ProductImage
 
@@ -50,8 +49,6 @@ class ProductForm(forms.ModelForm):
         product = super().save(commit=False)
         if self.shop:
             product.shop = self.shop
-        if not product.slug:
-            product.slug = slugify(product.name)[:200]
         if commit:
             product.save()
         return product
@@ -104,8 +101,6 @@ class PackForm(forms.ModelForm):
         pack.track_stock = False  # Stock calculé depuis les sous-produits
         if self.shop:
             pack.shop = self.shop
-        if not pack.slug:
-            pack.slug = slugify(pack.name)[:200]
         if commit:
             pack.save()
         return pack
@@ -168,8 +163,6 @@ class CategoryForm(forms.ModelForm):
         cat = super().save(commit=False)
         if self.shop:
             cat.shop = self.shop
-        if not cat.slug:
-            cat.slug = slugify(cat.name)[:100]
         if commit:
             cat.save()
         return cat

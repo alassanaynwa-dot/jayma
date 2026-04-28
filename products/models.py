@@ -34,7 +34,14 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)[:100]
+            base = slugify(self.name)[:100] or "categorie"
+            slug = base
+            i = 2
+            while Category.objects.filter(shop=self.shop, slug=slug).exclude(pk=self.pk).exists():
+                suffix = f"-{i}"
+                slug = f"{base[: 100 - len(suffix)]}{suffix}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
 
@@ -108,7 +115,14 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)[:200]
+            base = slugify(self.name)[:200] or "produit"
+            slug = base
+            i = 2
+            while Product.objects.filter(shop=self.shop, slug=slug).exclude(pk=self.pk).exists():
+                suffix = f"-{i}"
+                slug = f"{base[: 200 - len(suffix)]}{suffix}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     @property
