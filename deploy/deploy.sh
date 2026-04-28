@@ -19,11 +19,11 @@ $COMPOSE build web celery_worker celery_beat
 echo ">>> 3. Application des migrations"
 $COMPOSE run --rm web python manage.py migrate --noinput
 
-echo ">>> 4. Collecte des fichiers statiques"
-$COMPOSE run --rm web python manage.py collectstatic --noinput
+echo ">>> 4. Build de Tailwind CSS (source -> static/css)"
+$COMPOSE run --rm web tailwindcss -i /app/static/src/main.css -o /app/static/css/main.css --minify
 
-echo ">>> 5. Build de Tailwind CSS"
-$COMPOSE run --rm web tailwindcss -i /app/static/src/main.css -o /app/static_collected/css/main.css --minify
+echo ">>> 5. Collecte des fichiers statiques (ignore src/ qui contient le source Tailwind)"
+$COMPOSE run --rm web python manage.py collectstatic --noinput --ignore=src
 
 echo ">>> 6. Restart des services (rolling)"
 $COMPOSE up -d --no-deps --remove-orphans web celery_worker celery_beat nginx
