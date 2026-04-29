@@ -805,28 +805,39 @@ Recensé pendant l'audit. Aucun n'est bloquant pour la prod, mais à traiter au 
 
 | # | Sujet | Commit |
 |---|-------|--------|
-| 1 | Préfixe couleurs Tailwind renommé `jayma-` → `jappesi-` (62 fichiers, 166 occ.) | sprint 1 |
+| 1 | Préfixe couleurs Tailwind renommé `jayma-` → `jappesi-` (62 fichiers, 166 occ.) | `5e50b84` |
 | 2 | `USE_R2` défaut aligné à `False` dans `production.py` (cohérent avec `base.py`) | `2c8a36e` |
 | 3 | Beat schedule défini via management command (cf #10) | `2c8a36e` |
 | 10 | Management command `setup_periodic_tasks` créée + appelée par `deploy.sh` | `2c8a36e` |
 | 17 | Endpoint `/healthz/` qui teste DB + cache Redis | `2c8a36e` |
 
-### À faire (sprints suivants)
+### ✅ Réglés (sprint 2)
+
+| # | Sujet | Commit |
+|---|-------|--------|
+| 5 | Templates email HTML + texte branded (4 paires) + helper `send_branded_email()` | `0c347d1` |
+| 6 | Rate limiting via `django-ratelimit` sur login, OTP, signup, stock alert | `0c347d1` |
+| 15 | CI GitHub Actions : lint (ruff) + tests (pytest + Postgres + Redis) | `0c347d1` |
+| 16 | Pinning strict des dépendances (`==<version>`) dans `requirements.txt` | `0c347d1` |
+
+Bonus sprint 2 :
+- `pyproject.toml` avec config ruff (line=110, target=py312, exclusions venv/migrations)
+- Auto-fix de 95 issues lint (imports, variables inutilisées)
+- Page `templates/403.html` friendly pour le rate-limited
+- `make migrations --check` ajouté au CI pour détecter les modèles non migrés
+
+### À faire (sprint 3 ou plus tard)
 
 | # | Sujet | Fichier | Action proposée |
 |---|-------|---------|-----------------|
 | 4 | OTP en BDD plutôt que Redis | `accounts/models.py` | Acceptable (audit trail), mais Redis serait plus performant. À évaluer plus tard |
-| 5 | Templates email en f-string Python | tasks Celery | Migrer vers templates Django (`render_to_string`) pour HTML pro |
-| 6 | Pas de rate limiting | partout | Ajouter `django-ratelimit` sur login, signup, webhooks (au moins) |
 | 7 | Webhooks paiement : pas de retry serveur | `payments/views.py` | Si HTTP 500 sur réception, certains providers retry — vérifier qu'on est idempotent (déjà ok) |
 | 8 | Status order `disputed` mais pas de vue | `orders/` | Soit retirer le status, soit créer le workflow |
 | 9 | Multi-currency hardcodé XOF | partout | Documenter la limite, prévoir abstraction si extension Afrique de l'Ouest |
 | 11 | Reversement commissions manuel | `commissions/` | API Wave Business pour automatisation |
 | 12 | Slug auto sur `Product` et `Category` (ok), mais pas sur `Shop` | `shops/models.py` | À vérifier : faut-il pareil ? Probablement non (admin saisit explicitement) |
 | 13 | Email transactionnel souvent en spam Gmail | infra | Long terme : Search Console + DMARC `p=quarantine` après 3 mois de bons envois |
-| 14 | Tests : couverture inconnue | partout | Ajouter `pytest --cov` au CI quand on aura un CI |
-| 15 | Pas de CI configuré (GitHub Actions, etc.) | racine | Ajouter `.github/workflows/test.yml` (lint + tests sur PR) |
-| 16 | `requirements.txt` sans pinning strict | `requirements.txt` | Migrer vers `pip-compile` ou `uv` lock pour reproductibilité |
+| 14 | Tests : couverture inconnue | partout | Ajouter `pytest --cov` au CI maintenant qu'il existe |
 
 ---
 
