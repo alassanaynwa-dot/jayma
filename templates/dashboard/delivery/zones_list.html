@@ -41,7 +41,7 @@
               {{ z.couriers.count }} livreur{{ z.couriers.count|pluralize }} · {{ z.city_list|length }} ville{{ z.city_list|length|pluralize }}
             </div>
             <div class="flex gap-1">
-              <a href="{% url 'delivery_dashboard:zone_edit' z.pk %}" class="text-xs font-medium text-slate-600 hover:text-jayma-600">Modifier</a>
+              <a href="{% url 'delivery_dashboard:zone_edit' z.pk %}" class="text-xs font-medium text-slate-600 hover:text-jappesi-600">Modifier</a>
               <span class="text-slate-300">·</span>
               <form method="post" action="{% url 'delivery_dashboard:zone_delete' z.pk %}" class="inline" onsubmit="return confirm('Supprimer la zone « {{ z.name|escapejs }} » ?')">
                 {% csrf_token %}
@@ -54,8 +54,8 @@
     </div>
   {% else %}
     <div class="card px-6 py-16 text-center">
-      <div class="mx-auto h-16 w-16 rounded-2xl bg-jayma-50 flex items-center justify-center">
-        <svg class="h-8 w-8 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <div class="mx-auto h-16 w-16 rounded-2xl bg-jappesi-50 flex items-center justify-center">
+        <svg class="h-8 w-8 text-jappesi-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       </div>
       <h3 class="mt-4 font-serif text-lg text-ink-500">Aucune zone configurée</h3>
       <p class="mt-1 text-sm text-slate-500 max-w-sm mx-auto">Sans zone, aucun frais de livraison n'est calculé au checkout (gratuit par défaut).</p>

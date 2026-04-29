@@ -17,7 +17,7 @@ class Command(BaseCommand):
         out.mkdir(parents=True, exist_ok=True)
 
         # Palette Jappesi
-        BG = (196, 92, 42)       # jayma-500 orange brique
+        BG = (196, 92, 42)       # jappesi-500 orange brique
         FG = (255, 255, 255)     # blanc
         MASKABLE_SCALE = 0.68    # safe area pour maskable
 

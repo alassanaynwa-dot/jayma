@@ -25,12 +25,12 @@
     </div>
     <div class="card">
       <div class="text-xs uppercase tracking-wide text-slate-500">Admins</div>
-      <div class="mt-1 font-serif text-2xl font-medium text-jayma-600">{{ counts.admins_total }}</div>
+      <div class="mt-1 font-serif text-2xl font-medium text-jappesi-600">{{ counts.admins_total }}</div>
     </div>
   </div>
 
   <div class="flex gap-2">
-    <a href="?role=merchant" class="rounded-full px-4 py-1.5 text-sm font-medium {% if role == 'merchant' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Commerçants</a>
+    <a href="?role=merchant" class="rounded-full px-4 py-1.5 text-sm font-medium {% if role == 'merchant' %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Commerçants</a>
     <a href="?role=admin" class="rounded-full px-4 py-1.5 text-sm font-medium {% if role == 'admin' %}bg-ink-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Admins plateforme</a>
   </div>
 
@@ -71,7 +71,7 @@
             <tr class="hover:bg-slate-50 {% if not u.is_active %}opacity-60{% endif %}">
               <td class="px-5 py-3">
                 <div class="flex items-center gap-3">
-                  <div class="h-9 w-9 rounded-full bg-jayma-100 text-jayma-700 flex items-center justify-center font-serif">{{ u.username|slice:":1"|upper }}</div>
+                  <div class="h-9 w-9 rounded-full bg-jappesi-100 text-jappesi-700 flex items-center justify-center font-serif">{{ u.username|slice:":1"|upper }}</div>
                   <div>
                     <div class="text-sm font-medium text-ink-500">{{ u.get_full_name|default:u.username }}</div>
                     <div class="text-xs text-slate-500">{{ u.email }} · {{ u.phone }}</div>
@@ -85,7 +85,7 @@
               {% if role == 'merchant' %}
                 <td class="px-5 py-3">
                   {% if u.shop %}
-                    <a href="{% url 'admin_panel:shop_detail' u.shop.pk %}" class="text-sm text-jayma-600 hover:underline">{{ u.shop.name }}</a>
+                    <a href="{% url 'admin_panel:shop_detail' u.shop.pk %}" class="text-sm text-jappesi-600 hover:underline">{{ u.shop.name }}</a>
                     <div class="text-xs text-slate-400">@{{ u.shop.slug }}</div>
                   {% else %}
                     <span class="text-xs text-slate-400">—</span>

@@ -16,7 +16,7 @@
 
     {# Revenus ce mois #}
     <div class="card relative overflow-hidden">
-      <div class="absolute top-0 right-0 h-24 w-24 -mr-10 -mt-10 rounded-full bg-jayma-50"></div>
+      <div class="absolute top-0 right-0 h-24 w-24 -mr-10 -mt-10 rounded-full bg-jappesi-50"></div>
       <div class="relative">
         <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Revenus du mois</div>
         <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">
@@ -52,9 +52,9 @@
     </div>
 
     {# Action rapide #}
-    <a href="{% url 'products_dashboard:create' %}" class="card group hover:border-jayma-300 hover:shadow-md transition flex flex-col justify-between">
+    <a href="{% url 'products_dashboard:create' %}" class="card group hover:border-jappesi-300 hover:shadow-md transition flex flex-col justify-between">
       <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Action rapide</div>
-      <div class="mt-2 flex items-center gap-2 text-jayma-600 font-medium">
+      <div class="mt-2 flex items-center gap-2 text-jappesi-600 font-medium">
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         Ajouter un produit
       </div>
@@ -67,7 +67,7 @@
     <div class="lg:col-span-2 card p-0 overflow-hidden">
       <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
         <h2 class="font-serif text-lg font-medium text-ink-500">Dernières commandes</h2>
-        <a href="{% url 'orders_dashboard:list' %}" class="text-sm text-jayma-600 hover:text-jayma-700 font-medium">Tout voir →</a>
+        <a href="{% url 'orders_dashboard:list' %}" class="text-sm text-jappesi-600 hover:text-jappesi-700 font-medium">Tout voir →</a>
       </div>
       {% if stats.last_orders %}
         <ul class="divide-y divide-slate-100">
@@ -102,7 +102,7 @@
         {% if shop.logo %}
           <img src="{{ shop.logo.url }}" class="h-14 w-14 rounded-lg object-cover">
         {% else %}
-          <div class="h-14 w-14 rounded-lg bg-jayma-500 flex items-center justify-center text-white font-serif text-xl">{{ shop.name|slice:":1"|upper }}</div>
+          <div class="h-14 w-14 rounded-lg bg-jappesi-500 flex items-center justify-center text-white font-serif text-xl">{{ shop.name|slice:":1"|upper }}</div>
         {% endif %}
         <div>
           <div class="font-medium text-ink-500">{{ shop.name }}</div>

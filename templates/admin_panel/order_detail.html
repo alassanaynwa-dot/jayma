@@ -81,7 +81,7 @@
       <div class="card">
         <h3 class="text-sm font-semibold uppercase text-slate-500">Boutique</h3>
         <div class="mt-2">
-          <a href="{% url 'admin_panel:shop_detail' order.shop.pk %}" class="text-jayma-600 font-medium hover:underline">{{ order.shop.name }}</a>
+          <a href="{% url 'admin_panel:shop_detail' order.shop.pk %}" class="text-jappesi-600 font-medium hover:underline">{{ order.shop.name }}</a>
           <div class="text-xs text-slate-500">{{ order.shop.slug }}.jappesi.sn</div>
         </div>
       </div>
@@ -115,7 +115,7 @@
           <h3 class="text-sm font-semibold uppercase text-slate-500">Commission</h3>
           <div class="mt-2 text-sm space-y-1">
             <div class="flex justify-between"><span class="text-slate-600">Vente</span><span>{{ commission.sale_amount_xof }} XOF</span></div>
-            <div class="flex justify-between"><span class="text-slate-600">Commission ({{ commission.rate }}%)</span><span class="text-jayma-600">{{ commission.commission_xof }} XOF</span></div>
+            <div class="flex justify-between"><span class="text-slate-600">Commission ({{ commission.rate }}%)</span><span class="text-jappesi-600">{{ commission.commission_xof }} XOF</span></div>
             <div class="flex justify-between font-medium"><span>À reverser</span><span>{{ commission.merchant_amount_xof }} XOF</span></div>
             <div class="pt-2 text-xs">
               {% if commission.is_paid %}

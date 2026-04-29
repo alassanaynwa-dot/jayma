@@ -14,7 +14,7 @@
   {# Badge "en attente" (swap via OOB pour être partout) #}
   <span id="nav-pending-badge"
         hx-swap-oob="outerHTML"
-        class="{% if pending_count %}inline-flex{% else %}hidden{% endif %} items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-jayma-500 text-white text-[11px] font-bold">
+        class="{% if pending_count %}inline-flex{% else %}hidden{% endif %} items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-jappesi-500 text-white text-[11px] font-bold">
     {{ pending_count }}
   </span>
 
@@ -24,11 +24,11 @@
          hx-swap-oob="beforeend"
          class="fixed bottom-6 right-6 z-50 space-y-2">
       {% for order in new_orders %}
-        <div class="rounded-xl border border-jayma-200 bg-white shadow-lg p-4 max-w-sm animate-[slideIn_0.3s_ease-out] flex items-start gap-3"
+        <div class="rounded-xl border border-jappesi-200 bg-white shadow-lg p-4 max-w-sm animate-[slideIn_0.3s_ease-out] flex items-start gap-3"
              x-data="{ show: true }"
              x-show="show"
              x-init="setTimeout(() => show = false, 12000)">
-          <div class="h-10 w-10 rounded-full bg-jayma-500 flex items-center justify-center text-white shrink-0">
+          <div class="h-10 w-10 rounded-full bg-jappesi-500 flex items-center justify-center text-white shrink-0">
             🛎️
           </div>
           <div class="flex-1 min-w-0">
@@ -36,7 +36,7 @@
             <div class="mt-0.5 text-xs text-slate-600">
               <span class="font-mono">{{ order.reference }}</span> · {{ order.client_name }} · <strong>{{ order.total_xof }} XOF</strong>
             </div>
-            <a href="{% url 'orders_dashboard:detail' order.reference %}" class="mt-2 inline-flex text-xs font-medium text-jayma-600 hover:text-jayma-700">Voir la commande →</a>
+            <a href="{% url 'orders_dashboard:detail' order.reference %}" class="mt-2 inline-flex text-xs font-medium text-jappesi-600 hover:text-jappesi-700">Voir la commande →</a>
           </div>
           <button type="button" @click="show = false" class="text-slate-400 hover:text-ink-500 shrink-0">×</button>
         </div>

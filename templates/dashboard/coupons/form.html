@@ -8,7 +8,7 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <div class="sm:col-span-3">
-      <label class="label">{{ form.code.label }} <span class="text-jayma-500">*</span></label>
+      <label class="label">{{ form.code.label }} <span class="text-jappesi-500">*</span></label>
       {{ form.code }}
       <p class="mt-1 text-xs text-slate-500">Ex : <strong>SOLDES10</strong>, <strong>BIENVENUE</strong>, <strong>WEEKEND</strong></p>
       {% if form.code.errors %}<p class="mt-1 text-xs text-red-600">{{ form.code.errors.0 }}</p>{% endif %}
@@ -19,7 +19,7 @@
       {{ form.type }}
     </div>
     <div>
-      <label class="label">{{ form.value.label }} <span class="text-jayma-500">*</span></label>
+      <label class="label">{{ form.value.label }} <span class="text-jappesi-500">*</span></label>
       {{ form.value }}
       {% if form.value.errors %}<p class="mt-1 text-xs text-red-600">{{ form.value.errors.0 }}</p>{% endif %}
     </div>

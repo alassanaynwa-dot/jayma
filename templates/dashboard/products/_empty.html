@@ -1,14 +1,14 @@
 {# État vide #}
 <div class="px-6 py-20 text-center">
-  <div class="mx-auto h-20 w-20 rounded-2xl bg-jayma-50 flex items-center justify-center">
-    <svg class="h-10 w-10 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+  <div class="mx-auto h-20 w-20 rounded-2xl bg-jappesi-50 flex items-center justify-center">
+    <svg class="h-10 w-10 text-jappesi-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
   </div>
   <h3 class="mt-5 font-serif text-xl font-medium text-ink-500">
     {% if q or status %}Aucun résultat{% else %}Aucun produit pour le moment{% endif %}
   </h3>
   <p class="mt-2 text-sm text-slate-500 max-w-sm mx-auto">
     {% if q or status %}
-      Essaie une autre recherche ou <a href="{% url 'products_dashboard:list' %}" class="text-jayma-600">retire les filtres</a>.
+      Essaie une autre recherche ou <a href="{% url 'products_dashboard:list' %}" class="text-jappesi-600">retire les filtres</a>.
     {% else %}
       Commence par ajouter ton premier produit pour qu'il apparaisse sur ta boutique.
     {% endif %}

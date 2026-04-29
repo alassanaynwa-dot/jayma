@@ -9,7 +9,7 @@
 
   <div x-data="{ open: false }" class="relative">
     <button type="button" @click="open = !open" class="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100">
-      <div class="h-8 w-8 rounded-full bg-jayma-500 flex items-center justify-center text-white text-sm font-semibold">
+      <div class="h-8 w-8 rounded-full bg-jappesi-500 flex items-center justify-center text-white text-sm font-semibold">
         {{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}
       </div>
       <span class="hidden sm:block text-sm font-medium text-slate-700">{{ request.user.first_name|default:request.user.username }}</span>

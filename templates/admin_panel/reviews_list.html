@@ -5,7 +5,7 @@
 {% block content %}
 <div class="space-y-6">
   <div class="flex gap-2">
-    <a href="?state=all" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'all' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Tous</a>
+    <a href="?state=all" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'all' %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Tous</a>
     <a href="?state=approved" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'approved' %}bg-emerald-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Affichés</a>
     <a href="?state=hidden" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'hidden' %}bg-red-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Masqués</a>
   </div>
@@ -19,7 +19,7 @@
               <div class="flex items-center gap-2 flex-wrap">
                 {% include "partials/rating_stars.html" with rating=r.rating %}
                 <span class="text-sm font-medium text-ink-500">{{ r.product.name }}</span>
-                <a href="{% url 'admin_panel:shop_detail' r.product.shop.pk %}" class="text-xs text-jayma-600 hover:underline">@{{ r.product.shop.slug }}</a>
+                <a href="{% url 'admin_panel:shop_detail' r.product.shop.pk %}" class="text-xs text-jappesi-600 hover:underline">@{{ r.product.shop.slug }}</a>
               </div>
               {% if r.comment %}<p class="mt-2 text-sm text-slate-700">{{ r.comment }}</p>{% endif %}
               <div class="mt-2 text-xs text-slate-500">

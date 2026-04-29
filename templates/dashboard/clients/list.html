@@ -12,7 +12,7 @@
     </div>
     <div class="card">
       <div class="text-xs uppercase text-slate-500 font-medium">Chiffre d'affaires total</div>
-      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-jayma-600">{{ total_spent }} <span class="text-sm font-sans text-slate-500">XOF</span></div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-jappesi-600">{{ total_spent }} <span class="text-sm font-sans text-slate-500">XOF</span></div>
     </div>
   </div>
 
@@ -38,7 +38,7 @@
             <tr class="hover:bg-slate-50 cursor-pointer" onclick="window.location='{% url 'clients_dashboard:detail' c.phone %}'">
               <td class="px-5 py-3">
                 <div class="flex items-center gap-3">
-                  <div class="h-9 w-9 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif">
+                  <div class="h-9 w-9 rounded-full bg-jappesi-100 flex items-center justify-center text-jappesi-700 font-serif">
                     {{ c.last_name|slice:":1"|upper|default:"?" }}
                   </div>
                   <div>
@@ -67,7 +67,7 @@
     {% for c in clients %}
       <a href="{% url 'clients_dashboard:detail' c.phone %}" class="block card">
         <div class="flex items-start gap-3">
-          <div class="h-10 w-10 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif shrink-0">{{ c.last_name|slice:":1"|upper|default:"?" }}</div>
+          <div class="h-10 w-10 rounded-full bg-jappesi-100 flex items-center justify-center text-jappesi-700 font-serif shrink-0">{{ c.last_name|slice:":1"|upper|default:"?" }}</div>
           <div class="flex-1 min-w-0">
             <div class="flex items-start justify-between gap-2">
               <div class="font-medium text-ink-500 truncate">{{ c.last_name }}</div>

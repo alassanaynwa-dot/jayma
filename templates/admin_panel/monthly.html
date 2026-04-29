@@ -33,7 +33,7 @@
           <tr class="hover:bg-slate-50">
             <td class="px-5 py-3 font-medium text-ink-500">{{ m.label|capfirst }}</td>
             <td class="px-5 py-3 text-right">{{ m.gmv }} XOF</td>
-            <td class="px-5 py-3 text-right text-jayma-600">{{ m.commission }} XOF</td>
+            <td class="px-5 py-3 text-right text-jappesi-600">{{ m.commission }} XOF</td>
             <td class="px-5 py-3 text-right">{{ m.orders }}</td>
             <td class="px-5 py-3 text-right">{{ m.active_shops }}</td>
           </tr>
@@ -66,14 +66,14 @@
                   {% if s.logo %}
                     <img src="{{ s.logo.url }}" class="h-7 w-7 rounded-lg object-cover">
                   {% else %}
-                    <div class="h-7 w-7 rounded-lg bg-jayma-500 flex items-center justify-center text-white text-xs font-semibold">{{ s.name|slice:":1"|upper }}</div>
+                    <div class="h-7 w-7 rounded-lg bg-jappesi-500 flex items-center justify-center text-white text-xs font-semibold">{{ s.name|slice:":1"|upper }}</div>
                   {% endif %}
                   <span class="font-medium text-ink-500">{{ s.name }}</span>
                 </div>
               </td>
               <td class="px-5 py-3 text-right text-sm">{{ s.orders_count }}</td>
               <td class="px-5 py-3 text-right text-sm font-semibold">{{ s.gmv_month }} XOF</td>
-              <td class="px-5 py-3 text-right text-sm text-jayma-600">{{ s.commission_month }} XOF</td>
+              <td class="px-5 py-3 text-right text-sm text-jappesi-600">{{ s.commission_month }} XOF</td>
             </tr>
           {% endfor %}
         </tbody>

@@ -146,7 +146,7 @@
           <h2 class="font-serif text-lg font-medium text-ink-500">Livreur</h2>
           {% if order.courier %}
             <div class="flex items-center gap-3 rounded-lg shop-bg-soft p-3">
-              <div class="h-10 w-10 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif">{{ order.courier.name|slice:":1"|upper }}</div>
+              <div class="h-10 w-10 rounded-full bg-jappesi-100 flex items-center justify-center text-jappesi-700 font-serif">{{ order.courier.name|slice:":1"|upper }}</div>
               <div class="flex-1 min-w-0">
                 <div class="text-sm font-medium truncate">{{ order.courier.name }}</div>
                 <div class="text-xs text-slate-500">{{ order.courier.phone }} · {{ order.courier.get_vehicle_display }}</div>

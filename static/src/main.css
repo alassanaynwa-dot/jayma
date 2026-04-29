@@ -13,16 +13,16 @@
   --font-serif: "Playfair Display", Georgia, serif;
 
   /* Orange brique (couleur principale, logo + CTA) */
-  --color-jayma-50:  #FEF5EF;
-  --color-jayma-100: #FCE6D5;
-  --color-jayma-200: #F8C8A6;
-  --color-jayma-300: #F0997B;
-  --color-jayma-400: #DB7751;
-  --color-jayma-500: #C45C2A;  /* orange principal du logo */
-  --color-jayma-600: #A64A20;
-  --color-jayma-700: #84391A;
-  --color-jayma-800: #62291C;
-  --color-jayma-900: #3D1A14;
+  --color-jappesi-50:  #FEF5EF;
+  --color-jappesi-100: #FCE6D5;
+  --color-jappesi-200: #F8C8A6;
+  --color-jappesi-300: #F0997B;
+  --color-jappesi-400: #DB7751;
+  --color-jappesi-500: #C45C2A;  /* orange principal du logo */
+  --color-jappesi-600: #A64A20;
+  --color-jappesi-700: #84391A;
+  --color-jappesi-800: #62291C;
+  --color-jappesi-900: #3D1A14;
 
   /* Encre profonde (texte principal) */
   --color-ink-500: #1C1612;
@@ -33,7 +33,7 @@
  * ----------------------------------------------------------- */
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-jayma-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-jayma-600 focus:outline-none focus:ring-2 focus:ring-jayma-300 disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-lg bg-jappesi-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-jappesi-600 focus:outline-none focus:ring-2 focus:ring-jappesi-300 disabled:opacity-50;
   }
 
   .btn-secondary {
@@ -49,27 +49,27 @@
   }
 
   .input {
-    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-jayma-500 focus:outline-none focus:ring-1 focus:ring-jayma-500;
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-jappesi-500 focus:outline-none focus:ring-1 focus:ring-jappesi-500;
   }
 
   .nav-link {
     @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-ink-500;
   }
   .nav-link.active {
-    @apply bg-jayma-50 text-jayma-700;
+    @apply bg-jappesi-50 text-jappesi-700;
   }
   .nav-link svg {
     @apply h-5 w-5 text-slate-400;
   }
   .nav-link.active svg {
-    @apply text-jayma-500;
+    @apply text-jappesi-500;
   }
 
   .admin-nav-link {
     @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white;
   }
   .admin-nav-link.active {
-    @apply bg-jayma-500 text-white;
+    @apply bg-jappesi-500 text-white;
   }
   .admin-nav-link svg {
     @apply h-5 w-5;

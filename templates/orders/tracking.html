@@ -56,7 +56,7 @@
             {% endif %}
             <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-lg
               {% if step.state == 'done' %}bg-emerald-500 text-white
-              {% elif step.state == 'current' %}shop-bg text-white ring-4 ring-jayma-100 animate-pulse
+              {% elif step.state == 'current' %}shop-bg text-white ring-4 ring-jappesi-100 animate-pulse
               {% elif step.state == 'cancelled' %}bg-red-500 text-white
               {% else %}bg-slate-200 text-slate-400{% endif %}">
               {{ step.icon }}
@@ -83,7 +83,7 @@
         <div class="mt-6 pt-5 border-t border-slate-100">
           <div class="text-xs text-slate-500 uppercase font-semibold">Livreur</div>
           <div class="mt-2 flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif">
+            <div class="h-10 w-10 rounded-full bg-jappesi-100 flex items-center justify-center text-jappesi-700 font-serif">
               {{ order.courier.name|slice:":1"|upper }}
             </div>
             <div class="flex-1">

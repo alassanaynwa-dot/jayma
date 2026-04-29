@@ -19,7 +19,7 @@
     </div>
     <div class="card">
       <div class="text-xs uppercase tracking-wide text-slate-500">Commission du mois</div>
-      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-jayma-600">{{ stats.commissions_month }} <span class="text-sm text-slate-500 font-sans">XOF</span></div>
+      <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-jappesi-600">{{ stats.commissions_month }} <span class="text-sm text-slate-500 font-sans">XOF</span></div>
       <div class="mt-1 text-xs text-slate-500">8% par défaut</div>
     </div>
     <div class="card">
@@ -27,10 +27,10 @@
       <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">{{ stats.total_shops }}</div>
       <div class="mt-1 text-xs text-slate-500">{{ stats.total_merchants }} commerçants</div>
     </div>
-    <a href="{% url 'admin_panel:requests' %}" class="card hover:border-jayma-300 transition">
+    <a href="{% url 'admin_panel:requests' %}" class="card hover:border-jappesi-300 transition">
       <div class="text-xs uppercase tracking-wide text-slate-500">Demandes en attente</div>
       <div class="mt-2 font-serif text-2xl sm:text-3xl font-medium {% if stats.pending_requests %}text-amber-600{% else %}text-slate-400{% endif %}">{{ stats.pending_requests }}</div>
-      <div class="mt-1 text-xs text-jayma-600">Traiter →</div>
+      <div class="mt-1 text-xs text-jappesi-600">Traiter →</div>
     </a>
   </div>
 
@@ -41,7 +41,7 @@
         <h2 class="font-serif text-lg font-medium text-ink-500">GMV sur 30 jours</h2>
         <p class="text-xs text-slate-500">Ventes payées + commissions Jappesi, cross-boutiques.</p>
       </div>
-      <a href="{% url 'admin_panel:monthly' %}" class="text-sm text-jayma-600 hover:underline">Récap mensuel →</a>
+      <a href="{% url 'admin_panel:monthly' %}" class="text-sm text-jappesi-600 hover:underline">Récap mensuel →</a>
     </div>
     <canvas id="gmvChart" height="80"></canvas>
   </div>
@@ -56,7 +56,7 @@
         {% for cat in stats.top_categories %}
           <li class="px-5 py-3 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
-              <div class="h-9 w-9 rounded-lg bg-jayma-50 flex items-center justify-center text-jayma-600 font-serif shrink-0">{{ cat.name|slice:":1"|upper }}</div>
+              <div class="h-9 w-9 rounded-lg bg-jappesi-50 flex items-center justify-center text-jappesi-600 font-serif shrink-0">{{ cat.name|slice:":1"|upper }}</div>
               <div class="min-w-0">
                 <div class="font-medium text-ink-500 truncate">{{ cat.name }}</div>
                 <div class="text-xs text-slate-500">{{ cat.units_sold }} unité{{ cat.units_sold|pluralize }} vendue{{ cat.units_sold|pluralize }}</div>
@@ -93,7 +93,7 @@
     <div class="card p-0 overflow-hidden">
       <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
         <h2 class="font-serif text-lg font-medium">Dernières demandes</h2>
-        <a href="{% url 'admin_panel:requests' %}" class="text-sm text-jayma-600 hover:underline">Tout →</a>
+        <a href="{% url 'admin_panel:requests' %}" class="text-sm text-jappesi-600 hover:underline">Tout →</a>
       </div>
       {% if stats.recent_requests %}
         <ul class="divide-y divide-slate-100">
@@ -125,7 +125,7 @@
                 {% if shop.logo %}
                   <img src="{{ shop.logo.url }}" class="h-9 w-9 rounded-lg object-cover">
                 {% else %}
-                  <div class="h-9 w-9 rounded-lg bg-jayma-500 flex items-center justify-center text-white font-serif">{{ shop.name|slice:":1"|upper }}</div>
+                  <div class="h-9 w-9 rounded-lg bg-jappesi-500 flex items-center justify-center text-white font-serif">{{ shop.name|slice:":1"|upper }}</div>
                 {% endif %}
                 <div>
                   <div class="text-sm font-medium">{{ shop.name }}</div>

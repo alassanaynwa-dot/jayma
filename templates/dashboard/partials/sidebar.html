@@ -49,19 +49,19 @@
   {% if shop %}
   {% shop_public_url shop as shop_url %}
   {% shop_public_host shop as shop_host %}
-  <a href="{{ shop_url }}" target="_blank" class="flex items-center justify-between rounded-lg bg-jayma-50 hover:bg-jayma-100 px-3 py-2.5 transition group">
+  <a href="{{ shop_url }}" target="_blank" class="flex items-center justify-between rounded-lg bg-jappesi-50 hover:bg-jappesi-100 px-3 py-2.5 transition group">
     <div class="flex items-center gap-3 min-w-0">
       {% if shop.logo %}
         <img src="{{ shop.logo.url }}" class="h-8 w-8 rounded-md object-cover shrink-0">
       {% else %}
-        <div class="h-8 w-8 rounded-md bg-jayma-500 flex items-center justify-center text-white text-xs font-semibold shrink-0">{{ shop.name|slice:":1"|upper }}</div>
+        <div class="h-8 w-8 rounded-md bg-jappesi-500 flex items-center justify-center text-white text-xs font-semibold shrink-0">{{ shop.name|slice:":1"|upper }}</div>
       {% endif %}
       <div class="min-w-0">
         <div class="text-sm font-medium text-ink-500 truncate">{{ shop.name }}</div>
         <div class="text-xs text-slate-500 truncate">{{ shop_host }}</div>
       </div>
     </div>
-    <svg class="h-4 w-4 text-slate-400 group-hover:text-jayma-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+    <svg class="h-4 w-4 text-slate-400 group-hover:text-jappesi-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
   </a>
   {% endif %}
 </div>

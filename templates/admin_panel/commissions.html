@@ -12,7 +12,7 @@
     </div>
     <div class="card">
       <div class="text-xs uppercase text-slate-500">Commission Jappesi (non encore compensée)</div>
-      <div class="mt-2 font-serif text-3xl font-medium text-jayma-600">{{ total_commission }} <span class="text-sm font-sans text-slate-500">XOF</span></div>
+      <div class="mt-2 font-serif text-3xl font-medium text-jappesi-600">{{ total_commission }} <span class="text-sm font-sans text-slate-500">XOF</span></div>
     </div>
   </div>
 
@@ -20,7 +20,7 @@
     <div class="flex gap-2">
       <a href="?state=unpaid" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'unpaid' %}bg-amber-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">À reverser</a>
       <a href="?state=paid" class="rounded-full px-4 py-1.5 text-sm font-medium {% if state == 'paid' %}bg-emerald-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Reversées</a>
-      <a href="?state=" class="rounded-full px-4 py-1.5 text-sm font-medium {% if not state %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Toutes</a>
+      <a href="?state=" class="rounded-full px-4 py-1.5 text-sm font-medium {% if not state %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Toutes</a>
     </div>
     <a href="{% url 'admin_panel:commissions_export_csv' %}?state={{ state }}"
        class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
@@ -49,7 +49,7 @@
               <td class="px-5 py-3"><span class="font-mono text-xs text-slate-600">{{ c.order.reference }}</span></td>
               <td class="px-5 py-3 text-sm">{{ c.shop.name }}</td>
               <td class="px-5 py-3 text-right text-sm">{{ c.sale_amount_xof }} XOF</td>
-              <td class="px-5 py-3 text-right text-sm text-jayma-600">{{ c.commission_xof }} XOF</td>
+              <td class="px-5 py-3 text-right text-sm text-jappesi-600">{{ c.commission_xof }} XOF</td>
               <td class="px-5 py-3 text-right text-sm font-medium">{{ c.merchant_amount_xof }} XOF</td>
               <td class="px-5 py-3">
                 {% if c.is_paid %}

@@ -6,10 +6,10 @@
 <div class="space-y-6">
 
   <div class="flex gap-2 overflow-x-auto pb-2">
-    <a href="?status=pending" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'pending' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">En attente</a>
-    <a href="?status=approved" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'approved' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Approuvées</a>
-    <a href="?status=rejected" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'rejected' %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Rejetées</a>
-    <a href="?status=" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if not status %}bg-jayma-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Toutes</a>
+    <a href="?status=pending" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'pending' %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">En attente</a>
+    <a href="?status=approved" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'approved' %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Approuvées</a>
+    <a href="?status=rejected" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if status == 'rejected' %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Rejetées</a>
+    <a href="?status=" class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium {% if not status %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">Toutes</a>
   </div>
 
   {% for sr in shop_requests %}
@@ -27,7 +27,7 @@
             {% endif %}
           </div>
           <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
-            <div><span class="text-slate-500">Slug :</span> <strong class="text-jayma-600">{{ sr.desired_slug }}.jappesi.sn</strong></div>
+            <div><span class="text-slate-500">Slug :</span> <strong class="text-jappesi-600">{{ sr.desired_slug }}.jappesi.sn</strong></div>
             <div><span class="text-slate-500">Catégorie :</span> {{ sr.product_category|default:"—" }}</div>
             <div><span class="text-slate-500">Demandeur :</span> {{ sr.full_name }}</div>
             <div><span class="text-slate-500">Ville :</span> {{ sr.city }}</div>
@@ -57,8 +57,8 @@
     </div>
   {% empty %}
     <div class="card px-6 py-16 text-center">
-      <div class="mx-auto h-16 w-16 rounded-2xl bg-jayma-50 flex items-center justify-center">
-        <svg class="h-8 w-8 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4"/></svg>
+      <div class="mx-auto h-16 w-16 rounded-2xl bg-jappesi-50 flex items-center justify-center">
+        <svg class="h-8 w-8 text-jappesi-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4"/></svg>
       </div>
       <h3 class="mt-4 font-serif text-lg">Aucune demande</h3>
       <p class="text-sm text-slate-500">Tout est traité.</p>

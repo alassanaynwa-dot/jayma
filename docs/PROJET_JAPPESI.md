@@ -801,25 +801,32 @@ cd /opt/jappesi
 
 Recensé pendant l'audit. Aucun n'est bloquant pour la prod, mais à traiter au fil de l'eau.
 
+### ✅ Réglés (sprint 1)
+
+| # | Sujet | Commit |
+|---|-------|--------|
+| 1 | Préfixe couleurs Tailwind renommé `jayma-` → `jappesi-` (62 fichiers, 166 occ.) | sprint 1 |
+| 2 | `USE_R2` défaut aligné à `False` dans `production.py` (cohérent avec `base.py`) | `2c8a36e` |
+| 3 | Beat schedule défini via management command (cf #10) | `2c8a36e` |
+| 10 | Management command `setup_periodic_tasks` créée + appelée par `deploy.sh` | `2c8a36e` |
+| 17 | Endpoint `/healthz/` qui teste DB + cache Redis | `2c8a36e` |
+
+### À faire (sprints suivants)
+
 | # | Sujet | Fichier | Action proposée |
 |---|-------|---------|-----------------|
-| 1 | Préfixe couleurs Tailwind encore `jayma-` | `static/src/main.css` | Renommer en `jappesi-` + grep dans tous templates |
-| 2 | `USE_R2` défaut incohérent : `False` dans `base.py` mais `True` dans `production.py` | `config/settings/production.py:27` | Aligner sur `False` pour éviter activations accidentelles si var manquante |
-| 3 | `CELERY_BEAT_SCHEDULE` non défini en code | `config/celery.py` ou `base.py` | Soit définir en code, soit documenter explicitement la config admin DB |
 | 4 | OTP en BDD plutôt que Redis | `accounts/models.py` | Acceptable (audit trail), mais Redis serait plus performant. À évaluer plus tard |
 | 5 | Templates email en f-string Python | tasks Celery | Migrer vers templates Django (`render_to_string`) pour HTML pro |
 | 6 | Pas de rate limiting | partout | Ajouter `django-ratelimit` sur login, signup, webhooks (au moins) |
 | 7 | Webhooks paiement : pas de retry serveur | `payments/views.py` | Si HTTP 500 sur réception, certains providers retry — vérifier qu'on est idempotent (déjà ok) |
 | 8 | Status order `disputed` mais pas de vue | `orders/` | Soit retirer le status, soit créer le workflow |
 | 9 | Multi-currency hardcodé XOF | partout | Documenter la limite, prévoir abstraction si extension Afrique de l'Ouest |
-| 10 | Pas de management command pour `setup_cart_reminders` | `cart/management/` | Créer `manage.py setup_cart_reminders` qui crée la `PeriodicTask` |
 | 11 | Reversement commissions manuel | `commissions/` | API Wave Business pour automatisation |
 | 12 | Slug auto sur `Product` et `Category` (ok), mais pas sur `Shop` | `shops/models.py` | À vérifier : faut-il pareil ? Probablement non (admin saisit explicitement) |
 | 13 | Email transactionnel souvent en spam Gmail | infra | Long terme : Search Console + DMARC `p=quarantine` après 3 mois de bons envois |
 | 14 | Tests : couverture inconnue | partout | Ajouter `pytest --cov` au CI quand on aura un CI |
 | 15 | Pas de CI configuré (GitHub Actions, etc.) | racine | Ajouter `.github/workflows/test.yml` (lint + tests sur PR) |
 | 16 | `requirements.txt` sans pinning strict | `requirements.txt` | Migrer vers `pip-compile` ou `uv` lock pour reproductibilité |
-| 17 | Pas de healthcheck endpoint Django | manquant | Ajouter `/healthz/` qui répond OK si DB+Redis joignables |
 
 ---
 

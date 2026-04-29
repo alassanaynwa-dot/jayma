@@ -12,7 +12,7 @@
       {% if shop.logo %}
         <img src="{{ shop.logo.url }}" class="h-16 w-16 rounded-xl object-cover">
       {% else %}
-        <div class="h-16 w-16 rounded-xl bg-jayma-500 flex items-center justify-center text-white font-serif text-2xl">{{ shop.name|slice:":1"|upper }}</div>
+        <div class="h-16 w-16 rounded-xl bg-jappesi-500 flex items-center justify-center text-white font-serif text-2xl">{{ shop.name|slice:":1"|upper }}</div>
       {% endif %}
       <div>
         <div class="flex items-center gap-2 flex-wrap">
@@ -23,7 +23,7 @@
             <span class="inline-flex rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-600">Désactivée</span>
           {% endif %}
         </div>
-        <div class="mt-1 text-sm text-jayma-600 font-mono">{{ shop.slug }}.jappesi.sn</div>
+        <div class="mt-1 text-sm text-jappesi-600 font-mono">{{ shop.slug }}.jappesi.sn</div>
         <div class="mt-0.5 text-xs text-slate-500">{{ shop.city }} · Créée le {{ shop.created_at|date:"d/m/Y" }}</div>
       </div>
     </div>
@@ -47,7 +47,7 @@
     </div>
     <div class="card">
       <div class="text-xs uppercase text-slate-500">Commission du mois</div>
-      <div class="mt-1 font-serif text-xl font-medium text-jayma-600">{{ stats.commission_month }}</div>
+      <div class="mt-1 font-serif text-xl font-medium text-jappesi-600">{{ stats.commission_month }}</div>
       <div class="text-xs text-slate-500">XOF</div>
     </div>
     <div class="card">
@@ -117,7 +117,7 @@
       <div class="card p-0 overflow-hidden">
         <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100">
           <h2 class="font-serif text-lg font-medium text-ink-500">Dernières commandes</h2>
-          <a href="{% url 'admin_panel:orders' %}?shop={{ shop.slug }}" class="text-sm text-jayma-600 hover:underline">Tout voir ({{ stats.total_orders }}) →</a>
+          <a href="{% url 'admin_panel:orders' %}?shop={{ shop.slug }}" class="text-sm text-jappesi-600 hover:underline">Tout voir ({{ stats.total_orders }}) →</a>
         </div>
         {% if last_orders %}
           <ul class="divide-y divide-slate-100">

@@ -16,7 +16,7 @@
 
   {% if messages %}
     {% for message in messages %}
-      <div class="mt-4 rounded-lg bg-jayma-50 border border-jayma-200 px-4 py-3 text-sm text-jayma-800">
+      <div class="mt-4 rounded-lg bg-jappesi-50 border border-jappesi-200 px-4 py-3 text-sm text-jappesi-800">
         {{ message }}
       </div>
     {% endfor %}
@@ -46,7 +46,7 @@
         <div x-data="{% if field.name == 'desired_slug' %}slugPreview('{{ field.value|default_if_none:''|escapejs }}'){% else %}{}{% endif %}">
           <label for="{{ field.id_for_label }}" class="label">
             {{ field.label }}
-            {% if field.field.required %}<span class="text-jayma-500">*</span>{% endif %}
+            {% if field.field.required %}<span class="text-jappesi-500">*</span>{% endif %}
           </label>
           {% if field.name == "desired_slug" %}
             <input type="text"
@@ -60,7 +60,7 @@
                    required>
             <div class="mt-1.5 text-xs flex items-center gap-1.5">
               <span class="text-slate-500">Ta boutique sera sur</span>
-              <span class="font-mono font-medium text-jayma-600" x-text="preview || 'ton-choix'"></span><span class="font-mono text-slate-500">.jappesi.sn</span>
+              <span class="font-mono font-medium text-jappesi-600" x-text="preview || 'ton-choix'"></span><span class="font-mono text-slate-500">.jappesi.sn</span>
             </div>
           {% else %}
             {{ field }}

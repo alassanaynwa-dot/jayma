@@ -31,7 +31,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {% for c in couriers %}
         <a href="{% url 'delivery_dashboard:detail' c.pk %}" class="card hover:shadow-md transition flex items-start gap-4">
-          <div class="h-12 w-12 rounded-full bg-jayma-100 flex items-center justify-center text-jayma-700 font-serif text-lg shrink-0">
+          <div class="h-12 w-12 rounded-full bg-jappesi-100 flex items-center justify-center text-jappesi-700 font-serif text-lg shrink-0">
             {{ c.name|slice:":1"|upper }}
           </div>
           <div class="flex-1 min-w-0">
@@ -59,8 +59,8 @@
     </div>
   {% else %}
     <div class="card px-6 py-16 text-center">
-      <div class="mx-auto h-16 w-16 rounded-2xl bg-jayma-50 flex items-center justify-center">
-        <svg class="h-8 w-8 text-jayma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16l2-7 6 1-2 7H8z M5 7a2 2 0 012-2h3m4 0h3a2 2 0 012 2v2M9 3v2m6-2v2"/></svg>
+      <div class="mx-auto h-16 w-16 rounded-2xl bg-jappesi-50 flex items-center justify-center">
+        <svg class="h-8 w-8 text-jappesi-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16l2-7 6 1-2 7H8z M5 7a2 2 0 012-2h3m4 0h3a2 2 0 012 2v2M9 3v2m6-2v2"/></svg>
       </div>
       <h3 class="mt-4 font-serif text-lg text-ink-500">Aucun livreur pour l'instant</h3>
       <p class="mt-1 text-sm text-slate-500 max-w-sm mx-auto">Ajoute ton premier livreur pour pouvoir lui assigner des commandes et lui envoyer un lien portail.</p>

@@ -73,7 +73,7 @@
                     {% if img %}
                       <img src="{{ img.image.url }}" class="h-10 w-10 rounded-lg object-cover shrink-0">
                     {% else %}
-                      <div class="h-10 w-10 rounded-lg bg-jayma-100 text-jayma-700 flex items-center justify-center font-serif shrink-0">{{ p.name|slice:":1"|upper }}</div>
+                      <div class="h-10 w-10 rounded-lg bg-jappesi-100 text-jappesi-700 flex items-center justify-center font-serif shrink-0">{{ p.name|slice:":1"|upper }}</div>
                     {% endif %}
                   {% endwith %}
                   <div class="min-w-0">
@@ -83,7 +83,7 @@
                 </div>
               </td>
               <td class="px-5 py-3">
-                <a href="{% url 'admin_panel:shop_detail' p.shop.pk %}" class="text-sm text-jayma-600 hover:underline">{{ p.shop.name }}</a>
+                <a href="{% url 'admin_panel:shop_detail' p.shop.pk %}" class="text-sm text-jappesi-600 hover:underline">{{ p.shop.name }}</a>
               </td>
               <td class="px-5 py-3 text-sm text-slate-600">{{ p.category.name|default:"—" }}</td>
               <td class="px-5 py-3 text-right text-sm font-medium">{{ p.price }} <span class="text-xs text-slate-500">XOF</span></td>
