@@ -46,3 +46,18 @@ if env.bool("USE_R2", default=True):  # noqa: F405
 
 # Logging plus verbeux en prod (erreurs)
 LOGGING["root"]["level"] = "WARNING"  # noqa: F405
+
+# Sentry — monitoring erreurs prod (silencieux si SENTRY_DSN vide)
+SENTRY_DSN = env("SENTRY_DSN", default="")  # noqa: F405
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration(), CeleryIntegration()],
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+        environment="production",
+    )

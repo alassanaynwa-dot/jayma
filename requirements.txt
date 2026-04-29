@@ -35,3 +35,6 @@ africastalking>=1.2
 
 # Serveur prod
 gunicorn>=23.0
+
+# Monitoring erreurs prod
+sentry-sdk[django]>=2.18
