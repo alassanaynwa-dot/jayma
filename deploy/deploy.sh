@@ -19,6 +19,9 @@ $COMPOSE build web celery_worker celery_beat
 echo ">>> 3. Application des migrations"
 $COMPOSE run --rm web python manage.py migrate --noinput
 
+echo ">>> 3b. Sync des tâches périodiques Celery Beat"
+$COMPOSE run --rm web python manage.py setup_periodic_tasks
+
 echo ">>> 4. Build de Tailwind CSS (source -> static/css)"
 $COMPOSE run --rm web tailwindcss -i /app/static/src/main.css -o /app/static/css/main.css --minify
 

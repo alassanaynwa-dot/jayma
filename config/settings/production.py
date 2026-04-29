@@ -24,7 +24,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 SMS_BACKEND = "notifications.services.sms.AfricasTalkingSMSBackend"
 
 # Stockage fichiers : Cloudflare R2 (S3-compatible)
-if env.bool("USE_R2", default=True):  # noqa: F405
+if env.bool("USE_R2", default=False):  # noqa: F405
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3.S3Storage",

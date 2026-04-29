@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, views_health
 
 app_name = "core"
 
@@ -13,4 +13,7 @@ urlpatterns = [
     path("cgv/", views.legal_cgv, name="legal_cgv"),
     path("mentions-legales/", views.legal_mentions, name="legal_mentions"),
     path("confidentialite/", views.legal_confidentialite, name="legal_confidentialite"),
+
+    # Healthcheck pour uptime monitoring
+    path("healthz/", views_health.healthz, name="healthz"),
 ]
