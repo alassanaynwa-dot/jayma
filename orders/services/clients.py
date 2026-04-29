@@ -7,6 +7,7 @@ On agrège donc les Orders par client_phone pour obtenir une vue client.
 """
 from dataclasses import dataclass
 from typing import Iterable
+
 from django.db.models import Count, Max, Min, Sum
 
 from ..models import Order

@@ -10,10 +10,10 @@ from cart.services.cart import Cart
 from .forms import CouponForm
 from .models import Coupon
 from .services.application import (
-    clear_session_coupon, compute_cart_discount, set_session_coupon,
+    clear_session_coupon,
+    set_session_coupon,
     try_apply_coupon,
 )
-
 
 # =============== DASHBOARD ===============
 
@@ -21,7 +21,8 @@ from .services.application import (
 def coupon_list(request):
     shop = request.merchant_shop
     # Stats de conversion par coupon (jointure CouponUsage → Order → total)
-    from django.db.models import Sum, Count as CountAgg
+    from django.db.models import Count as CountAgg
+    from django.db.models import Sum
     coupons = shop.coupons.all().annotate(
         revenue_generated=Sum("usages__order__total_xof"),
         total_discount=Sum("usages__discount_xof"),

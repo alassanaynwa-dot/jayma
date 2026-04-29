@@ -4,7 +4,6 @@ Service checkout — transforme un panier session + formulaire en Order persist�
 Transactionnel : soit l'Order complète est créée avec toutes ses lignes
 et la Commission associée, soit rien ne bouge.
 """
-from decimal import Decimal
 from django.db import transaction
 
 from cart.services.cart import Cart
@@ -44,7 +43,8 @@ def create_order_from_cart(request, shop: Shop, form_data: dict) -> Order:
 
     # Coupon appliqué (stocké en session) — re-vérifié avec le phone client
     from coupons.services.application import (
-        clear_session_coupon, compute_cart_discount,
+        clear_session_coupon,
+        compute_cart_discount,
     )
     coupon_result = compute_cart_discount(
         request, shop, subtotal, client_phone=form_data["client_phone"],

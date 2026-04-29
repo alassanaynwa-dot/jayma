@@ -1,13 +1,13 @@
 """Vues client (favoris + alertes stock) — côté boutique publique."""
 from django.contrib import messages
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from django_ratelimit.decorators import ratelimit
 
 from accounts.views_client import client_required
 
 from .models import Favorite, Product, StockAlert
-
 
 # ============ FAVORIS ============
 
@@ -53,6 +53,8 @@ def favorites_list(request):
 
 # ============ ALERTE RETOUR EN STOCK ============
 
+@ratelimit(key="ip", rate="10/m", method="POST", block=True)
+@ratelimit(key="post:phone", rate="3/m", method="POST", block=True)
 @require_POST
 def register_stock_alert(request, product_id):
     """
@@ -77,8 +79,9 @@ def register_stock_alert(request, product_id):
         messages.error(request, "Numéro de téléphone requis.")
         return redirect("products_public:detail", slug=product.slug)
 
-    from accounts.models import phone_validator
     from django.core.exceptions import ValidationError
+
+    from accounts.models import phone_validator
     try:
         phone_validator(phone)
     except ValidationError:

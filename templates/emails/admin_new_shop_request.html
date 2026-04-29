@@ -1,0 +1,33 @@
+{% extends "emails/_layout.html" %}
+
+{% block title %}Nouvelle demande de boutique — Jappesi{% endblock %}
+
+{% block content %}
+<h2 style="margin:0 0 16px;font-family:'Playfair Display',Georgia,serif;font-size:22px;color:#3A2418;">Nouvelle demande de boutique</h2>
+
+<p style="margin:0 0 20px;">Une nouvelle demande vient d'arriver sur la plateforme. À traiter dans le panneau admin.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;border-collapse:collapse;background:#FAF1EB;border-radius:6px;">
+  <tr>
+    <td style="padding:16px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="6" border="0">
+        <tr><td style="font-size:13px;color:#7A5A48;width:140px;">Nom</td><td style="font-size:14px;color:#3A2418;font-weight:500;">{{ sr.full_name }}</td></tr>
+        <tr><td style="font-size:13px;color:#7A5A48;">Email</td><td style="font-size:14px;color:#3A2418;">{{ sr.email }}</td></tr>
+        <tr><td style="font-size:13px;color:#7A5A48;">Téléphone</td><td style="font-size:14px;color:#3A2418;">{{ sr.phone }}</td></tr>
+        <tr><td style="font-size:13px;color:#7A5A48;">Ville</td><td style="font-size:14px;color:#3A2418;">{{ sr.city }}</td></tr>
+        <tr><td style="font-size:13px;color:#7A5A48;">Boutique</td><td style="font-size:14px;color:#3A2418;font-weight:500;">{{ sr.shop_name }}</td></tr>
+        <tr><td style="font-size:13px;color:#7A5A48;">Slug demandé</td><td style="font-size:14px;color:#3A2418;font-family:monospace;">{{ sr.desired_slug }}.{{ root_domain }}</td></tr>
+        <tr><td style="font-size:13px;color:#7A5A48;">Catégorie</td><td style="font-size:14px;color:#3A2418;">{{ sr.product_category|default:"(non précisée)" }}</td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<p style="margin:0 0 24px;text-align:center;">
+  <a href="{{ admin_url }}" style="display:inline-block;background:#C45C2A;color:#ffffff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;">Valider ou rejeter →</a>
+</p>
+
+<p style="margin:0;font-size:13px;color:#7A5A48;">
+  Reçu le {{ sr.created_at|date:"d/m/Y à H:i" }}
+</p>
+{% endblock %}

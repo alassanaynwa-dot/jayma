@@ -5,6 +5,7 @@ En dev (creds absentes) → MockProvider qui simule succès immédiat,
 pour que le flow e2e soit testable sans comptes dev providers.
 """
 from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 

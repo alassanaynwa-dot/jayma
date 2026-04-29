@@ -6,6 +6,7 @@ Utilisation :
     send_sms("+221771234567", "Votre commande est confirmée.")
 """
 import logging
+
 from django.conf import settings
 from django.utils import timezone
 from django.utils.module_loading import import_string

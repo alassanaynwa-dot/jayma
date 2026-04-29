@@ -11,7 +11,6 @@ from accounts.decorators import merchant_required
 
 from .forms import ShopSettingsForm
 
-
 # ============ PUBLIC ============
 
 def shop_public_home(request):

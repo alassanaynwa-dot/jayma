@@ -2,6 +2,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django_ratelimit.decorators import ratelimit
 
 from .forms import ShopRequestForm
 from .tasks import notify_admin_of_new_request
@@ -12,8 +13,13 @@ def landing_home(request):
     return render(request, "core/landing.html")
 
 
+@ratelimit(key="ip", rate="5/h", method="POST", block=True)
 def shop_request(request):
-    """Formulaire de demande de création de boutique."""
+    """Formulaire de demande de création de boutique.
+
+    Rate-limit anti-spam : 5 demandes/heure par IP suffisent largement pour
+    un usage légitime (un commerçant ne soumet qu'une fois). Au-delà = bot.
+    """
     if request.method == "POST":
         form = ShopRequestForm(request.POST)
         if form.is_valid():

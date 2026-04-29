@@ -4,7 +4,8 @@ import secrets
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
+
+from core.services.emails import send_branded_email
 
 logger = logging.getLogger("jayma")
 User = get_user_model()
@@ -20,6 +21,7 @@ def reset_merchant_password(user) -> str:
     user.save()
 
     root = settings.JAYMA_ROOT_DOMAIN
+    dashboard_url = f"https://dashboard.{root}"
 
     # SMS
     try:
@@ -33,23 +35,18 @@ def reset_merchant_password(user) -> str:
         logger.exception("Échec SMS reset pour user %s", user.pk)
 
     # Email
-    try:
-        send_mail(
+    if user.email:
+        send_branded_email(
             subject="Ton mot de passe Jappesi a été réinitialisé",
-            message=(
-                f"Bonjour {user.first_name or user.username},\n\n"
-                f"L'équipe Jappesi a réinitialisé ton mot de passe.\n\n"
-                f"  Identifiant           : {user.username}\n"
-                f"  Nouveau mot de passe  : {new_pw}\n\n"
-                f"Connecte-toi sur https://dashboard.{root} et change-le immédiatement "
-                f"depuis Paramètres → Mot de passe.\n\n"
-                f"— L'équipe Jappesi"
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email] if user.email else [],
+            recipients=[user.email],
+            template_name="merchant_password_reset",
+            context={
+                "user": user,
+                "new_password": new_pw,
+                "dashboard_url": dashboard_url,
+                "recipient_label": user.email,
+            },
             fail_silently=True,
         )
-    except Exception:
-        logger.exception("Échec email reset pour user %s", user.pk)
 
     return new_pw

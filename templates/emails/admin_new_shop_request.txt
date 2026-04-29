@@ -1,0 +1,16 @@
+Bonjour,
+
+Une nouvelle demande de boutique vient d'arriver sur Jappesi.
+
+  Nom          : {{ sr.full_name }}
+  Email        : {{ sr.email }}
+  Téléphone    : {{ sr.phone }}
+  Ville        : {{ sr.city }}
+  Boutique     : {{ sr.shop_name }}
+  Slug demandé : {{ sr.desired_slug }}.{{ root_domain }}
+  Catégorie    : {{ sr.product_category|default:"(non précisée)" }}
+
+Valider ou rejeter dans l'admin :
+{{ admin_url }}
+
+— L'équipe Jappesi

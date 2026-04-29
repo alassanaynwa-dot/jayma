@@ -10,7 +10,9 @@ Transitions autorisées :
     disputed   → delivered | cancelled
 """
 from __future__ import annotations
+
 import logging
+
 from django.db import transaction
 from django.utils import timezone
 

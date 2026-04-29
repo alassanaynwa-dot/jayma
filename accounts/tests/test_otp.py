@@ -1,10 +1,11 @@
 """Tests de l'auth OTP client."""
-import pytest
 from datetime import timedelta
+
+import pytest
 from django.utils import timezone
 
 from accounts.models import OTPToken
-from accounts.services.otp import send_otp, verify_otp, MAX_ATTEMPTS, RATE_LIMIT_COUNT
+from accounts.services.otp import MAX_ATTEMPTS, RATE_LIMIT_COUNT, send_otp, verify_otp
 
 
 class TestSendOTP:
@@ -68,7 +69,7 @@ class TestVerifyOTP:
         assert result.ok is False
 
     def test_expired_code_refused(self, db):
-        token = OTPToken.objects.create(
+        OTPToken.objects.create(
             phone="+221770007777", code="1234",
             expires_at=timezone.now() - timedelta(minutes=1),
         )

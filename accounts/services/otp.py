@@ -12,12 +12,12 @@ Sécurité :
 - Code invalidé après usage (consumed_at)
 """
 from __future__ import annotations
+
 import logging
 import secrets
 from dataclasses import dataclass
 from datetime import timedelta
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.utils import timezone

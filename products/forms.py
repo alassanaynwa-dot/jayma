@@ -126,7 +126,6 @@ class _PackItemForm(forms.ModelForm):
 
 def build_pack_item_formset(shop):
     """Factory qui retourne un formset pré-configuré avec le queryset shop-scoped."""
-    from functools import partial
     return inlineformset_factory(
         Product, PackItem,
         form=_PackItemForm,

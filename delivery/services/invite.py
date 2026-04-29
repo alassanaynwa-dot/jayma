@@ -1,5 +1,6 @@
 """Envoi du lien portail par SMS au livreur."""
 import logging
+
 from django.conf import settings
 
 from ..models import Courier

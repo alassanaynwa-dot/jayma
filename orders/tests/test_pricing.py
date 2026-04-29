@@ -1,6 +1,7 @@
 """Tests du service pricing — calcul de commission."""
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from orders.services.pricing import compute_commission
 

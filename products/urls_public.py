@@ -1,4 +1,5 @@
 from django.urls import path
+
 from . import views, views_client, views_reviews
 
 app_name = "products_public"

@@ -3,10 +3,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
+from django_ratelimit.decorators import ratelimit
 
 from .decorators import merchant_required
 from .forms import LoginForm
-
 
 # ============ URLs des tenants (pour suggestions de redirection) ============
 
@@ -20,6 +20,8 @@ def _tenant_url(request, sub: str) -> str:
 
 # ============ Vues ============
 
+@ratelimit(key="ip", rate="10/m", method="POST", block=True)
+@ratelimit(key="post:username", rate="5/m", method="POST", block=True)
 def login_view(request):
     """
     Page de connexion — ses 3 incarnations :
@@ -108,7 +110,8 @@ def check_notifications(request):
     commandes depuis le dernier check. Appelé toutes les 15s par le
     dashboard pour afficher une toast quand une nouvelle commande arrive.
     """
-    from datetime import datetime, timezone as dt_tz
+    from datetime import datetime
+
     from orders.models import Order
 
     shop = request.merchant_shop

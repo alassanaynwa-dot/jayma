@@ -6,6 +6,7 @@ et stockée en snapshot sur l'Order (on ne recalcule jamais à partir du
 commission_rate du shop, qui pourrait changer entre-temps).
 """
 import secrets
+
 from django.db import models
 
 

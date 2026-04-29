@@ -1,9 +1,10 @@
 """Tâches Celery pour le flow de demande de boutique."""
 import logging
+
 from celery import shared_task
 from django.conf import settings
-from django.core.mail import send_mail
 
+from core.services.emails import send_branded_email
 from shops.models import Shop, ShopRequest
 
 logger = logging.getLogger("jayma")
@@ -20,28 +21,11 @@ def notify_admin_of_new_request(request_id: int) -> None:
 
     admin_url = f"https://admin.{settings.JAYMA_ROOT_DOMAIN}/shops/shoprequest/{sr.pk}/change/"
 
-    subject = f"[Jappesi] Nouvelle demande de boutique : {sr.shop_name}"
-    body = f"""Bonjour,
-
-Une nouvelle demande de boutique vient d'être reçue sur Jappesi.
-
-  Nom          : {sr.full_name}
-  Email        : {sr.email}
-  Téléphone    : {sr.phone}
-  Ville        : {sr.city}
-  Boutique     : {sr.shop_name}
-  Slug demandé : {sr.desired_slug}.{settings.JAYMA_ROOT_DOMAIN}
-  Catégorie    : {sr.product_category or "(non précisée)"}
-
-Valider ou rejeter dans l'admin :
-{admin_url}
-"""
-    send_mail(
-        subject=subject,
-        message=body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[settings.DEFAULT_FROM_EMAIL],  # envoie à l'adresse Jappesi par défaut
-        fail_silently=False,
+    send_branded_email(
+        subject=f"[Jappesi] Nouvelle demande de boutique : {sr.shop_name}",
+        recipients=[settings.DEFAULT_FROM_EMAIL],
+        template_name="admin_new_shop_request",
+        context={"sr": sr, "admin_url": admin_url, "recipient_label": "l'équipe Jappesi"},
     )
     logger.info("Notification admin envoyée pour demande %s.", request_id)
 
@@ -59,38 +43,22 @@ def send_merchant_welcome(shop_id: int, temp_password: str | None = None) -> Non
     public_url = shop.get_public_url()
     dashboard_url = f"https://dashboard.{settings.JAYMA_ROOT_DOMAIN}/"
 
-    password_block = ""
-    if temp_password:
-        password_block = (
-            f"\n  Mot de passe temporaire : {temp_password}\n"
-            f"  (change-le dès ta première connexion)\n"
-        )
-
-    # --- Email ---
-    subject = f"Bienvenue sur Jappesi — ta boutique {shop.name} est prête !"
-    body = f"""Bonjour {owner.first_name or owner.username},
-
-Bonne nouvelle : ta boutique {shop.name} est approuvée et en ligne !
-
-  Ton adresse client   : {public_url}
-  Ton dashboard        : {dashboard_url}
-  Tes identifiants     : {owner.username}{password_block}
-
-Tu peux maintenant ajouter tes produits, configurer ta boutique,
-et partager ton lien sur WhatsApp.
-
-À très vite,
-L'équipe Jappesi
-"""
-    send_mail(
-        subject=subject,
-        message=body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[owner.email],
+    send_branded_email(
+        subject=f"Bienvenue sur Jappesi — ta boutique {shop.name} est prête !",
+        recipients=[owner.email],
+        template_name="merchant_welcome",
+        context={
+            "shop": shop,
+            "owner": owner,
+            "public_url": public_url,
+            "dashboard_url": dashboard_url,
+            "temp_password": temp_password,
+            "recipient_label": owner.email,
+        },
         fail_silently=True,
     )
 
-    # --- SMS ---
+    # --- SMS (inchangé, on garde le format court existant) ---
     try:
         from notifications.services.sms import send_sms
         sms_text = (

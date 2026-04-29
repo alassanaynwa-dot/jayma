@@ -4,6 +4,7 @@ Settings communs à tous les environnements.
 Les variables sensibles sont lues depuis .env via django-environ.
 """
 from pathlib import Path
+
 import environ
 
 # ----------------------------------------------------------------

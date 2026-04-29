@@ -377,6 +377,7 @@ def admin_commission_mark_paid(request, pk):
 def admin_commissions_export_csv(request):
     """Export CSV streamé des commissions (filtrable par ?state=unpaid|paid|all)."""
     import csv
+
     from django.http import StreamingHttpResponse
 
     filter_state = request.GET.get("state", "unpaid")
@@ -718,6 +719,7 @@ def admin_categories(request):
     # Revenus + unités vendues par catégorie (via OrderItem → Product → Category)
     from django.db.models import F, IntegerField
     from django.db.models.expressions import ExpressionWrapper
+
     from orders.models import OrderItem
     revenue_by_cat = (
         OrderItem.objects
@@ -789,6 +791,7 @@ def admin_audit(request):
 @platform_admin_required
 def admin_users(request):
     from datetime import timedelta
+
     from django.contrib.auth import get_user_model
 
     User = get_user_model()
@@ -891,6 +894,7 @@ def admin_user_toggle_active(request, pk):
 def admin_user_send_reengage(request, pk):
     """Envoie un SMS de relance à un commerçant zombie."""
     from django.contrib.auth import get_user_model
+
     from notifications.services.sms import send_sms
 
     User = get_user_model()

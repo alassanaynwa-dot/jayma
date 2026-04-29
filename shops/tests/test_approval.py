@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from shops.models import Shop, ShopRequest
 from shops.services.approval import ApprovalError, approve_shop_request
 
-
 User = get_user_model()
 
 

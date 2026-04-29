@@ -1,6 +1,7 @@
 from django.urls import path
 
 from products.views_client import favorites_list
+
 from . import views_client
 
 app_name = "client"

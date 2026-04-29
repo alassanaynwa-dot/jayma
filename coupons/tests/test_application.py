@@ -1,7 +1,8 @@
 """Tests du service d'application des coupons."""
+from datetime import timedelta
+
 import pytest
 from django.utils import timezone
-from datetime import timedelta
 
 from coupons.models import Coupon, CouponUsage
 from coupons.services.application import try_apply_coupon

@@ -3,9 +3,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 
-from shops.models import Shop, ShopRequest
-from config.middleware import RESERVED_SUBDOMAINS
 from accounts.models import phone_validator
+from config.middleware import RESERVED_SUBDOMAINS
+from shops.models import Shop, ShopRequest
 
 
 class ShopRequestForm(forms.ModelForm):

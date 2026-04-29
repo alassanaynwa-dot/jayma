@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 from ..models import Coupon, CouponUsage
 
-
 COUPON_SESSION_KEY = "coupon_code"
 
 

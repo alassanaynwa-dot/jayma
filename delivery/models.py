@@ -4,7 +4,6 @@ Modèles livraison — zones tarifées + Courier rattaché à une boutique.
 from django.core.validators import RegexValidator
 from django.db import models
 
-
 phone_validator = RegexValidator(
     regex=r"^(\+221)?[37][0-9]{8}$",
     message="Numéro sénégalais invalide.",

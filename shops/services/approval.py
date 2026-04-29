@@ -4,8 +4,9 @@ Service d'approbation d'une demande de boutique.
 Règle : transaction atomique. Soit la demande est approuvée et le
 User+Shop sont créés, soit rien ne change.
 """
-import secrets
 import logging
+import secrets
+
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone

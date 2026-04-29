@@ -4,8 +4,7 @@ Vues PWA — manifest dynamique et service worker.
 Le manifest est généré selon le tenant (dashboard = "Jappesi Dashboard",
 boutique = nom de la boutique, portail livreur = "Jappesi Livreur").
 """
-from django.conf import settings
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.templatetags.static import static
 from django.views.decorators.cache import cache_control
 

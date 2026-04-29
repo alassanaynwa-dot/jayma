@@ -1,7 +1,8 @@
 """Vues paiements — init, return, webhooks providers."""
 import logging
+
 from django.contrib import messages
-from django.http import Http404, JsonResponse, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -100,6 +101,7 @@ def _log_webhook(provider: str, event_id: str, payload: dict, signature_ok: bool
 def webhook_wave(request):
     """Webhook Wave — https://docs.wave.com/business#webhooks."""
     import json
+
     from .services import wave
     try:
         raw = request.body
@@ -169,7 +171,6 @@ def webhook_cinetpay(request):
     if evt.processed:
         return HttpResponse("OK")
 
-    from . import cinetpay_check  # placeholder pour vérification par API si besoin
 
     # Signal de succès (à confirmer via API check en prod)
     if payload.get("cpm_result") == "00":

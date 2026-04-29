@@ -9,7 +9,6 @@ Usage:
 from django.core.management.base import BaseCommand
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
-
 # (name, task, every, period, description)
 PERIODIC_TASKS = [
     (

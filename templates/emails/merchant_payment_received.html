@@ -1,0 +1,31 @@
+{% extends "emails/_layout.html" %}
+
+{% block title %}Paiement reçu — commande {{ order.reference }}{% endblock %}
+
+{% block content %}
+<h2 style="margin:0 0 16px;font-family:'Playfair Display',Georgia,serif;font-size:22px;color:#3A2418;">💰 Paiement reçu</h2>
+
+<p style="margin:0 0 20px;">Bonjour {{ owner.first_name|default:owner.username }},</p>
+
+<p style="margin:0 0 24px;">La commande <strong>{{ order.reference }}</strong> sur <strong>{{ shop.name }}</strong> a été payée. Tu peux la traiter dès maintenant.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;border-collapse:collapse;background:#F0F8E8;border-radius:6px;border-left:4px solid #6BA84F;">
+  <tr>
+    <td style="padding:18px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="6" border="0">
+        <tr><td style="font-size:13px;color:#5A6A4A;width:140px;">Client</td><td style="font-size:14px;color:#3A2418;font-weight:500;">{{ order.client_name }}</td></tr>
+        <tr><td style="font-size:13px;color:#5A6A4A;">Téléphone</td><td style="font-size:14px;color:#3A2418;font-family:monospace;">{{ order.client_phone }}</td></tr>
+        <tr><td style="font-size:13px;color:#5A6A4A;">Méthode</td><td style="font-size:14px;color:#3A2418;">{{ order.get_payment_method_display }}</td></tr>
+        <tr><td style="font-size:13px;color:#5A6A4A;">Total payé</td><td style="font-size:18px;color:#3A2418;font-weight:600;">{{ order.total_xof }} XOF</td></tr>
+        <tr><td style="font-size:13px;color:#5A6A4A;">Tu reçois</td><td style="font-size:18px;color:#3A6A1A;font-weight:700;">{{ order.merchant_amount_xof }} XOF</td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<p style="margin:0 0 24px;text-align:center;">
+  <a href="{{ order_url }}" style="display:inline-block;background:#C45C2A;color:#ffffff;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;">Traiter la commande →</a>
+</p>
+
+<p style="margin:0;font-size:13px;color:#7A5A48;">Le montant à recevoir s'affiche après déduction de la commission Jappesi ({{ order.commission_rate }} %). Le reversement sera effectué selon ton calendrier habituel.</p>
+{% endblock %}

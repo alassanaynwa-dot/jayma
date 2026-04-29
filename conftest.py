@@ -2,11 +2,10 @@
 import pytest
 from django.contrib.auth import get_user_model
 
-from shops.models import Shop
-from products.models import Category, PackItem, Product
-from delivery.models import Courier, DeliveryZone
 from coupons.models import Coupon
-
+from delivery.models import Courier, DeliveryZone
+from products.models import Category, PackItem, Product
+from shops.models import Shop
 
 User = get_user_model()
 

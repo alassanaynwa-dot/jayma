@@ -13,7 +13,6 @@ Un panier est lié à UNE seule boutique : si l'utilisateur ajoute un
 produit d'une autre boutique, l'ancien panier est remplacé (règle
 métier à confirmer avec le client).
 """
-from django.conf import settings
 
 
 CART_SESSION_KEY = "cart"

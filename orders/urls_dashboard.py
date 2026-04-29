@@ -1,5 +1,7 @@
 from django.urls import path
+
 from delivery import views as delivery_views
+
 from . import views
 
 app_name = "orders_dashboard"

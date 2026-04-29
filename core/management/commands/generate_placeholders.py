@@ -14,15 +14,11 @@ Usage :
 """
 import io
 import random
-from pathlib import Path
 
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 
 from products.models import Product, ProductImage
-from shops.models import Shop
-
 
 # Palette couleurs (fond, fond-bas, accent) par slug de catégorie
 CATEGORY_PALETTE = {
@@ -111,7 +107,7 @@ def make_placeholder(name: str, category_slug: str | None, size: int = 800) -> b
     font_name = _font(int(size * 0.042))
     max_line_width = int(size * 0.82)
     lines = _wrap_text(name, font_name, draw, max_line_width)
-    total_h = sum(draw.textbbox((0, 0), l, font=font_name)[3] for l in lines) + 5 * (len(lines) - 1)
+    total_h = sum(draw.textbbox((0, 0), ln, font=font_name)[3] for ln in lines) + 5 * (len(lines) - 1)
     start_y = size - int(size * 0.13) - total_h
     for i, line in enumerate(lines):
         bbox = draw.textbbox((0, 0), line, font=font_name)

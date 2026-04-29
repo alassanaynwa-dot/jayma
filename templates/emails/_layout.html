@@ -1,0 +1,45 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Jappesi{% endblock %}</title>
+</head>
+<body style="margin:0;padding:0;background:#FEF5EF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#3A2418;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#FEF5EF;padding:32px 16px;">
+    <tr>
+      <td align="center">
+
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+
+          {# === En-tête avec logo + couleur Jappesi === #}
+          <tr>
+            <td style="background:#C45C2A;padding:24px 32px;text-align:center;">
+              <h1 style="margin:0;font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:600;color:#ffffff;letter-spacing:0.5px;">Jappesi</h1>
+              <p style="margin:4px 0 0;font-size:13px;color:#FCE6D5;">Vendez en ligne au Sénégal</p>
+            </td>
+          </tr>
+
+          {# === Contenu principal === #}
+          <tr>
+            <td style="padding:32px;font-size:15px;line-height:1.6;color:#3A2418;">
+              {% block content %}{% endblock %}
+            </td>
+          </tr>
+
+          {# === Pied de page === #}
+          <tr>
+            <td style="background:#FAF1EB;padding:20px 32px;text-align:center;font-size:12px;color:#7A5A48;">
+              Cet email a été envoyé par Jappesi à <strong>{{ recipient_label|default:"toi" }}</strong>.<br>
+              Pour toute question, écris à <a href="mailto:contact@{{ root_domain }}" style="color:#C45C2A;text-decoration:none;">contact@{{ root_domain }}</a>.<br>
+              <br>
+              <span style="color:#A88E7E;">© Jappesi — {{ root_domain }}</span>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

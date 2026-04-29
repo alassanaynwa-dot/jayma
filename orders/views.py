@@ -13,7 +13,6 @@ from .models import Order
 from .services.checkout import CheckoutError, create_order_from_cart
 from .services.workflow import TransitionError, transition_order
 
-
 # ======================== PUBLIC ========================
 
 def checkout(request):

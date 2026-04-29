@@ -8,7 +8,6 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
-
 # Numéro de téléphone sénégalais : +221 77 xxx xx xx ou 77xxxxxxx
 phone_validator = RegexValidator(
     regex=r"^(\+221)?[37][0-9]{8}$",

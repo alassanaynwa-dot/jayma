@@ -10,8 +10,7 @@ Flow :
 4. OM callback via notif_url → on vérifie le paiement via API check.
 """
 import logging
-import hmac
-import hashlib
+
 import requests
 from django.conf import settings
 

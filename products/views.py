@@ -8,11 +8,13 @@ from django.views.decorators.http import require_POST
 from accounts.decorators import merchant_required
 
 from .forms import (
-    CategoryForm, PackForm, ProductForm, ProductImageFormSet,
+    CategoryForm,
+    PackForm,
+    ProductForm,
+    ProductImageFormSet,
     build_pack_item_formset,
 )
 from .models import Category, Product
-
 
 # ======================== BOUTIQUE PUBLIQUE ========================
 

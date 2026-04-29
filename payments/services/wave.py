@@ -8,9 +8,10 @@ Flow :
 4. Le client paie via son app Wave → webhook POST sur nos endpoints.
 5. La signature du webhook est un HMAC-SHA256 du corps avec WAVE_WEBHOOK_SECRET.
 """
-import hmac
 import hashlib
+import hmac
 import logging
+
 import requests
 from django.conf import settings
 

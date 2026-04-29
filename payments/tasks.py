@@ -1,7 +1,10 @@
 """Tâches Celery liées aux paiements."""
 import logging
-from celery import shared_task
 
+from celery import shared_task
+from django.conf import settings
+
+from core.services.emails import send_branded_email
 from orders.models import Order
 
 logger = logging.getLogger("jayma")
@@ -17,30 +20,21 @@ def notify_merchant_payment_received(order_id: int) -> None:
 
     shop = order.shop
     owner = shop.owner
+    order_url = f"https://dashboard.{settings.JAYMA_ROOT_DOMAIN}/commandes/{order.reference}/"
 
-    # Email
-    from django.core.mail import send_mail
-    from django.conf import settings
-    try:
-        send_mail(
-            subject=f"💰 Nouveau paiement reçu — commande {order.reference}",
-            message=(
-                f"Bonjour {owner.first_name or owner.username},\n\n"
-                f"Bonne nouvelle : la commande {order.reference} sur {shop.name} a été payée.\n\n"
-                f"  Client     : {order.client_name} ({order.client_phone})\n"
-                f"  Méthode    : {order.get_payment_method_display()}\n"
-                f"  Montant    : {order.total_xof} XOF\n"
-                f"  À recevoir : {order.merchant_amount_xof} XOF (après commission Jappesi)\n\n"
-                f"Tu peux la traiter depuis ton dashboard :\n"
-                f"https://dashboard.{settings.JAYMA_ROOT_DOMAIN}/commandes/{order.reference}/\n\n"
-                f"— L'équipe Jappesi"
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[owner.email],
-            fail_silently=True,
-        )
-    except Exception:
-        logger.exception("Échec email merchant pour order %s", order.reference)
+    send_branded_email(
+        subject=f"💰 Nouveau paiement reçu — commande {order.reference}",
+        recipients=[owner.email],
+        template_name="merchant_payment_received",
+        context={
+            "order": order,
+            "shop": shop,
+            "owner": owner,
+            "order_url": order_url,
+            "recipient_label": owner.email,
+        },
+        fail_silently=True,
+    )
 
     # SMS
     try:

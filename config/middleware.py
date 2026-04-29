@@ -15,7 +15,6 @@ from django.core.cache import cache
 from django.http import Http404
 from django.shortcuts import render
 
-
 # Sous-domaines réservés qui ne correspondent pas à des boutiques
 RESERVED_SUBDOMAINS = {
     "www",

@@ -1,0 +1,13 @@
+Bonjour {{ owner.first_name|default:owner.username }},
+
+Bonne nouvelle : la commande {{ order.reference }} sur {{ shop.name }} a été payée.
+
+  Client       : {{ order.client_name }} ({{ order.client_phone }})
+  Méthode      : {{ order.get_payment_method_display }}
+  Montant payé : {{ order.total_xof }} XOF
+  Tu reçois    : {{ order.merchant_amount_xof }} XOF (après commission Jappesi)
+
+Traite-la dans ton dashboard :
+{{ order_url }}
+
+— L'équipe Jappesi

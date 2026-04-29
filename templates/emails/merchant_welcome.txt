@@ -1,0 +1,18 @@
+Bienvenue {{ owner.first_name|default:owner.username }} !
+
+Bonne nouvelle : ta boutique {{ shop.name }} est approuvée et en ligne sur Jappesi.
+
+  Adresse client   : {{ public_url }}
+  Ton dashboard    : {{ dashboard_url }}
+  Identifiant      : {{ owner.username }}{% if temp_password %}
+  Mot de passe     : {{ temp_password }}
+  ⚠️ Change-le dès ta première connexion.{% endif %}
+
+Tu peux maintenant :
+- Ajouter tes produits
+- Configurer tes zones de livraison
+- Partager ton lien sur WhatsApp
+
+Besoin d'aide ? Réponds à cet email.
+
+— L'équipe Jappesi

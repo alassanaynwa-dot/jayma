@@ -1,0 +1,25 @@
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+extend-exclude = [
+    ".venv",
+    "static_collected",
+    "static/css",
+    "media",
+    "*/migrations",
+    "node_modules",
+]
+
+[tool.ruff.lint]
+# Règles activées par défaut : E (pycodestyle errors), F (pyflakes), W (warnings)
+# On ajoute I (isort) pour ordonner les imports automatiquement.
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E501",  # line too long (on a déjà line-length=110, suffisant)
+    "E731",  # lambda assignment (parfois utile pour des helpers locaux)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/*" = ["F401", "F811"]  # imports inutilisés dans les tests OK (fixtures)
+"**/__init__.py" = ["F401"]      # imports re-exposés OK
+"conftest.py" = ["F401", "F811"]

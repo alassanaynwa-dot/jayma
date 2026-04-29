@@ -1,0 +1,23 @@
+{% extends "base/base.html" %}
+
+{% block title %}Trop de tentatives — Jappesi{% endblock %}
+
+{% block content %}
+<main class="min-h-screen flex items-center justify-center px-4">
+  <div class="max-w-md text-center space-y-6">
+    <div class="text-6xl">🛑</div>
+    <h1 class="text-3xl font-serif font-semibold text-jappesi-700">
+      Action bloquée
+    </h1>
+    <p class="text-gray-600">
+      Tu as effectué trop d'actions en peu de temps, ou tu n'as pas les
+      autorisations nécessaires pour cette page. Réessaie dans quelques minutes.
+    </p>
+    <div class="pt-4">
+      <a href="/" class="inline-block bg-jappesi-500 hover:bg-jappesi-600 text-white px-6 py-3 rounded-lg font-medium">
+        Retour à l'accueil
+      </a>
+    </div>
+  </div>
+</main>
+{% endblock %}

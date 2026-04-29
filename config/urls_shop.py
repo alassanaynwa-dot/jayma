@@ -1,13 +1,11 @@
 """URLs pour <slug>.jappesi.sn (boutique publique d'un commerçant)."""
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path
+from django.urls import include, path
 
 from core import views_pwa
 from delivery.views import compute_fee_partial
 from orders import views as orders_views
-
-from django.urls import include
 
 urlpatterns = [
     path("", include("shops.urls_public")),

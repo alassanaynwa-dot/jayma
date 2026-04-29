@@ -1,6 +1,7 @@
 """Calculs de stats pour le dashboard commerçant."""
 from datetime import timedelta
-from django.db.models import Count, Sum
+
+from django.db.models import Sum
 from django.utils import timezone
 
 from orders.models import Order

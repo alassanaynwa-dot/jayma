@@ -3,6 +3,7 @@ Génère les icônes PWA à partir d'une lettre + couleur, via Pillow.
 Produit : static/icons/icon-192.png, icon-512.png, icon-maskable-512.png, favicon.png
 """
 from pathlib import Path
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
 

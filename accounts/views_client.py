@@ -12,13 +12,13 @@ from django.contrib.auth import login, logout
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from django_ratelimit.decorators import ratelimit
 
 from orders.models import Order
 
 from .forms import ClientAddressForm, OTPVerifyForm, PhoneLoginForm
 from .models import ClientAddress
 from .services.otp import send_otp, verify_otp
-
 
 # Clé de session pour stocker le phone entre étape 1 et 2
 OTP_PHONE_SESSION_KEY = "client_otp_phone"
@@ -38,8 +38,14 @@ def client_required(view_func):
 
 # ============ Auth OTP ============
 
+@ratelimit(key="ip", rate="10/m", method="POST", block=True)
+@ratelimit(key="post:phone", rate="3/m", method="POST", block=True)
 def client_login(request):
-    """Étape 1 : le client entre son numéro."""
+    """Étape 1 : le client entre son numéro.
+
+    Rate-limit serré : un OTP coûte un SMS (~10 FCFA). Sans limite, un attaquant
+    peut épuiser le crédit AfricasTalking en quelques secondes.
+    """
     if not request.shop:
         raise Http404()
     if request.user.is_authenticated and request.user.is_client:
@@ -60,8 +66,14 @@ def client_login(request):
     return render(request, "client/login.html", {"shop": request.shop, "form": form})
 
 
+@ratelimit(key="ip", rate="20/m", method="POST", block=True)
+@ratelimit(key="post:code", rate="10/m", method="POST", block=True)
 def client_verify_otp(request):
-    """Étape 2 : le client tape le code reçu."""
+    """Étape 2 : le client tape le code reçu.
+
+    Limite plus permissive que client_login : pas de coût SMS. Mais on bloque
+    quand même les bots qui essaient toutes les combinaisons à 4 chiffres.
+    """
     if not request.shop:
         raise Http404()
     phone = request.session.get(OTP_PHONE_SESSION_KEY)

@@ -1,5 +1,6 @@
 """Décorateurs d'accès — vérifient le rôle après login."""
 from functools import wraps
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render

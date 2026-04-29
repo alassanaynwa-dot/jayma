@@ -1,4 +1,5 @@
 from django.urls import path
+
 from . import views_clients
 
 app_name = "clients_dashboard"

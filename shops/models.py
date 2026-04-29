@@ -8,7 +8,6 @@ from django.conf import settings
 from django.core.validators import RegexValidator
 from django.db import models
 
-
 # Slug de boutique : lettres minuscules, chiffres, tirets, 3-40 caractères
 slug_validator = RegexValidator(
     regex=r"^[a-z0-9]([a-z0-9-]{1,38}[a-z0-9])$",
