@@ -25,10 +25,13 @@ $COMPOSE run --rm web tailwindcss -i /app/static/src/main.css -o /app/static/css
 echo ">>> 5. Collecte des fichiers statiques (ignore src/ qui contient le source Tailwind)"
 $COMPOSE run --rm web python manage.py collectstatic --noinput --ignore=src
 
-echo ">>> 6. Restart des services (rolling)"
-$COMPOSE up -d --no-deps --remove-orphans web celery_worker celery_beat nginx
+echo ">>> 6. Restart des services applicatifs (rolling)"
+$COMPOSE up -d --no-deps --remove-orphans web celery_worker celery_beat
 
-echo ">>> 7. Vérification santé"
+echo ">>> 7. Restart nginx (refresh DNS du nouvel upstream web)"
+$COMPOSE restart nginx
+
+echo ">>> 8. Vérification santé"
 sleep 5
 $COMPOSE ps
 
