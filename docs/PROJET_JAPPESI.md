@@ -826,18 +826,28 @@ Bonus sprint 2 :
 - Page `templates/403.html` friendly pour le rate-limited
 - `make migrations --check` ajouté au CI pour détecter les modèles non migrés
 
-### À faire (sprint 3 ou plus tard)
+### ✅ Réglés (sprint 3)
 
-| # | Sujet | Fichier | Action proposée |
-|---|-------|---------|-----------------|
-| 4 | OTP en BDD plutôt que Redis | `accounts/models.py` | Acceptable (audit trail), mais Redis serait plus performant. À évaluer plus tard |
-| 7 | Webhooks paiement : pas de retry serveur | `payments/views.py` | Si HTTP 500 sur réception, certains providers retry — vérifier qu'on est idempotent (déjà ok) |
-| 8 | Status order `disputed` mais pas de vue | `orders/` | Soit retirer le status, soit créer le workflow |
-| 9 | Multi-currency hardcodé XOF | partout | Documenter la limite, prévoir abstraction si extension Afrique de l'Ouest |
-| 11 | Reversement commissions manuel | `commissions/` | API Wave Business pour automatisation |
-| 12 | Slug auto sur `Product` et `Category` (ok), mais pas sur `Shop` | `shops/models.py` | À vérifier : faut-il pareil ? Probablement non (admin saisit explicitement) |
-| 13 | Email transactionnel souvent en spam Gmail | infra | Long terme : Search Console + DMARC `p=quarantine` après 3 mois de bons envois |
-| 14 | Tests : couverture inconnue | partout | Ajouter `pytest --cov` au CI maintenant qu'il existe |
+| # | Sujet | Commit |
+|---|-------|--------|
+| 7 | Webhooks paiement : tests d'idempotence (4 tests, Wave + OM) — déjà idempotent en code, maintenant garanti par tests | sprint 3 |
+| 9 | Helper `format_xof()` + filtre Django `\|xof` pour formater les montants avec séparateur de milliers (`10 000 XOF`) | sprint 3 |
+| 14 | `pytest-cov` activé + `.coveragerc` + rapport coverage uploadé en artefact GitHub Actions | sprint 3 |
+
+### Décisions de non-action (sprint 3)
+
+| # | Sujet | Décision |
+|---|-------|----------|
+| 4 | OTP en BDD (vs Redis) | **OK comme ça**. La BDD donne audit trail + détection d'abus. Migrer en Redis n'apporterait que de la perf — pas un besoin à l'échelle Sénégal. À reconsidérer si les volumes explosent (>100k OTP/jour) |
+| 8 | Status order `disputed` | **Déjà fonctionnel** : transitions code (workflow.py), bouton UI (dashboard/orders/detail.html), badge visuel (_status_badge.html). Reste à améliorer plus tard : filtre dédié dans la liste, notification SMS au commerçant, mais c'est du produit pas de la dette |
+| 12 | Slug auto sur `Shop` | **Pas souhaitable**. L'admin valide explicitement chaque slug via `desired_slug` dans `ShopRequest`, et `approve_shop_request()` lève `ApprovalError` si collision. Auto-suffixer ferait perdre le contrôle marketing du nom de domaine |
+
+### À faire (long terme, pas actionnable maintenant)
+
+| # | Sujet | Pourquoi pas maintenant |
+|---|-------|-------------------------|
+| 11 | Reversement commissions automatique via Wave Business API | Nécessite KYC Wave validé d'abord (1-2 semaines). À faire quand Wave est branché en prod |
+| 13 | Email transactionnel souvent en spam Gmail | Réputation domaine se construit en 3-6 mois de bons envois. Déjà configuré : SPF, DKIM, DMARC. Action progressive : Search Console + DMARC `p=quarantine` après 3 mois |
 
 ---
 
