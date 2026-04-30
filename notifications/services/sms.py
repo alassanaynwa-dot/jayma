@@ -30,7 +30,12 @@ class ConsoleSMSBackend(BaseSMSBackend):
 
 
 class AfricasTalkingSMSBackend(BaseSMSBackend):
-    """Backend AfricasTalking — prod."""
+    """Backend AfricasTalking — prod et sandbox.
+
+    En sandbox, AT n'autorise PAS les Sender ID custom (JAPPESI, etc.) — il
+    faut laisser sender_id vide pour qu'AT utilise un numéro court par défaut.
+    En production, on passe le Sender ID validé par AT (~1 semaine de review).
+    """
 
     def __init__(self):
         import africastalking
@@ -39,7 +44,11 @@ class AfricasTalkingSMSBackend(BaseSMSBackend):
         self.sms = africastalking.SMS
 
     def send(self, to: str, message: str) -> dict:
-        return self.sms.send(message, [to], sender_id=settings.AT_SENDER_ID)
+        sender_id = getattr(settings, "AT_SENDER_ID", "") or ""
+        kwargs = {}
+        if sender_id.strip():
+            kwargs["sender_id"] = sender_id.strip()
+        return self.sms.send(message, [to], **kwargs)
 
 
 def _get_backend() -> BaseSMSBackend:
@@ -89,12 +98,58 @@ def send_sms(to: str, message: str) -> NotificationLog:
         return log
     try:
         response = _get_backend().send(to, message)
-        log.status = NotificationLog.Status.SENT
         log.provider_response = response
-        log.sent_at = timezone.now()
+        if _is_at_failure(response):
+            log.status = NotificationLog.Status.FAILED
+            log.error = _extract_at_error(response)
+            logger.warning("AT a refusé le SMS vers %s : %s", to, log.error)
+        else:
+            log.status = NotificationLog.Status.SENT
+            log.sent_at = timezone.now()
     except Exception as exc:
         log.status = NotificationLog.Status.FAILED
         log.error = str(exc)
         logger.exception("Échec envoi SMS vers %s", to)
     log.save()
     return log
+
+
+def _is_at_failure(response) -> bool:
+    """Détecte les réponses AT qui indiquent un échec malgré l'absence d'exception.
+
+    AT renvoie un payload comme {SMSMessageData: {Message: 'InvalidSenderId',
+    Recipients: []}} sans lever d'exception Python. Sans cette détection,
+    le NotificationLog serait marqué 'sent' à tort.
+    """
+    if not isinstance(response, dict):
+        return False
+    msg_data = response.get("SMSMessageData")
+    if not isinstance(msg_data, dict):
+        return False
+    recipients = msg_data.get("Recipients") or []
+    if not recipients:
+        # Recipients vide = aucun SMS envoyé
+        return True
+    # Recipients présent : on vérifie le statusCode de chacun
+    for r in recipients:
+        if not isinstance(r, dict):
+            continue
+        # Code 101 = Success ; 4xx / 5xx = échec
+        if r.get("statusCode", 0) >= 200:
+            return True
+    return False
+
+
+def _extract_at_error(response) -> str:
+    """Extrait un message d'erreur lisible de la réponse AT."""
+    if not isinstance(response, dict):
+        return "Réponse AT inattendue."
+    msg_data = response.get("SMSMessageData", {})
+    top_msg = msg_data.get("Message", "")
+    if top_msg and "Sent" not in top_msg:
+        return f"AT a refusé : {top_msg}"
+    recipients = msg_data.get("Recipients") or []
+    if not recipients:
+        return "AT a refusé : aucun destinataire accepté."
+    statuses = ", ".join(str(r.get("status", "?")) for r in recipients)
+    return f"AT a refusé : {statuses}"
