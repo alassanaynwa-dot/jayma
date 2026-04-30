@@ -1,0 +1,66 @@
+{% load cart_tags %}
+{# Bottom navigation mobile — 4 icônes persistantes, masquée en desktop (md+) #}
+{# Pattern e-commerce mobile standard : Accueil · Produits · Panier · Compte #}
+{% with current=request.resolver_match.url_name %}
+<nav class="fixed bottom-0 inset-x-0 z-30 md:hidden bg-white border-t border-slate-200 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
+  <div class="grid grid-cols-4 h-14">
+
+    {# Accueil #}
+    <a href="{% url 'shops_public:home' %}"
+       class="flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium {% if current == 'home' %}shop-accent{% else %}text-slate-500{% endif %}">
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{% if current == 'home' %}2.2{% else %}1.6{% endif %}">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.75 12 3l9 6.75V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1V9.75Z"/>
+      </svg>
+      <span>Accueil</span>
+    </a>
+
+    {# Produits #}
+    <a href="{% url 'products_public:list' %}"
+       class="flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium {% if current == 'list' or current == 'detail' %}shop-accent{% else %}text-slate-500{% endif %}">
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{% if current == 'list' or current == 'detail' %}2.2{% else %}1.6{% endif %}">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/>
+      </svg>
+      <span>Produits</span>
+    </a>
+
+    {# Panier (avec badge compteur) #}
+    {% cart_count as cart_n %}
+    <a href="{% url 'cart:view' %}"
+       class="relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium {% if current == 'view' %}shop-accent{% else %}text-slate-500{% endif %}">
+      <span class="relative">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{% if current == 'view' %}2.2{% else %}1.6{% endif %}">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+        </svg>
+        {% if cart_n > 0 %}
+          <span class="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] rounded-full shop-bg text-white text-[9px] font-bold flex items-center justify-center px-1">
+            {{ cart_n }}
+          </span>
+        {% endif %}
+      </span>
+      <span>Panier</span>
+    </a>
+
+    {# Compte #}
+    {% if request.user.is_authenticated and request.user.is_client %}
+      <a href="{% url 'client:home' %}"
+         class="flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium {% if current == 'home' and request.path|slice:':8' == '/compte/' %}shop-accent{% else %}text-slate-500{% endif %}">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7Z"/>
+        </svg>
+        <span>Mon compte</span>
+      </a>
+    {% else %}
+      <a href="{% url 'client:login' %}"
+         class="flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium {% if current == 'login' %}shop-accent{% else %}text-slate-500{% endif %}">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7Z"/>
+        </svg>
+        <span>Connexion</span>
+      </a>
+    {% endif %}
+
+  </div>
+</nav>
+{# Spacer pour éviter que la barre cache le contenu en bas #}
+<div class="h-14 md:hidden" aria-hidden="true"></div>
+{% endwith %}

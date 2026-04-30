@@ -24,11 +24,31 @@
   }
   .shop-btn:hover { filter: brightness(0.92); }
   .shop-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  {# Variantes douces de la couleur boutique pour avatars / pills / rings #}
+  .shop-ring-soft { --tw-ring-color: color-mix(in srgb, var(--shop-accent) 25%, transparent); }
+  .shop-text-soft { color: color-mix(in srgb, var(--shop-accent) 80%, #1F2937); }
+
+  {# Barre de progression top — feedback async pour les requêtes HTMX longues (3G) #}
+  #htmx-progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--shop-accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0; z-index: 50;
+    pointer-events: none;
+  }
+  #htmx-progress.loading { transform: scaleX(0.7); opacity: 1; }
+  #htmx-progress.done { transform: scaleX(1); opacity: 0; }
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="min-h-screen flex flex-col bg-white">
+
+  {# Indicateur de chargement HTMX global — visible pendant les fetch async #}
+  <div id="htmx-progress" aria-hidden="true"></div>
+
   {% include "shops/partials/header.html" %}
   <main class="flex-1">
     {% if messages %}
@@ -46,5 +66,25 @@
     {% block content %}{% endblock %}
   </main>
   {% include "shops/partials/footer.html" %}
+  {% include "shops/partials/bottom_nav.html" %}
 </div>
+
+<script>
+  // Active la barre de progression HTMX globalement (toute requête HTMX)
+  (function() {
+    const bar = document.getElementById('htmx-progress');
+    if (!bar) return;
+    let timer = null;
+    document.addEventListener('htmx:beforeRequest', () => {
+      bar.classList.remove('done');
+      bar.classList.add('loading');
+    });
+    document.addEventListener('htmx:afterRequest', () => {
+      bar.classList.remove('loading');
+      bar.classList.add('done');
+      clearTimeout(timer);
+      timer = setTimeout(() => bar.classList.remove('done'), 400);
+    });
+  })();
+</script>
 {% endblock %}

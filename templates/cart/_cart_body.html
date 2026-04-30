@@ -27,9 +27,12 @@
                     hx-target="#cart-body"
                     hx-swap="innerHTML"
                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    hx-confirm="Retirer « {{ item.name }} » du panier ?"
                     class="shrink-0">
-                <button type="submit" class="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600" title="Retirer">
-                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <button type="submit"
+                        aria-label="Retirer {{ item.name }} du panier"
+                        class="h-9 w-9 flex items-center justify-center rounded hover:bg-red-50 text-slate-400 hover:text-red-600 active:bg-red-100">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
               </form>
             </div>
