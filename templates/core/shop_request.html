@@ -22,7 +22,7 @@
     {% endfor %}
   {% endif %}
 
-  <form method="post" class="mt-8 space-y-5 card">
+  <form method="post" class="mt-8 space-y-5 card" x-data="shopUrlPreview('{{ form.shop_name.value|default_if_none:''|escapejs }}')">
     {% csrf_token %}
 
     {% if form.non_field_errors %}
@@ -43,32 +43,31 @@
       {% endif %}
 
       {% if field.name != "terms_accepted" %}
-        <div x-data="{% if field.name == 'desired_slug' %}slugPreview('{{ field.value|default_if_none:''|escapejs }}'){% else %}{}{% endif %}">
+        <div>
           <label for="{{ field.id_for_label }}" class="label">
             {{ field.label }}
             {% if field.field.required %}<span class="text-jappesi-500">*</span>{% endif %}
           </label>
-          {% if field.name == "desired_slug" %}
+          {% if field.name == "shop_name" %}
+            {# Champ contrôlé par Alpine pour la preview live #}
             <input type="text"
                    name="{{ field.name }}"
                    id="{{ field.id_for_label }}"
                    value="{{ field.value|default_if_none:'' }}"
                    placeholder="{{ field.field.widget.attrs.placeholder }}"
                    class="input"
-                   x-model="raw"
-                   x-on:input="slugify()"
+                   x-model="rawName"
+                   x-on:input="updatePreview()"
                    required>
             <div class="mt-1.5 text-xs flex items-center gap-1.5">
-              <span class="text-slate-500">Ta boutique sera sur</span>
-              <span class="font-mono font-medium text-jappesi-600" x-text="preview || 'ton-choix'"></span><span class="font-mono text-slate-500">.jappesi.sn</span>
+              <span class="text-slate-500">Adresse de ta boutique :</span>
+              <span class="font-mono font-medium text-jappesi-600" x-text="preview || 'ton-nom'"></span><span class="font-mono text-slate-500">.jappesi.sn</span>
             </div>
           {% else %}
             {{ field }}
           {% endif %}
-          {% if field.help_text and field.name != "desired_slug" %}
+          {% if field.help_text %}
             <p class="mt-1 text-xs text-slate-500">{{ field.help_text|safe }}</p>
-          {% elif field.name == "desired_slug" %}
-            <p class="mt-1 text-xs text-slate-500">Tape ce que tu veux — accents, espaces, majuscules autorisés. On normalise pour toi.</p>
           {% endif %}
           {% if field.errors %}
             <p class="mt-1 text-xs text-red-600">{{ field.errors.0 }}</p>
@@ -78,18 +77,18 @@
     {% endfor %}
 
     <script>
-      // Slugify côté client — même logique que Django slugify() pour le preview
-      function slugPreview(initial) {
+      // Slugify côté client — preview live de l'URL boutique selon le nom saisi
+      function shopUrlPreview(initialName) {
         return {
-          raw: initial,
+          rawName: initialName,
           preview: '',
-          init() { this.slugify(); },
-          slugify() {
-            let s = (this.raw || '').toString().toLowerCase().trim();
-            s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');  // accents
-            s = s.replace(/[^a-z0-9\s-]/g, '');                     // chars invalides
-            s = s.replace(/\s+/g, '-').replace(/-+/g, '-');         // espaces → -
-            s = s.replace(/^-+|-+$/g, '');                          // trim tirets
+          init() { this.updatePreview(); },
+          updatePreview() {
+            let s = (this.rawName || '').toString().toLowerCase().trim();
+            s = s.normalize('NFD').replace(/[̀-ͯ]/g, '');  // accents
+            s = s.replace(/[^a-z0-9\s-]/g, '');                      // chars invalides
+            s = s.replace(/\s+/g, '-').replace(/-+/g, '-');          // espaces → -
+            s = s.replace(/^-+|-+$/g, '');                           // trim tirets
             this.preview = s.slice(0, 40);
           },
         };

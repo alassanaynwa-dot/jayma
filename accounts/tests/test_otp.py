@@ -2,10 +2,19 @@
 from datetime import timedelta
 
 import pytest
+from django.core.cache import cache
 from django.utils import timezone
 
 from accounts.models import OTPToken
 from accounts.services.otp import MAX_ATTEMPTS, RATE_LIMIT_COUNT, send_otp, verify_otp
+
+
+@pytest.fixture(autouse=True)
+def _clear_cache():
+    """Garantit l'isolation des tests qui utilisent le rate-limit Redis."""
+    cache.clear()
+    yield
+    cache.clear()
 
 
 class TestSendOTP:

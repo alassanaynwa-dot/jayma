@@ -7,25 +7,17 @@ from accounts.models import phone_validator
 from config.middleware import RESERVED_SUBDOMAINS
 from shops.models import Shop, ShopRequest
 
+SLUG_MAX_LENGTH = 40
+SLUG_MIN_LENGTH = 3
+
 
 class ShopRequestForm(forms.ModelForm):
-    """Formulaire de demande de création d'une boutique."""
+    """Formulaire de demande de création d'une boutique.
 
-    # Override explicite : on accepte TOUT en entrée (accents, espaces, majuscules)
-    # et on normalise dans clean_desired_slug(). Ça évite que les validators
-    # stricts du SlugField du model bloquent avant notre normalisation.
-    desired_slug = forms.CharField(
-        max_length=80,
-        required=True,
-        label="Adresse en ligne",
-        widget=forms.TextInput(attrs={
-            "class": "input",
-            "placeholder": "Chez Awa, 62 rue du commerce…",
-            "id": "id_desired_slug",
-        }),
-    )
+    Le slug (adresse en ligne) est calculé automatiquement à partir du nom de
+    la boutique. Si le slug auto-généré est déjà pris, on suffixe -2, -3, etc.
+    """
 
-    # On rajoute une case à cocher pour l'acceptation des conditions
     terms_accepted = forms.BooleanField(
         required=True,
         label="J'accepte les conditions de Jappesi (commission 8%).",
@@ -33,9 +25,10 @@ class ShopRequestForm(forms.ModelForm):
 
     class Meta:
         model = ShopRequest
+        # `desired_slug` n'est PAS dans la liste : il est calculé en save()
         fields = [
             "full_name", "email", "phone", "city",
-            "shop_name", "desired_slug",
+            "shop_name",
             "product_category", "description",
         ]
         labels = {
@@ -44,12 +37,11 @@ class ShopRequestForm(forms.ModelForm):
             "phone": "Téléphone (Sénégal)",
             "city": "Ville",
             "shop_name": "Nom de ta boutique",
-            "desired_slug": "Adresse en ligne",
             "product_category": "Que vends-tu ?",
             "description": "Décris ta boutique (optionnel)",
         }
         help_texts = {
-            "desired_slug": "Tape ce que tu veux — accents, espaces, majuscules autorisés. On normalise automatiquement.",
+            "shop_name": "Le nom servira aussi d'adresse en ligne (ex : « Chez Awa » → chez-awa.jappesi.sn).",
             "phone": "Format : +221 77 123 45 67",
             "product_category": "Ex : vêtements, cosmétiques, électronique...",
         }
@@ -58,7 +50,7 @@ class ShopRequestForm(forms.ModelForm):
             "email":            forms.EmailInput(attrs={"class": "input", "placeholder": "awa@exemple.sn"}),
             "phone":            forms.TextInput(attrs={"class": "input", "placeholder": "+221 77 123 45 67"}),
             "city":             forms.TextInput(attrs={"class": "input", "placeholder": "Dakar"}),
-            "shop_name":        forms.TextInput(attrs={"class": "input", "placeholder": "Chez Awa"}),
+            "shop_name":        forms.TextInput(attrs={"class": "input", "placeholder": "Chez Awa", "id": "id_shop_name"}),
             "product_category": forms.TextInput(attrs={"class": "input", "placeholder": "Vêtements"}),
             "description":      forms.Textarea(attrs={"class": "input", "rows": 3, "placeholder": "Optionnel"}),
         }
@@ -68,47 +60,62 @@ class ShopRequestForm(forms.ModelForm):
         phone_validator(phone)
         return phone
 
-    def clean_desired_slug(self):
-        """
-        On accepte TOUT ce que le user tape (accents, espaces, majuscules,
-        chiffres) et on normalise automatiquement via slugify().
-        """
-        raw = (self.cleaned_data.get("desired_slug") or "").strip()
-        if not raw:
-            raise ValidationError("Choisis une adresse pour ta boutique.")
-
-        slug = slugify(raw)  # "62 rue du commerce" → "62-rue-du-commerce"
-        if not slug:
-            raise ValidationError(
-                "Impossible de normaliser cette adresse. Utilise des lettres ou des chiffres."
-            )
-        # Le slug doit faire au moins 3 caractères et max 40
-        if len(slug) < 3:
-            raise ValidationError("L'adresse doit faire au moins 3 caractères.")
-        if len(slug) > 40:
-            slug = slug[:40].rstrip("-")
-
-        if slug in RESERVED_SUBDOMAINS:
-            raise ValidationError(
-                f"L'adresse « {slug} » est réservée par Jappesi. Choisis-en une autre."
-            )
-
-        if Shop.objects.filter(slug=slug).exists():
-            raise ValidationError(
-                f"L'adresse « {slug} » est déjà prise. Choisis-en une autre."
-            )
-
-        if ShopRequest.objects.filter(
-            desired_slug=slug, status=ShopRequest.Status.PENDING
-        ).exists():
-            raise ValidationError(
-                f"Une demande pour « {slug} » est déjà en cours. Choisis-en une autre."
-            )
-
-        return slug
-
     def clean_shop_name(self):
+        """Valide le nom ET garantit qu'il produit un slug acceptable."""
         name = (self.cleaned_data.get("shop_name") or "").strip()
         if len(name) < 2:
             raise ValidationError("Le nom de boutique doit faire au moins 2 caractères.")
+
+        # Vérifie que le nom est slugifiable
+        slug = slugify(name)
+        if not slug or len(slug) < SLUG_MIN_LENGTH:
+            raise ValidationError(
+                f"Ce nom ne peut pas être transformé en adresse web. "
+                f"Utilise des lettres ou chiffres (au moins {SLUG_MIN_LENGTH} caractères significatifs)."
+            )
+
+        # Le slug auto ne doit pas être un sous-domaine réservé même tronqué
+        base = slug[:SLUG_MAX_LENGTH]
+        if base in RESERVED_SUBDOMAINS:
+            raise ValidationError(
+                f"« {name} » correspond à un sous-domaine réservé par Jappesi. "
+                f"Choisis un autre nom."
+            )
+
         return name
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.desired_slug = self._compute_unique_slug(instance.shop_name)
+        if commit:
+            instance.save()
+        return instance
+
+    @staticmethod
+    def _compute_unique_slug(shop_name: str) -> str:
+        """Calcule un slug unique à partir du nom de la boutique.
+
+        Si le slug de base est déjà pris (par une boutique active OU une
+        demande en attente), on suffixe -2, -3, etc.
+        """
+        base = slugify(shop_name)[:SLUG_MAX_LENGTH] or "boutique"
+        slug = base
+        i = 2
+        while _slug_is_taken(slug):
+            suffix = f"-{i}"
+            slug = f"{base[: SLUG_MAX_LENGTH - len(suffix)]}{suffix}"
+            i += 1
+            if i > 9999:  # safety net
+                raise ValidationError("Trop de tentatives pour générer un slug unique.")
+        return slug
+
+
+def _slug_is_taken(slug: str) -> bool:
+    """Indique si un slug est déjà pris par une Shop ou une demande en attente."""
+    if Shop.objects.filter(slug=slug).exists():
+        return True
+    if ShopRequest.objects.filter(
+        desired_slug=slug, status=ShopRequest.Status.PENDING
+    ).exists():
+        return True
+    return False

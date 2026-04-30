@@ -9,7 +9,6 @@ Si on supporte d'autres monnaies un jour (NGN, GHS, USD…), refactorer
 """
 from __future__ import annotations
 
-
 THOUSAND_SEP = " "  # espace régulière (compatible terminal, copy-paste, exports CSV)
 DECIMAL_SEP = ","
 
