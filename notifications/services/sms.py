@@ -53,8 +53,28 @@ def _get_backend() -> BaseSMSBackend:
 
 
 def send_sms(to: str, message: str) -> NotificationLog:
-    """Envoie un SMS et logue le résultat. Respecte le kill-switch PlatformSettings.sms_enabled."""
+    """Envoie un SMS et logue le résultat. Respecte le kill-switch PlatformSettings.sms_enabled.
+
+    Le numéro est normalisé en E.164 (+221XXXXXXXXX) avant tout envoi : c'est
+    indispensable pour AfricasTalking, qui ignore silencieusement les numéros
+    sans préfixe pays.
+    """
+    from accounts.models import normalize_phone_sn
     from core.models import PlatformSettings
+
+    # Garde-fou : normalisation E.164 obligatoire avant l'envoi
+    try:
+        to = normalize_phone_sn(to)
+    except Exception as exc:
+        log = NotificationLog.objects.create(
+            channel=NotificationLog.Channel.SMS,
+            recipient=str(to or ""),
+            body=message,
+            status=NotificationLog.Status.FAILED,
+            error=f"Numéro invalide (non normalisable) : {exc}",
+        )
+        logger.warning("[SMS REJECTED] numéro invalide : %s", to)
+        return log
 
     log = NotificationLog.objects.create(
         channel=NotificationLog.Channel.SMS,

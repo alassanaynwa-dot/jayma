@@ -4,7 +4,10 @@ Modèles accounts — utilisateur unique pour tous les rôles (client, commerça
 Un seul modèle User permet à un même compte d'être client chez plusieurs
 boutiques ET commerçant sur la sienne.
 """
+import re
+
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -13,6 +16,35 @@ phone_validator = RegexValidator(
     regex=r"^(\+221)?[37][0-9]{8}$",
     message="Numéro de téléphone sénégalais invalide.",
 )
+
+
+def normalize_phone_sn(raw: str | None) -> str:
+    """Normalise un numéro sénégalais au format E.164 (+221XXXXXXXXX).
+
+    Indispensable avant tout envoi SMS via AfricasTalking : l'API exige
+    le préfixe +221, sinon le SMS est silencieusement ignoré.
+
+    Accepte les formats courants :
+      "+221 77 000 12 34"  → "+221770001234"
+      "221770001234"        → "+221770001234"
+      "770001234"           → "+221770001234"
+      "+221770001234"       → "+221770001234"
+
+    Lève ValidationError si le numéro reste invalide après nettoyage.
+    """
+    if not raw:
+        raise ValidationError("Numéro de téléphone manquant.")
+    cleaned = re.sub(r"[\s\-().]", "", str(raw))
+    if cleaned.startswith("+221"):
+        cleaned = cleaned[4:]
+    elif cleaned.startswith("221"):
+        cleaned = cleaned[3:]
+    if not re.match(r"^[37]\d{8}$", cleaned):
+        raise ValidationError(
+            "Numéro de téléphone sénégalais invalide. "
+            "Format attendu : +221 77 XXX XX XX (ou 77XXXXXXX)."
+        )
+    return f"+221{cleaned}"
 
 
 class User(AbstractUser):

@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth import authenticate
 
-from .models import ClientAddress, phone_validator
+from .models import ClientAddress, normalize_phone_sn
 
 
 class LoginForm(forms.Form):
@@ -72,9 +72,7 @@ class PhoneLoginForm(forms.Form):
     )
 
     def clean_phone(self):
-        phone = (self.cleaned_data.get("phone") or "").replace(" ", "")
-        phone_validator(phone)
-        return phone
+        return normalize_phone_sn(self.cleaned_data.get("phone"))
 
 
 class OTPVerifyForm(forms.Form):

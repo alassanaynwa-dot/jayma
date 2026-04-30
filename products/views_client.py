@@ -81,9 +81,9 @@ def register_stock_alert(request, product_id):
 
     from django.core.exceptions import ValidationError
 
-    from accounts.models import phone_validator
+    from accounts.models import normalize_phone_sn
     try:
-        phone_validator(phone)
+        phone = normalize_phone_sn(phone)
     except ValidationError:
         if request.headers.get("HX-Request"):
             return render(request, "products/_stock_alert_btn.html", {

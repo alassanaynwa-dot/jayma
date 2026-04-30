@@ -3,7 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 
-from accounts.models import phone_validator
+from accounts.models import normalize_phone_sn
 from config.middleware import RESERVED_SUBDOMAINS
 from shops.models import Shop, ShopRequest
 
@@ -56,9 +56,7 @@ class ShopRequestForm(forms.ModelForm):
         }
 
     def clean_phone(self):
-        phone = (self.cleaned_data.get("phone") or "").replace(" ", "")
-        phone_validator(phone)
-        return phone
+        return normalize_phone_sn(self.cleaned_data.get("phone"))
 
     def clean_shop_name(self):
         """Valide le nom ET garantit qu'il produit un slug acceptable."""

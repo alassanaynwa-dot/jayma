@@ -1,7 +1,7 @@
 """Formulaire checkout client."""
 from django import forms
 
-from accounts.models import phone_validator
+from accounts.models import normalize_phone_sn
 
 from .models import Order
 
@@ -77,6 +77,4 @@ class CheckoutForm(forms.Form):
     )
 
     def clean_client_phone(self):
-        phone = (self.cleaned_data.get("client_phone") or "").replace(" ", "")
-        phone_validator(phone)
-        return phone
+        return normalize_phone_sn(self.cleaned_data.get("client_phone"))
