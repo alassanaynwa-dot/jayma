@@ -119,21 +119,32 @@
       {% endif %}
 
       {% if product.is_available %}
-        <form class="mt-8 flex flex-col sm:flex-row gap-3"
+        {# Mobile : barre fixée en bas de l'écran (CTA toujours visible).        Desktop (sm+) : retour à un layout inline classique sous la fiche produit. #}
+        <form class="mt-8 fixed bottom-0 inset-x-0 z-30 sm:relative sm:bottom-auto bg-white border-t border-slate-200 sm:border-0 sm:bg-transparent px-4 py-3 sm:p-0 flex items-center gap-3 shadow-lg sm:shadow-none pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-0"
               hx-post="{% url 'cart:add' product.id %}"
               hx-swap="none"
               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
               hx-on::after-request="if(event.detail.successful) { window.location = '{% url 'cart:view' %}' }">
-          <div class="flex items-center rounded-lg border border-slate-300 bg-white">
-            <button type="button" class="px-3 py-2 text-slate-500 hover:text-ink-500" onclick="const i=this.nextElementSibling; i.value=Math.max(1, parseInt(i.value)-1)">−</button>
-            <input type="number" name="quantity" value="1" min="1" {% if product.track_stock %}max="{{ product.stock }}"{% endif %} class="w-14 text-center border-0 focus:ring-0 text-sm font-medium">
-            <button type="button" class="px-3 py-2 text-slate-500 hover:text-ink-500" onclick="const i=this.previousElementSibling; i.value=parseInt(i.value)+1">+</button>
+          <div class="flex items-center rounded-lg border border-slate-300 bg-white shrink-0">
+            <button type="button"
+                    aria-label="Diminuer la quantité"
+                    class="h-11 w-11 flex items-center justify-center text-xl text-slate-600 hover:text-ink-500 active:bg-slate-50"
+                    onclick="const i=this.nextElementSibling; i.value=Math.max(1, parseInt(i.value)-1)">−</button>
+            <input type="number" name="quantity" value="1" min="1" {% if product.track_stock %}max="{{ product.stock }}"{% endif %}
+                   inputmode="numeric"
+                   class="w-12 h-11 text-center border-0 focus:ring-0 text-base font-medium">
+            <button type="button"
+                    aria-label="Augmenter la quantité"
+                    class="h-11 w-11 flex items-center justify-center text-xl text-slate-600 hover:text-ink-500 active:bg-slate-50"
+                    onclick="const i=this.previousElementSibling; i.value=parseInt(i.value)+1">+</button>
           </div>
-          <button type="submit" class="shop-btn flex-1">
+          <button type="submit" class="shop-btn flex-1 h-11">
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4"/></svg>
             Ajouter au panier
           </button>
         </form>
+        {# Spacer pour éviter que la barre fixe mobile cache le contenu en bas (avis, etc.) #}
+        <div class="h-20 sm:hidden" aria-hidden="true"></div>
       {% else %}
         <button disabled class="shop-btn mt-8 w-full">Produit indisponible</button>
       {% endif %}

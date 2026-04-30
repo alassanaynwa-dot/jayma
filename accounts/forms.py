@@ -111,7 +111,20 @@ class ClientAddressForm(forms.ModelForm):
             "is_default": "Adresse par défaut",
         }
         widgets = {
-            "label":   forms.TextInput(attrs={"class": "input", "placeholder": "Maison, Bureau…"}),
-            "address": forms.Textarea(attrs={"class": "input", "rows": 2}),
-            "city":    forms.TextInput(attrs={"class": "input"}),
+            "label":   forms.TextInput(attrs={
+                "class": "input",
+                "placeholder": "Maison, Bureau…",
+                "autocapitalize": "words",
+            }),
+            "address": forms.Textarea(attrs={
+                "class": "input",
+                "rows": 2,
+                "autocomplete": "street-address",
+                "autocapitalize": "sentences",
+            }),
+            "city":    forms.TextInput(attrs={
+                "class": "input",
+                "autocomplete": "address-level2",
+                "autocapitalize": "words",
+            }),
         }

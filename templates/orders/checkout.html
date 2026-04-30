@@ -15,7 +15,7 @@
     </div>
   {% endif %}
 
-  <form method="post" class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <form id="checkoutForm" method="post" class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
     {% csrf_token %}
 
     <div class="lg:col-span-2 space-y-5">
@@ -126,9 +126,22 @@
         <span class="font-medium text-ink-500">Total estimé</span>
         <span class="font-serif text-2xl font-medium text-ink-500">{{ total_estimate }} <span class="text-sm font-sans text-slate-500">XOF</span></span>
       </div>
-      <button type="submit" class="shop-btn w-full">Passer ma commande</button>
+      <button type="submit" class="shop-btn w-full hidden lg:flex">Passer ma commande</button>
       <a href="{% url 'cart:view' %}" class="block text-center text-sm text-slate-500 hover:text-ink-500">← Retour au panier</a>
     </aside>
   </form>
+
+  {# Barre sticky mobile : total + CTA submit (toujours visible pendant le scroll) #}
+  <div class="fixed bottom-0 inset-x-0 z-30 lg:hidden bg-white border-t border-slate-200 shadow-lg px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-3">
+    <div class="flex-1 min-w-0">
+      <div class="text-xs text-slate-500">Total estimé</div>
+      <div class="font-serif text-xl font-medium text-ink-500 truncate">
+        {{ total_estimate }} <span class="text-xs font-sans text-slate-500">XOF</span>
+      </div>
+    </div>
+    <button type="submit" form="checkoutForm" class="shop-btn h-11 px-5 shrink-0">Commander</button>
+  </div>
+  {# Spacer pour éviter que la barre fixe cache le contenu en bas du form sur mobile #}
+  <div class="h-20 lg:hidden" aria-hidden="true"></div>
 </section>
 {% endblock %}
