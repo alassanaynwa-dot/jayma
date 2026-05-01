@@ -77,18 +77,29 @@
 {% endif %}
 
 {# ============ CATÉGORIES ============ #}
+{# On n'affiche que les univers (racines) qui ont au moins 1 produit.        Compteur étendu : produits du parent + de ses sous-catégories. #}
 {% if categories %}
-<section class="max-w-6xl mx-auto px-4 py-12 sm:py-16 border-t border-slate-100">
-  <h2 class="font-serif text-2xl sm:text-3xl font-medium text-ink-500 mb-6">Explorer par catégorie</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+<section class="max-w-6xl mx-auto px-4 py-10 sm:py-14 border-t border-slate-100">
+  <div class="flex items-baseline justify-between mb-6">
+    <h2 class="font-serif text-2xl sm:text-3xl font-medium text-ink-500">Nos catégories</h2>
+    <a href="{% url 'products_public:list' %}" class="text-sm shop-accent hover:underline">Voir tout →</a>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
     {% for cat in categories %}
-      <a href="{% url 'products_public:list' %}?cat={{ cat.slug }}" class="group relative aspect-[4/3] rounded-xl shop-bg-soft overflow-hidden hover:shadow-md transition">
-        <div class="absolute inset-0 flex items-center justify-center">
-          <div class="font-serif text-5xl shop-accent opacity-30 group-hover:opacity-50 transition">{{ cat.name|slice:":1"|upper }}</div>
-        </div>
-        <div class="absolute bottom-0 inset-x-0 p-3">
-          <div class="font-medium text-ink-500">{{ cat.name }}</div>
-          <div class="text-xs text-slate-500">{{ cat.products_count }} produit{{ cat.products_count|pluralize }}</div>
+      <a href="{% url 'products_public:list' %}?cat={{ cat.slug }}"
+         class="group flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-2xl shop-bg-soft hover:shadow-md transition relative overflow-hidden">
+        {# Emoji ou fallback initiale stylisée #}
+        {% if cat.emoji %}
+          <div class="text-4xl sm:text-5xl mb-2 transition group-hover:scale-110">{{ cat.emoji }}</div>
+        {% else %}
+          <div class="h-12 w-12 sm:h-14 sm:w-14 mb-2 rounded-full bg-white flex items-center justify-center font-serif text-2xl shop-accent transition group-hover:scale-110">
+            {{ cat.name|slice:":1"|upper }}
+          </div>
+        {% endif %}
+        <div class="font-medium text-sm text-ink-500 line-clamp-2 leading-tight">{{ cat.name }}</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">
+          {{ cat.products_count }} produit{{ cat.products_count|pluralize }}
         </div>
       </a>
     {% endfor %}

@@ -2,7 +2,6 @@
 from django.contrib import messages
 from django.core.cache import cache
 from django.db import models
-from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -20,7 +19,21 @@ def shop_public_home(request):
     shop = request.shop
     featured = shop.products.filter(is_active=True, is_featured=True).prefetch_related("images")[:8]
     latest = shop.products.filter(is_active=True).prefetch_related("images")[:8]
-    categories = shop.categories.filter(is_active=True).annotate(products_count=Count("products"))
+
+    # Catégories : on n'affiche QUE les univers (racines) avec un compteur
+    # qui inclut les produits du parent + de ses sous-catégories. On masque
+    # les univers vides (0 produit) pour ne pas encombrer la home.
+    roots = list(
+        shop.categories.filter(parent__isnull=True, is_active=True)
+        .order_by("position", "name")
+        .prefetch_related("children")
+    )
+    for root in roots:
+        cat_ids = [root.pk] + [c.pk for c in root.children.all() if c.is_active]
+        root.products_count = shop.products.filter(
+            category_id__in=cat_ids, is_active=True,
+        ).count()
+    categories = [r for r in roots if r.products_count > 0]
 
     # Bannière promo : premier coupon actif + dans les dates + quota non atteint
     now = timezone.now()
