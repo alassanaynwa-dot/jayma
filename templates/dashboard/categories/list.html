@@ -4,13 +4,34 @@
 
 {% block content %}
 <div class="space-y-6">
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between gap-2 flex-wrap">
     <p class="text-slate-600 text-sm">Organise tes produits par catégories.</p>
-    <a href="{% url 'products_dashboard:category_create' %}" class="btn-primary">
-      <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      Nouvelle catégorie
-    </a>
+    <div class="flex items-center gap-2">
+      <a href="{% url 'products_dashboard:category_wizard' %}" class="btn-secondary">
+        <span class="text-base">✨</span> Pré-remplir
+      </a>
+      <a href="{% url 'products_dashboard:category_create' %}" class="btn-primary">
+        <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Nouvelle catégorie
+      </a>
+    </div>
   </div>
+
+  {# Bandeau d'invitation au wizard quand la boutique est neuve #}
+  {% if show_wizard_promo %}
+    <div class="rounded-xl border border-jappesi-200 bg-jappesi-50/50 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div class="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-2xl shrink-0 border border-jappesi-100">✨</div>
+      <div class="flex-1">
+        <h3 class="font-serif text-lg text-ink-500">Démarre vite avec les bons rayons</h3>
+        <p class="text-sm text-slate-600 mt-0.5">
+          Choisis tes univers (mode, beauté, alimentation…) et on remplit tes catégories en 1 clic.
+        </p>
+      </div>
+      <a href="{% url 'products_dashboard:category_wizard' %}" class="btn-primary shrink-0">
+        Pré-remplir mes catégories →
+      </a>
+    </div>
+  {% endif %}
 
   <div class="card p-0 overflow-hidden">
     {% if categories %}

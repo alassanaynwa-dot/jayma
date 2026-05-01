@@ -1,0 +1,93 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Pré-remplir mes catégories — Jappesi{% endblock %}
+{% block header_title %}Pré-remplir mes catégories{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-4xl"
+     x-data="{ selected: [] }">
+
+  <div class="card">
+    <div class="flex items-start gap-4">
+      <div class="h-12 w-12 rounded-xl bg-jappesi-50 flex items-center justify-center text-2xl shrink-0">✨</div>
+      <div>
+        <h2 class="font-serif text-xl font-medium text-ink-500">Démarre vite avec les bons rayons</h2>
+        <p class="mt-1 text-sm text-slate-600">
+          Sélectionne entre 1 et 5 univers — on remplit ta boutique avec les sous-catégories les plus courantes
+          au Sénégal. Tu pourras ensuite renommer, supprimer ou ajouter ce que tu veux.
+        </p>
+        {% if existing_count %}
+          <p class="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2 inline-block">
+            ⓘ Ta boutique a déjà <strong>{{ existing_count }}</strong> catégorie{{ existing_count|pluralize }}.
+            On ajoutera seulement les nouvelles (les doublons sont ignorés).
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    {# Grille des univers — 1 col mobile, 2 cols sm+, 3 cols lg+ #}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {% for tpl in templates %}
+        <label class="relative flex flex-col gap-2 rounded-xl border-2 p-4 cursor-pointer transition select-none"
+               :class="selected.includes('{{ tpl.key }}') ? 'border-jappesi-500 bg-jappesi-50/40' : 'border-slate-200 hover:border-slate-300 bg-white'">
+          <input type="checkbox" name="universe" value="{{ tpl.key }}"
+                 class="sr-only"
+                 x-model="selected"
+                 :disabled="!selected.includes('{{ tpl.key }}') && selected.length >= 5">
+          <div class="flex items-start gap-3">
+            <div class="text-3xl leading-none shrink-0">{{ tpl.emoji }}</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-ink-500">{{ tpl.label }}</div>
+              <div class="text-xs text-slate-500 mt-0.5 line-clamp-2">{{ tpl.description }}</div>
+              <div class="mt-2 text-[11px] uppercase tracking-wide font-semibold text-slate-400">
+                {{ tpl.subcategories|length }} sous-catégorie{{ tpl.subcategories|length|pluralize }}
+              </div>
+            </div>
+            <div class="absolute top-3 right-3 h-5 w-5 rounded-full border-2 transition flex items-center justify-center"
+                 :class="selected.includes('{{ tpl.key }}') ? 'border-jappesi-500 bg-jappesi-500' : 'border-slate-300 bg-white'">
+              <svg x-show="selected.includes('{{ tpl.key }}')" class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+          </div>
+
+          {# Liste détaillée des sous-cat (toggle au clic sur l'œil) #}
+          <details class="mt-1">
+            <summary class="text-xs text-slate-500 cursor-pointer hover:text-jappesi-600 select-none">
+              Voir les sous-catégories
+            </summary>
+            <ul class="mt-2 pl-1 space-y-0.5 text-xs text-slate-600">
+              {% for sub in tpl.subcategories %}
+                <li class="flex items-center gap-1.5">
+                  <span class="h-1 w-1 rounded-full bg-slate-300"></span>{{ sub }}
+                </li>
+              {% endfor %}
+            </ul>
+          </details>
+        </label>
+      {% endfor %}
+    </div>
+
+    {# Barre récap + actions #}
+    <div class="sticky bottom-0 bg-white border-t border-slate-200 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <div class="text-sm">
+        <span class="font-semibold text-ink-500" x-text="selected.length"></span>
+        <span class="text-slate-500" x-text="selected.length === 1 ? 'univers sélectionné' : 'univers sélectionnés'"></span>
+        <span class="text-slate-400 text-xs hidden sm:inline" x-show="selected.length > 0">· max 5</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'products_dashboard:category_list' %}" class="btn-secondary">Annuler</a>
+        <button type="submit" class="btn-primary"
+                :disabled="selected.length === 0"
+                :class="selected.length === 0 ? 'opacity-50 cursor-not-allowed' : ''">
+          Importer mes catégories
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

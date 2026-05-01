@@ -241,7 +241,63 @@ def pack_delete(request, pk):
 def category_list(request):
     shop = request.merchant_shop
     return render(request, "dashboard/categories/list.html", {
-        "shop": shop, "categories": shop.categories.all(),
+        "shop": shop,
+        "categories": shop.categories.all(),
+        "show_wizard_promo": shop.categories.count() == 0,
+    })
+
+
+@merchant_required
+def category_wizard(request):
+    """Onboarding catégories : sélection de 1 à 3 univers → sous-cat copiées dans la boutique.
+
+    Idempotent : si une sous-cat porte déjà un slug existant dans la boutique,
+    elle est ignorée (Category.save() gère déjà l'auto-suffix `-2`, `-3` mais
+    on s'évite des doublons inutiles via get_or_create + slug pré-calculé).
+    """
+    from django.utils.text import slugify
+
+    from products.data.category_templates import CATEGORY_TEMPLATES, get_template_by_key
+
+    shop = request.merchant_shop
+    if request.method == "POST":
+        selected_keys = request.POST.getlist("universe")
+        if not selected_keys:
+            messages.error(request, "Sélectionne au moins un univers.")
+            return redirect("products_dashboard:category_wizard")
+        if len(selected_keys) > 5:
+            messages.error(request, "Maximum 5 univers à la fois.")
+            return redirect("products_dashboard:category_wizard")
+
+        position_offset = shop.categories.count()
+        added = 0
+        for key in selected_keys:
+            tpl = get_template_by_key(key)
+            if not tpl:
+                continue
+            for sub_name in tpl["subcategories"]:
+                sub_slug = slugify(sub_name)[:100]
+                _, created = Category.objects.get_or_create(
+                    shop=shop, slug=sub_slug,
+                    defaults={
+                        "name": sub_name,
+                        "position": position_offset + added,
+                        "is_active": True,
+                    },
+                )
+                if created:
+                    added += 1
+        messages.success(
+            request,
+            f"{added} catégorie{'s' if added > 1 else ''} ajoutée{'s' if added > 1 else ''} à ta boutique. "
+            f"Tu peux les modifier ou en supprimer à tout moment.",
+        )
+        return redirect("products_dashboard:category_list")
+
+    return render(request, "dashboard/categories/wizard.html", {
+        "shop": shop,
+        "templates": CATEGORY_TEMPLATES,
+        "existing_count": shop.categories.count(),
     })
 
 
