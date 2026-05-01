@@ -1,0 +1,76 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Idées de produits — Jappesi{% endblock %}
+{% block header_title %}Idées de produits{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="card">
+    <div class="flex items-start gap-4">
+      <div class="h-12 w-12 rounded-xl bg-jappesi-50 flex items-center justify-center text-2xl shrink-0">💡</div>
+      <div>
+        <h2 class="font-serif text-xl font-medium text-ink-500">Inspiration produits</h2>
+        <p class="mt-1 text-sm text-slate-600">
+          Voici des produits typiques au Sénégal pour t'inspirer. Clique sur l'un d'eux et le
+          formulaire de création sera <strong>pré-rempli</strong> (nom, description, prix suggéré).
+          Tu ajustes ensuite le prix, la photo et le stock avant de publier.
+        </p>
+        <p class="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-1.5 inline-block">
+          ⓘ Aucun produit n'est créé tant que tu n'as pas validé le formulaire toi-même.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {# Filtres par univers — chips horizontales scrollables sur mobile #}
+  <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:-mx-0 sm:px-0">
+    <a href="{% url 'products_dashboard:suggestions' %}"
+       class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition
+              {% if not selected_universe %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
+      Tous ({{ suggestions|length }})
+    </a>
+    {% for u in universes %}
+      <a href="?u={{ u.key }}"
+         class="shrink-0 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition
+                {% if selected_universe == u.key %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
+        <span>{{ u.emoji }}</span>{{ u.label }}
+        <span class="text-[11px] opacity-70">({{ u.count }})</span>
+      </a>
+    {% endfor %}
+  </div>
+
+  {# Grid des suggestions #}
+  {% if suggestions %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+      {% for s in suggestions %}
+        <div class="card flex flex-col gap-3 p-4 hover:shadow-md transition">
+          <div class="flex items-start gap-3">
+            <div class="text-3xl shrink-0">{{ s.universe_emoji }}</div>
+            <div class="min-w-0 flex-1">
+              <h3 class="font-medium text-ink-500 truncate">{{ s.name }}</h3>
+              <div class="text-[11px] text-slate-500 mt-0.5">{{ s.universe_label }}</div>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">{{ s.description }}</p>
+
+          <div class="flex items-center justify-between gap-2 pt-2 mt-auto border-t border-slate-100">
+            <div>
+              <div class="text-[10px] uppercase tracking-wide text-slate-400">Prix suggéré</div>
+              <div class="font-serif text-base font-medium text-ink-500">{{ s.suggested_price }} XOF</div>
+            </div>
+            <a href="{% url 'products_dashboard:create' %}?suggestion={{ s.key }}"
+               class="btn-primary text-xs px-3 py-2 shrink-0">
+              Créer ce produit →
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card px-6 py-16 text-center">
+      <p class="text-slate-500">Aucune suggestion pour cet univers.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

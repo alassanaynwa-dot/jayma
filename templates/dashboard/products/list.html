@@ -20,7 +20,8 @@
         <option value="low_stock" {% if status == "low_stock" %}selected{% endif %}>Stock bas</option>
       </select>
     </form>
-    <div class="flex gap-2">
+    <div class="flex gap-2 flex-wrap">
+      <a href="{% url 'products_dashboard:suggestions' %}" class="btn-secondary">💡 Idées</a>
       <a href="{% url 'products_dashboard:pack_list' %}" class="btn-secondary">📦 Packs</a>
       <a href="{% url 'products_dashboard:create' %}" class="btn-primary">
         <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>

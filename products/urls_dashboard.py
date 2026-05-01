@@ -7,6 +7,7 @@ app_name = "products_dashboard"
 urlpatterns = [
     path("", views.product_list_dashboard, name="list"),
     path("ajouter/", views.product_create, name="create"),
+    path("idees/", views.product_suggestions, name="suggestions"),
     path("<int:pk>/", views.product_edit, name="edit"),
     path("<int:pk>/supprimer/", views.product_delete, name="delete"),
     path("<int:pk>/toggle/", views.product_toggle_active, name="toggle_active"),

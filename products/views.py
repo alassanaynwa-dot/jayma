@@ -136,11 +136,84 @@ def product_create(request):
                 image_formset.save()
             messages.success(request, f"Produit « {product.name} » ajouté.")
             return redirect("products_dashboard:list")
+        image_formset_to_render = image_formset
     else:
-        form = ProductForm(shop=shop)
-        image_formset = ProductImageFormSet(instance=Product())
+        # Pré-remplir depuis une suggestion ?suggestion=key (wizard d'idées)
+        from products.data.product_suggestions import get_suggestion_by_key
+
+        initial = {}
+        suggestion_key = request.GET.get("suggestion")
+        if suggestion_key:
+            sg = get_suggestion_by_key(suggestion_key)
+            if sg:
+                initial = {
+                    "name": sg["name"],
+                    "description": sg["description"],
+                    "price": sg["suggested_price"],
+                }
+                # Pré-sélectionner la catégorie si elle existe dans la boutique
+                if sg.get("suggested_category_slug"):
+                    cat = shop.categories.filter(slug=sg["suggested_category_slug"]).first()
+                    if cat:
+                        initial["category"] = cat.pk
+        form = ProductForm(shop=shop, initial=initial)
+        image_formset_to_render = ProductImageFormSet(instance=Product())
     return render(request, "dashboard/products/form.html", {
-        "shop": shop, "form": form, "image_formset": image_formset, "product": None,
+        "shop": shop, "form": form, "image_formset": image_formset_to_render, "product": None,
+    })
+
+
+@merchant_required
+def product_suggestions(request):
+    """Affiche le catalogue de suggestions de produits (~50 idées sénégalaises).
+
+    Le commerçant clique « Créer ce produit » → redirige vers product_create
+    avec ?suggestion=<key>, qui pré-remplit le form. Aucun produit créé en
+    BDD à ce stade.
+    """
+    from products.data.category_templates import CATEGORY_TEMPLATES
+    from products.data.product_suggestions import suggestions_by_universe
+
+    shop = request.merchant_shop
+    selected_universe = request.GET.get("u", "").strip()
+    by_universe = suggestions_by_universe()
+
+    # Liste des univers présents dans les suggestions, dans l'ordre des templates
+    universes = []
+    for tpl in CATEGORY_TEMPLATES:
+        if tpl["key"] in by_universe:
+            universes.append({
+                "key": tpl["key"],
+                "label": tpl["label"],
+                "emoji": tpl["emoji"],
+                "count": len(by_universe[tpl["key"]]),
+            })
+
+    # Suggestions affichées : filtrées par univers sélectionné, sinon toutes
+    if selected_universe and selected_universe in by_universe:
+        suggestions = by_universe[selected_universe]
+    else:
+        suggestions = [s for sublist in by_universe.values() for s in sublist]
+
+    # On enrichit chaque suggestion avec l'emoji + label de son univers
+    # (clés sans underscore initial pour passer le validator Django template)
+    universe_emoji_map = {tpl["key"]: tpl["emoji"] for tpl in CATEGORY_TEMPLATES}
+    universe_label_map = {tpl["key"]: tpl["label"] for tpl in CATEGORY_TEMPLATES}
+    suggestions = [
+        {
+            **s,
+            "universe_emoji": universe_emoji_map.get(s["universe_key"], "📦"),
+            "universe_label": universe_label_map.get(s["universe_key"], ""),
+        }
+        for s in suggestions
+    ]
+
+    return render(request, "dashboard/products/suggestions.html", {
+        "shop": shop,
+        "universes": universes,
+        "suggestions": suggestions,
+        "selected_universe": selected_universe,
+        "total_suggestions": len(by_universe),
     })
 
 
