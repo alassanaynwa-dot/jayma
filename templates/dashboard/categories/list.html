@@ -3,13 +3,10 @@
 {% block header_title %}Catégories{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-  {% csrf_token %}
+<div class="space-y-6" x-data="{ selected: [] }">
 
   <div class="flex items-center justify-between gap-2 flex-wrap">
-    <p class="text-slate-600 text-sm">
-      Organise tes produits par catégories. Glisse-dépose pour réordonner.
-    </p>
+    <p class="text-slate-600 text-sm">Organise tes produits par catégories.</p>
     <div class="flex items-center gap-2">
       <a href="{% url 'products_dashboard:category_wizard' %}" class="btn-secondary">
         <span class="text-base">✨</span> Pré-remplir
@@ -37,132 +34,106 @@
     </div>
   {% endif %}
 
-  {% if roots %}
-    <div id="cat-roots" class="space-y-4 sortable-roots">
-      {% for root in roots %}
-        <div class="card p-0 overflow-hidden cat-root" data-cat-id="{{ root.pk }}">
-          {# Header racine (univers) — drag handle + actions #}
-          <div class="flex items-center justify-between px-4 sm:px-5 py-3 bg-slate-50 border-b border-slate-100">
-            <div class="flex items-center gap-3 min-w-0">
-              <button type="button"
-                      aria-label="Réordonner cet univers"
-                      class="drag-handle h-8 w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-200 cursor-grab active:cursor-grabbing">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16"/>
-                </svg>
-              </button>
-              <div class="text-2xl leading-none shrink-0">{{ root.emoji|default:"📁" }}</div>
-              <div class="min-w-0">
-                <a href="{% url 'products_dashboard:category_edit' root.pk %}" class="font-medium text-ink-500 hover:text-jappesi-600 truncate block">
-                  {{ root.name }}
-                </a>
-                <div class="text-xs text-slate-500">
-                  {{ root.children.count }} sous-cat · {{ root.products.count }} produit{{ root.products.count|pluralize }}
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              {% if not root.is_active %}
-                <span class="text-[11px] rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">inactive</span>
-              {% endif %}
-              <a href="{% url 'products_dashboard:category_edit' root.pk %}"
-                 class="h-8 w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-ink-500 hover:bg-slate-200">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+  {% if categories %}
+    <form method="post" action="{% url 'products_dashboard:category_bulk_delete' %}"
+          x-on:submit="if (selected.length === 0) return false">
+      {% csrf_token %}
+
+      <div class="card p-0 overflow-hidden">
+
+        {# Barre header : checkbox tout sélectionner + compteur #}
+        <div class="flex items-center justify-between px-4 sm:px-5 py-3 bg-slate-50 border-b border-slate-100">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox"
+                   class="h-4 w-4 rounded border-slate-300 text-jappesi-600 focus:ring-jappesi-500"
+                   x-on:change="selected = $event.target.checked ? Array.from(document.querySelectorAll('input[name=&quot;selected_ids[]&quot;]')).map(i => i.value) : []"
+                   x-bind:checked="selected.length === {{ total_count }} && selected.length > 0">
+            <span class="text-sm font-medium text-slate-700">Tout sélectionner</span>
+          </label>
+          <span class="text-xs text-slate-500">
+            <span x-show="selected.length === 0">{{ total_count }} catégorie{{ total_count|pluralize }}</span>
+            <span x-show="selected.length > 0" x-cloak>
+              <span x-text="selected.length"></span> sélectionnée<span x-show="selected.length > 1">s</span>
+            </span>
+          </span>
+        </div>
+
+        {# Liste plate des catégories #}
+        <ul class="divide-y divide-slate-100">
+          {% for cat in categories %}
+            <li class="flex items-center gap-3 px-4 sm:px-5 py-2.5 hover:bg-slate-50">
+              <input type="checkbox"
+                     name="selected_ids[]"
+                     value="{{ cat.pk }}"
+                     x-model="selected"
+                     class="h-4 w-4 rounded border-slate-300 text-jappesi-600 focus:ring-jappesi-500 shrink-0">
+
+              {# Emoji ou icône folder par défaut #}
+              <span class="text-base shrink-0 w-5 text-center">
+                {% if cat.emoji %}{{ cat.emoji }}{% elif cat.parent_label %}<span class="text-slate-300">·</span>{% else %}<span class="text-slate-400">📁</span>{% endif %}
+              </span>
+
+              {# Nom catégorie + lien edit #}
+              <a href="{% url 'products_dashboard:category_edit' cat.pk %}"
+                 class="flex-1 min-w-0 text-sm font-medium text-ink-500 hover:text-jappesi-600 truncate">
+                {{ cat.name }}
               </a>
-              <form method="post" action="{% url 'products_dashboard:category_delete' root.pk %}"
-                    onsubmit="return confirm('Supprimer « {{ root.name }} » et toutes ses sous-catégories ? Les produits ne seront pas supprimés.')">
+
+              {# Pill parent (uniquement pour les sous-cat) #}
+              {% if cat.parent_label %}
+                <span class="hidden sm:inline-flex items-center gap-1 text-[11px] rounded-full bg-slate-100 text-slate-600 px-2 py-0.5 shrink-0">
+                  {% if cat.parent_emoji %}{{ cat.parent_emoji }}{% endif %}{{ cat.parent_label }}
+                </span>
+              {% endif %}
+
+              {# Compteur produits + statut #}
+              <span class="text-xs text-slate-400 shrink-0">{{ cat.products.count }}&nbsp;produit{{ cat.products.count|pluralize }}</span>
+              {% if not cat.is_active %}
+                <span class="text-[10px] rounded-full bg-slate-100 px-1.5 py-0.5 text-slate-500 shrink-0">inactive</span>
+              {% endif %}
+
+              {# Bouton supprimer individuel #}
+              <form method="post" action="{% url 'products_dashboard:category_delete' cat.pk %}"
+                    onsubmit="return confirm('Supprimer « {{ cat.name|escapejs }} » ?')"
+                    class="shrink-0">
                 {% csrf_token %}
-                <button type="submit" class="h-8 w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50">
+                <button type="submit"
+                        aria-label="Supprimer {{ cat.name }}"
+                        class="h-8 w-8 flex items-center justify-center rounded text-slate-300 hover:text-red-600 hover:bg-red-50">
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/></svg>
                 </button>
               </form>
-            </div>
-          </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
 
-          {# Sous-catégories enfants (réordonnables au sein du parent) #}
-          {% if root.children.all %}
-            <ul class="divide-y divide-slate-100 sortable-children" data-parent-id="{{ root.pk }}">
-              {% for child in root.children.all %}
-                <li class="cat-child flex items-center justify-between px-4 sm:px-5 py-2.5 hover:bg-slate-50" data-cat-id="{{ child.pk }}">
-                  <div class="flex items-center gap-3 min-w-0">
-                    <button type="button"
-                            aria-label="Réordonner cette sous-catégorie"
-                            class="drag-handle h-7 w-7 flex items-center justify-center rounded text-slate-300 hover:text-slate-700 cursor-grab active:cursor-grabbing">
-                      <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16"/>
-                      </svg>
-                    </button>
-                    {% if child.emoji %}<span class="text-base">{{ child.emoji }}</span>{% endif %}
-                    <a href="{% url 'products_dashboard:category_edit' child.pk %}" class="text-sm font-medium text-slate-700 hover:text-jappesi-600 truncate">
-                      {{ child.name }}
-                    </a>
-                    <span class="text-xs text-slate-400">· {{ child.products.count }} produit{{ child.products.count|pluralize }}</span>
-                  </div>
-                  <div class="flex items-center gap-1 shrink-0">
-                    {% if not child.is_active %}
-                      <span class="text-[10px] rounded-full bg-slate-100 px-2 py-0.5 text-slate-500">inactive</span>
-                    {% endif %}
-                    <form method="post" action="{% url 'products_dashboard:category_delete' child.pk %}"
-                          onsubmit="return confirm('Supprimer « {{ child.name }} » ?')">
-                      {% csrf_token %}
-                      <button type="submit" class="h-7 w-7 flex items-center justify-center rounded text-slate-300 hover:text-red-600 hover:bg-red-50">
-                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                      </button>
-                    </form>
-                  </div>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <div class="px-5 py-3 text-xs text-slate-400 italic">Aucune sous-catégorie. <a href="{% url 'products_dashboard:category_create' %}?parent={{ root.pk }}" class="text-jappesi-600 hover:underline">Ajouter une sous-cat</a></div>
-          {% endif %}
+      {# Barre sticky bottom : action de masse quand >0 sélectionnées #}
+      <div x-show="selected.length > 0"
+           x-cloak
+           x-transition
+           class="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 shadow-lg px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-between gap-3">
+        <div class="text-sm">
+          <span class="font-semibold text-ink-500" x-text="selected.length"></span>
+          <span class="text-slate-500">catégorie<span x-show="selected.length > 1">s</span> sélectionnée<span x-show="selected.length > 1">s</span></span>
         </div>
-      {% endfor %}
-    </div>
-
-    {# SortableJS — drag & drop des univers + des sous-cat #}
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
-    <script>
-      (function() {
-        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-        const reorderUrl = "{% url 'products_dashboard:category_reorder' %}";
-
-        function postOrder(elements) {
-          if (!csrf) return;
-          const ids = Array.from(elements).map(el => el.dataset.catId);
-          const body = ids.map(id => `category_ids[]=${encodeURIComponent(id)}`).join('&');
-          fetch(reorderUrl, {
-            method: 'POST',
-            headers: {
-              'X-CSRFToken': csrf,
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body,
-          }).catch(err => console.error('reorder error', err));
-        }
-
-        // Sortable des racines (univers)
-        const rootsContainer = document.getElementById('cat-roots');
-        if (rootsContainer) {
-          new Sortable(rootsContainer, {
-            handle: '.cat-root > div .drag-handle',
-            animation: 150,
-            ghostClass: 'opacity-50',
-            onEnd: () => postOrder(rootsContainer.querySelectorAll(':scope > .cat-root')),
-          });
-        }
-
-        // Sortable des enfants (au sein de chaque parent)
-        document.querySelectorAll('.sortable-children').forEach(list => {
-          new Sortable(list, {
-            handle: '.drag-handle',
-            animation: 150,
-            ghostClass: 'opacity-50',
-            onEnd: () => postOrder(list.querySelectorAll('.cat-child')),
-          });
-        });
-      })();
-    </script>
+        <div class="flex items-center gap-2">
+          <button type="button"
+                  x-on:click="selected = []"
+                  class="text-sm text-slate-500 hover:text-ink-500 px-3 py-2">
+            Désélectionner
+          </button>
+          <button type="submit"
+                  x-on:click="return confirm('Supprimer les ' + selected.length + ' catégories sélectionnées ?')"
+                  class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm inline-flex items-center gap-1.5">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/></svg>
+            Supprimer la sélection
+          </button>
+        </div>
+      </div>
+      {# Spacer si la barre sticky est visible #}
+      <div x-show="selected.length > 0" x-cloak class="h-20"></div>
+    </form>
 
   {% else %}
     <div class="card px-6 py-16 text-center">
@@ -178,4 +149,8 @@
     </div>
   {% endif %}
 </div>
+
+<style>
+  [x-cloak] { display: none !important; }
+</style>
 {% endblock %}

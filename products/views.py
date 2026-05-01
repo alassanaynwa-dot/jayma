@@ -254,50 +254,66 @@ def pack_delete(request, pk):
 
 @merchant_required
 def category_list(request):
-    """Liste catégories du dashboard, groupée par parent.
+    """Liste catégories du dashboard, en liste plate ordonnée par hiérarchie.
 
-    Structure rendue au template :
-      - `roots` : catégories racines (parent=None) avec leurs `children` préchargés
-      - `orphans` : catégories sans parent qui ne sont pas non plus des racines
-        (cas legacy : avant la migration, toutes les categories étaient plates).
-        Aujourd'hui on les traite comme des racines aussi.
+    Ordre rendu : pour chaque univers (parent=null), d'abord l'univers lui-même
+    puis ses sous-catégories juste après. Les catégories orphelines (parent=null
+    sans enfants, créées manuellement) apparaissent au même niveau que les
+    univers.
+
+    On enrichit chaque objet d'un attribut `parent_label` = nom du parent
+    (ou None) pour l'affichage de la pill.
     """
-    from django.db.models import Prefetch
-
     shop = request.merchant_shop
-    children_qs = Category.objects.order_by("position", "name")
-    roots = (
-        shop.categories.filter(parent__isnull=True)
-        .order_by("position", "name")
-        .prefetch_related(Prefetch("children", queryset=children_qs))
+    flat = []
+    roots = list(
+        shop.categories.filter(parent__isnull=True).order_by("position", "name")
     )
+    for root in roots:
+        root.parent_label = None
+        flat.append(root)
+        for child in root.children.order_by("position", "name"):
+            child.parent_label = root.name
+            child.parent_emoji = root.emoji
+            flat.append(child)
+
     return render(request, "dashboard/categories/list.html", {
         "shop": shop,
-        "roots": roots,
-        "show_wizard_promo": shop.categories.count() == 0,
+        "categories": flat,
+        "total_count": len(flat),
+        "show_wizard_promo": len(flat) == 0,
     })
 
 
 @merchant_required
 @require_POST
-def category_reorder(request):
-    """Endpoint HTMX/fetch pour sauvegarder l'ordre des catégories après drag & drop.
+def category_bulk_delete(request):
+    """Supprime en lot les catégories cochées par le commerçant.
 
-    Format attendu : ``category_ids[]=1&category_ids[]=5&category_ids[]=3...``
-    L'index dans la liste devient la nouvelle ``position``. On reste scopé à la
-    boutique du commerçant (impossible de réordonner les catégories d'un autre).
+    Si on supprime un univers, ses sous-cat passent en orphelines (parent
+    devient NULL grâce au on_delete=SET_NULL du modèle), elles ne sont
+    PAS supprimées en cascade. Les produits liés perdent leur catégorie
+    (category devient NULL, comportement existant du modèle).
     """
-    from django.http import HttpResponse
-
-    ids = request.POST.getlist("category_ids[]")
+    ids_raw = request.POST.getlist("selected_ids[]") or request.POST.getlist("selected_ids")
     shop = request.merchant_shop
-    for position, cat_id in enumerate(ids):
+    valid_ids = []
+    for raw in ids_raw:
         try:
-            cat_id_int = int(cat_id)
+            valid_ids.append(int(raw))
         except (TypeError, ValueError):
             continue
-        Category.objects.filter(pk=cat_id_int, shop=shop).update(position=position)
-    return HttpResponse(status=204)
+    if not valid_ids:
+        messages.error(request, "Aucune catégorie sélectionnée.")
+        return redirect("products_dashboard:category_list")
+
+    deleted, _ = Category.objects.filter(pk__in=valid_ids, shop=shop).delete()
+    if deleted:
+        messages.success(
+            request,
+            f"{deleted} catégorie{'s' if deleted > 1 else ''} supprimée{'s' if deleted > 1 else ''}.",
+        )
+    return redirect("products_dashboard:category_list")
 
 
 @merchant_required

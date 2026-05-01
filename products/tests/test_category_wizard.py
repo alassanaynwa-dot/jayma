@@ -204,34 +204,37 @@ class TestCategoryHierarchy:
 
 
 @pytest.mark.django_db
-class TestCategoryReorder:
-    """Endpoint HTMX/fetch pour drag & drop."""
+class TestCategoryBulkDelete:
+    """Suppression en lot de plusieurs catégories cochées."""
 
-    URL_REORDER = "/produits/categories/reorder/"
+    URL_BULK_DELETE = "/produits/categories/bulk-delete/"
 
-    def test_reorder_updates_positions(self, merchant_client):
+    def test_bulk_delete_removes_selected(self, merchant_client):
         client, shop = merchant_client
-        c1 = Category.objects.create(shop=shop, name="A", slug="a", position=0)
-        c2 = Category.objects.create(shop=shop, name="B", slug="b", position=1)
-        c3 = Category.objects.create(shop=shop, name="C", slug="c", position=2)
-        # Drag : on réordonne en C, A, B
+        c1 = Category.objects.create(shop=shop, name="A", slug="a")
+        c2 = Category.objects.create(shop=shop, name="B", slug="b")
+        c3 = Category.objects.create(shop=shop, name="C", slug="c")
         response = client.post(
-            self.URL_REORDER,
-            f"category_ids[]={c3.pk}&category_ids[]={c1.pk}&category_ids[]={c2.pk}",
+            self.URL_BULK_DELETE,
+            f"selected_ids[]={c1.pk}&selected_ids[]={c3.pk}",
             content_type="application/x-www-form-urlencoded",
         )
-        assert response.status_code == 204
-        c1.refresh_from_db()
-        c2.refresh_from_db()
-        c3.refresh_from_db()
-        assert c3.position == 0
-        assert c1.position == 1
-        assert c2.position == 2
+        assert response.status_code == 302  # redirect vers list
+        # c1 et c3 supprimées, c2 reste
+        assert not Category.objects.filter(pk=c1.pk).exists()
+        assert Category.objects.filter(pk=c2.pk).exists()
+        assert not Category.objects.filter(pk=c3.pk).exists()
 
-    def test_reorder_isolated_per_shop(self, merchant_client, db):
-        """Un commerçant ne peut PAS réordonner les catégories d'une autre boutique."""
+    def test_bulk_delete_empty_selection_does_nothing(self, merchant_client):
         client, shop = merchant_client
-        # Crée une autre boutique avec une catégorie
+        c1 = Category.objects.create(shop=shop, name="A", slug="a")
+        response = client.post(self.URL_BULK_DELETE, {})
+        assert response.status_code == 302
+        assert Category.objects.filter(pk=c1.pk).exists()
+
+    def test_bulk_delete_isolated_per_shop(self, merchant_client, db):
+        """Un commerçant ne peut PAS supprimer les catégories d'une autre boutique."""
+        client, shop = merchant_client
         other_user = User.objects.create_user(
             username="bob", phone="+221770009999", role=User.Role.MERCHANT,
         )
@@ -239,18 +242,29 @@ class TestCategoryReorder:
             owner=other_user, name="Bob Shop", slug="bob-shop",
             is_approved=True, is_active=True,
         )
-        other_cat = Category.objects.create(
-            shop=other_shop, name="Other", slug="other", position=42,
-        )
-        # Awa tente de la réordonner
+        other_cat = Category.objects.create(shop=other_shop, name="Other", slug="other")
         client.post(
-            self.URL_REORDER,
-            f"category_ids[]={other_cat.pk}",
+            self.URL_BULK_DELETE,
+            f"selected_ids[]={other_cat.pk}",
             content_type="application/x-www-form-urlencoded",
         )
-        # La position de la catégorie d'autrui n'a PAS bougé
-        other_cat.refresh_from_db()
-        assert other_cat.position == 42
+        # La catégorie d'autrui n'a PAS été supprimée
+        assert Category.objects.filter(pk=other_cat.pk).exists()
+
+    def test_bulk_delete_parent_orphans_children(self, merchant_client):
+        """Supprimer un parent ne supprime PAS ses enfants : ils deviennent racines."""
+        client, shop = merchant_client
+        parent = Category.objects.create(shop=shop, name="Mode", slug="mode", emoji="👗")
+        child = Category.objects.create(shop=shop, name="Robes", slug="robes", parent=parent)
+        client.post(
+            self.URL_BULK_DELETE,
+            f"selected_ids[]={parent.pk}",
+            content_type="application/x-www-form-urlencoded",
+        )
+        assert not Category.objects.filter(pk=parent.pk).exists()
+        # L'enfant existe encore, mais sans parent
+        child.refresh_from_db()
+        assert child.parent is None
 
 
 @pytest.mark.django_db
