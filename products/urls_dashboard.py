@@ -20,6 +20,7 @@ urlpatterns = [
     # Catégories
     path("categories/", views.category_list, name="category_list"),
     path("categories/wizard/", views.category_wizard, name="category_wizard"),
+    path("categories/reorder/", views.category_reorder, name="category_reorder"),
     path("categories/ajouter/", views.category_create, name="category_create"),
     path("categories/<int:pk>/", views.category_edit, name="category_edit"),
     path("categories/<int:pk>/supprimer/", views.category_delete, name="category_delete"),

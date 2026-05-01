@@ -34,12 +34,27 @@ def product_list_public(request):
     if cat_slug:
         active_category = shop.categories.filter(slug=cat_slug).first()
         if active_category:
-            products = products.filter(category=active_category)
+            # Si c'est un univers parent, on inclut TOUS les produits de ses
+            # sous-catégories. Si c'est une sous-cat, on filtre juste dessus.
+            cats_to_filter = active_category.get_descendant_categories()
+            products = products.filter(category__in=cats_to_filter)
+
+    # Pour la nav publique : seulement les racines (univers), avec leurs enfants préchargés
+    from django.db.models import Prefetch
+    nav_categories = (
+        shop.categories.filter(is_active=True, parent__isnull=True)
+        .order_by("position", "name")
+        .prefetch_related(Prefetch(
+            "children",
+            queryset=Category.objects.filter(is_active=True).order_by("position", "name"),
+        ))
+    )
 
     return render(request, "products/list_public.html", {
         "shop": shop,
         "products": products,
-        "categories": shop.categories.filter(is_active=True),
+        "categories": shop.categories.filter(is_active=True),  # legacy compat
+        "nav_categories": nav_categories,
         "active_category": active_category,
         "q": q,
     })
@@ -239,21 +254,59 @@ def pack_delete(request, pk):
 
 @merchant_required
 def category_list(request):
+    """Liste catégories du dashboard, groupée par parent.
+
+    Structure rendue au template :
+      - `roots` : catégories racines (parent=None) avec leurs `children` préchargés
+      - `orphans` : catégories sans parent qui ne sont pas non plus des racines
+        (cas legacy : avant la migration, toutes les categories étaient plates).
+        Aujourd'hui on les traite comme des racines aussi.
+    """
+    from django.db.models import Prefetch
+
     shop = request.merchant_shop
+    children_qs = Category.objects.order_by("position", "name")
+    roots = (
+        shop.categories.filter(parent__isnull=True)
+        .order_by("position", "name")
+        .prefetch_related(Prefetch("children", queryset=children_qs))
+    )
     return render(request, "dashboard/categories/list.html", {
         "shop": shop,
-        "categories": shop.categories.all(),
+        "roots": roots,
         "show_wizard_promo": shop.categories.count() == 0,
     })
 
 
 @merchant_required
-def category_wizard(request):
-    """Onboarding catégories : sélection de 1 à 3 univers → sous-cat copiées dans la boutique.
+@require_POST
+def category_reorder(request):
+    """Endpoint HTMX/fetch pour sauvegarder l'ordre des catégories après drag & drop.
 
-    Idempotent : si une sous-cat porte déjà un slug existant dans la boutique,
-    elle est ignorée (Category.save() gère déjà l'auto-suffix `-2`, `-3` mais
-    on s'évite des doublons inutiles via get_or_create + slug pré-calculé).
+    Format attendu : ``category_ids[]=1&category_ids[]=5&category_ids[]=3...``
+    L'index dans la liste devient la nouvelle ``position``. On reste scopé à la
+    boutique du commerçant (impossible de réordonner les catégories d'un autre).
+    """
+    from django.http import HttpResponse
+
+    ids = request.POST.getlist("category_ids[]")
+    shop = request.merchant_shop
+    for position, cat_id in enumerate(ids):
+        try:
+            cat_id_int = int(cat_id)
+        except (TypeError, ValueError):
+            continue
+        Category.objects.filter(pk=cat_id_int, shop=shop).update(position=position)
+    return HttpResponse(status=204)
+
+
+@merchant_required
+def category_wizard(request):
+    """Onboarding catégories : sélection de 1 à 5 univers → arborescence créée.
+
+    Pour chaque univers, on crée la catégorie racine (l'univers lui-même, avec
+    son emoji) puis ses sous-catégories enfants. Idempotent : on s'appuie sur
+    get_or_create avec un slug pré-calculé pour ne pas dupliquer.
     """
     from django.utils.text import slugify
 
@@ -275,12 +328,27 @@ def category_wizard(request):
             tpl = get_template_by_key(key)
             if not tpl:
                 continue
+            # 1. Créer ou récupérer la catégorie racine (univers)
+            parent_slug = slugify(tpl["label"])[:100]
+            parent, parent_created = Category.objects.get_or_create(
+                shop=shop, slug=parent_slug,
+                defaults={
+                    "name": tpl["label"],
+                    "emoji": tpl["emoji"],
+                    "position": position_offset + added,
+                    "is_active": True,
+                },
+            )
+            if parent_created:
+                added += 1
+            # 2. Créer les sous-catégories enfants
             for sub_name in tpl["subcategories"]:
                 sub_slug = slugify(sub_name)[:100]
                 _, created = Category.objects.get_or_create(
                     shop=shop, slug=sub_slug,
                     defaults={
                         "name": sub_name,
+                        "parent": parent,
                         "position": position_offset + added,
                         "is_active": True,
                     },
@@ -290,7 +358,7 @@ def category_wizard(request):
         messages.success(
             request,
             f"{added} catégorie{'s' if added > 1 else ''} ajoutée{'s' if added > 1 else ''} à ta boutique. "
-            f"Tu peux les modifier ou en supprimer à tout moment.",
+            f"Tu peux les modifier, les réordonner ou en supprimer à tout moment.",
         )
         return redirect("products_dashboard:category_list")
 
@@ -311,7 +379,16 @@ def category_create(request):
             messages.success(request, f"Catégorie « {cat.name} » créée.")
             return redirect("products_dashboard:category_list")
     else:
-        form = CategoryForm(shop=shop)
+        # Pré-remplir parent via query string ?parent=<id> (utilisé par "Ajouter une sous-cat")
+        initial = {}
+        parent_id = request.GET.get("parent")
+        if parent_id:
+            try:
+                Category.objects.get(pk=int(parent_id), shop=shop, parent__isnull=True)
+                initial["parent"] = parent_id
+            except (Category.DoesNotExist, ValueError, TypeError):
+                pass
+        form = CategoryForm(shop=shop, initial=initial)
     return render(request, "dashboard/categories/form.html", {"shop": shop, "form": form, "category": None})
 
 

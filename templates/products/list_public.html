@@ -20,22 +20,48 @@
     </form>
   </div>
 
-  {# Pills filtre catégorie #}
-  {% if categories %}
-  <div class="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-4 px-4 sm:-mx-0 sm:px-0">
-    <a href="{% url 'products_public:list' %}"
-       class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition
-              {% if not active_category %}shop-bg text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-      Tous
-    </a>
-    {% for cat in categories %}
-      <a href="?cat={{ cat.slug }}"
+  {# Pills filtre catégorie — 2 niveaux : univers + sous-cat #}
+  {% if nav_categories %}
+    {# Détermine le parent actif (= active_category lui-même si c'est un parent, sinon son parent) #}
+    {% with active_root=active_category.parent|default:active_category %}
+
+    {# Niveau 1 : univers racines (avec emoji) #}
+    <div class="flex gap-2 overflow-x-auto pb-2 mb-3 -mx-4 px-4 sm:-mx-0 sm:px-0">
+      <a href="{% url 'products_public:list' %}"
          class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition
-                {% if active_category == cat %}shop-bg text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-        {{ cat.name }}
+                {% if not active_category %}shop-bg text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
+        Tous
       </a>
-    {% endfor %}
-  </div>
+      {% for root in nav_categories %}
+        <a href="?cat={{ root.slug }}"
+           class="shrink-0 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition
+                  {% if active_root == root %}shop-bg text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
+          {% if root.emoji %}<span>{{ root.emoji }}</span>{% endif %}{{ root.name }}
+        </a>
+      {% endfor %}
+    </div>
+
+    {# Niveau 2 : sous-cat du parent actif (si on est sur un univers ou une de ses sous-cat) #}
+    {% if active_root and active_root.children.all %}
+      <div class="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-4 px-4 sm:-mx-0 sm:px-0">
+        <a href="?cat={{ active_root.slug }}"
+           class="shrink-0 rounded-full px-3 py-1 text-xs font-medium transition
+                  {% if active_category == active_root %}shop-border-soft border shop-text-soft bg-white{% else %}border border-slate-200 text-slate-500 hover:border-slate-300{% endif %}">
+          Toute la catégorie
+        </a>
+        {% for sub in active_root.children.all %}
+          <a href="?cat={{ sub.slug }}"
+             class="shrink-0 rounded-full px-3 py-1 text-xs font-medium transition
+                    {% if active_category == sub %}shop-border-soft border shop-text-soft bg-white{% else %}border border-slate-200 text-slate-500 hover:border-slate-300{% endif %}">
+            {{ sub.name }}
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="mb-6"></div>
+    {% endif %}
+
+    {% endwith %}
   {% endif %}
 
   {% if products %}

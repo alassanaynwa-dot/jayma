@@ -143,20 +143,48 @@ def build_pack_item_formset(shop):
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ["name", "position", "is_active"]
+        fields = ["name", "parent", "emoji", "is_active"]
         labels = {
             "name": "Nom de la catégorie",
-            "position": "Ordre d'affichage",
+            "parent": "Catégorie parente (optionnel)",
+            "emoji": "Émoji (optionnel)",
             "is_active": "Catégorie active",
         }
+        help_texts = {
+            "parent": "Laisse vide pour créer un univers (catégorie racine).",
+            "emoji": "Affiché dans la nav. Surtout utile pour les univers (ex : 👗).",
+        }
         widgets = {
-            "name":     forms.TextInput(attrs={"class": "input", "placeholder": "Ex : Vêtements"}),
-            "position": forms.NumberInput(attrs={"class": "input", "min": 0}),
+            "name":   forms.TextInput(attrs={"class": "input", "placeholder": "Ex : Robes & tenues"}),
+            "parent": forms.Select(attrs={"class": "input"}),
+            "emoji":  forms.TextInput(attrs={
+                "class": "input",
+                "placeholder": "👗",
+                "maxlength": 8,
+                "autocapitalize": "off",
+            }),
         }
 
     def __init__(self, *args, shop=None, **kwargs):
         self.shop = shop
         super().__init__(*args, **kwargs)
+        if shop:
+            # Le parent ne peut être qu'une racine de la même boutique (et pas soi-même)
+            qs = Category.objects.filter(shop=shop, parent__isnull=True)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            self.fields["parent"].queryset = qs.order_by("position", "name")
+            self.fields["parent"].empty_label = "— Univers racine —"
+
+    def clean(self):
+        cleaned = super().clean()
+        parent = cleaned.get("parent")
+        # Empêche de définir un parent qui est déjà un enfant (cycle)
+        if parent and parent.parent_id is not None:
+            raise forms.ValidationError(
+                "Le parent doit être un univers racine (sans grand-parent).",
+            )
+        return cleaned
 
     def save(self, commit=True):
         cat = super().save(commit=False)

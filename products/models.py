@@ -5,20 +5,39 @@ Chaque Category et chaque Product appartiennent à un Shop (isolation tenant).
 Prix en XOF entiers (PositiveIntegerField), jamais de décimales.
 """
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 
 
 class Category(models.Model):
-    """Catégorie propre à une boutique."""
+    """Catégorie propre à une boutique.
+
+    Hiérarchie : 2 niveaux maximum.
+    - Catégorie racine (`parent=None`) : un univers comme « Mode femme » (avec emoji)
+    - Sous-catégorie (`parent=<racine>`) : « Robes & tenues »
+
+    Pas de grand-parents : on garde l'arbre lisible et plat.
+    """
 
     shop = models.ForeignKey(
         "shops.Shop",
         on_delete=models.CASCADE,
         related_name="categories",
     )
+    parent = models.ForeignKey(
+        "self",
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name="children",
+        help_text="Catégorie parente. Vide = catégorie racine (univers).",
+    )
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
+    emoji = models.CharField(
+        max_length=8, blank=True,
+        help_text="Émoji affiché dans la nav (ex: 👗). Surtout sur les catégories racines.",
+    )
     position = models.PositiveSmallIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -32,6 +51,15 @@ class Category(models.Model):
     def __str__(self):
         return f"{self.name} — {self.shop.name}"
 
+    def clean(self):
+        super().clean()
+        if self.parent_id == self.pk and self.pk is not None:
+            raise ValidationError({"parent": "Une catégorie ne peut pas être son propre parent."})
+        if self.parent and self.parent.parent_id is not None:
+            raise ValidationError({"parent": "Hiérarchie limitée à 2 niveaux (pas de grand-parent)."})
+        if self.parent and self.parent.shop_id != self.shop_id:
+            raise ValidationError({"parent": "Le parent doit appartenir à la même boutique."})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             base = slugify(self.name)[:100] or "categorie"
@@ -43,6 +71,14 @@ class Category(models.Model):
                 i += 1
             self.slug = slug
         super().save(*args, **kwargs)
+
+    @property
+    def is_root(self) -> bool:
+        return self.parent_id is None
+
+    def get_descendant_categories(self):
+        """Retourne self + ses enfants directs (utile pour filtrer les produits d'un univers)."""
+        return [self, *self.children.all()]
 
 
 class Product(models.Model):
