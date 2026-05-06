@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load category_icons %}
 {% block title %}Pré-remplir mes catégories — Jappesi{% endblock %}
 {% block header_title %}Pré-remplir mes catégories{% endblock %}
 
@@ -38,7 +39,9 @@
                  x-model="selected"
                  :disabled="!selected.includes('{{ tpl.key }}') && selected.length >= 5">
           <div class="flex items-start gap-3">
-            <div class="text-3xl leading-none shrink-0">{{ tpl.emoji }}</div>
+            <div class="h-10 w-10 rounded-lg bg-jappesi-50 text-jappesi-600 flex items-center justify-center shrink-0">
+              <div class="h-5 w-5">{{ tpl.key|universe_icon }}</div>
+            </div>
             <div class="flex-1 min-w-0">
               <div class="font-medium text-ink-500">{{ tpl.label }}</div>
               <div class="text-xs text-slate-500 mt-0.5 line-clamp-2">{{ tpl.description }}</div>

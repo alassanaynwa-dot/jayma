@@ -124,3 +124,37 @@ def category_icon(category) -> str:
     if parent and getattr(parent, "slug", "") in ICONS:
         return mark_safe(ICONS[parent.slug])
     return mark_safe(FALLBACK_ICON)
+
+
+# Mapping universe_key (utilisé dans CATEGORY_TEMPLATES et PRODUCT_SUGGESTIONS)
+# vers le slug correspondant dans ICONS. C'est nécessaire parce que le wizard
+# utilise des keys snake_case (mode_femme) alors que les slugs en BDD sont
+# kebab-case (mode-femme).
+UNIVERSE_KEY_TO_SLUG = {
+    "mode_femme": "mode-femme",
+    "mode_homme": "mode-homme",
+    "mode_enfant": "mode-enfant-bebe",
+    "chaussures": "chaussures",
+    "beaute": "beaute-cheveux",
+    "accessoires": "accessoires",
+    "maison": "maison-deco",
+    "electronique": "electronique",
+    "alimentation": "alimentation-traditions",
+    "loisirs": "loisirs-cadeaux",
+}
+
+
+@register.filter
+def universe_icon(universe_key) -> str:
+    """Icône SVG pour une clé d'univers (mode_femme, beaute, etc.).
+
+    Utilisé dans le dashboard (wizard catégories, suggestions produits) où
+    on manipule des dicts CATEGORY_TEMPLATES / PRODUCT_SUGGESTIONS plutôt
+    que des modèles Category.
+    """
+    if not universe_key:
+        return mark_safe(FALLBACK_ICON)
+    slug = UNIVERSE_KEY_TO_SLUG.get(universe_key, "")
+    if slug in ICONS:
+        return mark_safe(ICONS[slug])
+    return mark_safe(FALLBACK_ICON)

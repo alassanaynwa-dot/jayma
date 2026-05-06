@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load category_icons %}
 {% block title %}Idées de produits — Jappesi{% endblock %}
 {% block header_title %}Idées de produits{% endblock %}
 
@@ -31,9 +32,9 @@
     </a>
     {% for u in universes %}
       <a href="?u={{ u.key }}"
-         class="shrink-0 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition
+         class="shrink-0 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition
                 {% if selected_universe == u.key %}bg-jappesi-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-        <span>{{ u.emoji }}</span>{{ u.label }}
+        <div class="h-4 w-4">{{ u.key|universe_icon }}</div>{{ u.label }}
         <span class="text-[11px] opacity-70">({{ u.count }})</span>
       </a>
     {% endfor %}
@@ -45,7 +46,9 @@
       {% for s in suggestions %}
         <div class="card flex flex-col gap-3 p-4 hover:shadow-md transition">
           <div class="flex items-start gap-3">
-            <div class="text-3xl shrink-0">{{ s.universe_emoji }}</div>
+            <div class="h-10 w-10 rounded-lg bg-jappesi-50 text-jappesi-600 flex items-center justify-center shrink-0">
+              <div class="h-5 w-5">{{ s.universe_key|universe_icon }}</div>
+            </div>
             <div class="min-w-0 flex-1">
               <h3 class="font-medium text-ink-500 truncate">{{ s.name }}</h3>
               <div class="text-[11px] text-slate-500 mt-0.5">{{ s.universe_label }}</div>

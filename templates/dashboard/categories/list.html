@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load category_icons %}
 {% block title %}Catégories — Jappesi{% endblock %}
 {% block header_title %}Catégories{% endblock %}
 
@@ -68,9 +69,9 @@
                      x-model="selected"
                      class="h-4 w-4 rounded border-slate-300 text-jappesi-600 focus:ring-jappesi-500 shrink-0">
 
-              {# Emoji ou icône folder par défaut #}
-              <span class="text-base shrink-0 w-5 text-center">
-                {% if cat.emoji %}{{ cat.emoji }}{% elif cat.parent_label %}<span class="text-slate-300">·</span>{% else %}<span class="text-slate-400">📁</span>{% endif %}
+              {# Icône SVG ou puce neutre selon racine/sous-cat #}
+              <span class="shrink-0 w-5 h-5 flex items-center justify-center {% if cat.parent_label %}text-slate-300{% else %}text-slate-500{% endif %}">
+                {% if cat.parent_label %}·{% else %}{{ cat|category_icon }}{% endif %}
               </span>
 
               {# Nom catégorie + lien edit #}
