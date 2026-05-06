@@ -20,36 +20,36 @@
 </div>
 {% endif %}
 
-{# ============ HERO ============ #}
+{# ============ HERO compact ============ #}
 <section class="relative overflow-hidden">
   {% if shop.banner %}
-    <div class="absolute inset-0"><img src="{{ shop.banner.url }}" class="w-full h-full object-cover"></div>
+    <div class="absolute inset-0"><img src="{{ shop.banner.url }}" class="w-full h-full object-cover" alt="{{ shop.name }}"></div>
     <div class="absolute inset-0 bg-gradient-to-r from-ink-500/70 via-ink-500/40 to-transparent"></div>
-    <div class="relative max-w-6xl mx-auto px-4 py-20 sm:py-28 text-white">
-      <h1 class="font-serif text-4xl sm:text-6xl font-medium max-w-2xl leading-tight">{{ shop.name }}</h1>
-      {% if shop.description %}<p class="mt-4 max-w-xl text-lg text-white/90">{{ shop.description|truncatewords:25 }}</p>{% endif %}
-      <a href="{% url 'products_public:list' %}" class="shop-btn mt-6">
+    <div class="relative max-w-6xl mx-auto px-4 py-10 sm:py-14 text-white">
+      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-medium max-w-2xl leading-tight">{{ shop.name }}</h1>
+      {% if shop.description %}<p class="mt-2 max-w-xl text-sm sm:text-base text-white/90">{{ shop.description|truncatewords:18 }}</p>{% endif %}
+      <a href="{% url 'products_public:list' %}" class="shop-btn mt-5">
         Découvrir les produits
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
       </a>
     </div>
   {% else %}
     <div class="shop-bg-soft">
-      <div class="max-w-6xl mx-auto px-4 py-16 sm:py-24 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+      <div class="max-w-6xl mx-auto px-4 py-8 sm:py-12 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center">
         <div>
-          <div class="inline-block text-xs font-medium uppercase tracking-wider shop-accent">{{ shop.city }}</div>
-          <h1 class="mt-3 font-serif text-4xl sm:text-5xl font-medium text-ink-500 leading-tight">{{ shop.name }}</h1>
-          {% if shop.description %}<p class="mt-4 text-slate-600 text-lg">{{ shop.description|truncatewords:25 }}</p>{% endif %}
-          <a href="{% url 'products_public:list' %}" class="shop-btn mt-6">
+          {% if shop.city %}<div class="inline-block text-xs font-medium uppercase tracking-wider shop-accent">{{ shop.city }}</div>{% endif %}
+          <h1 class="mt-2 font-serif text-3xl sm:text-4xl font-medium text-ink-500 leading-tight">{{ shop.name }}</h1>
+          {% if shop.description %}<p class="mt-2 text-slate-600 text-sm sm:text-base max-w-md">{{ shop.description|truncatewords:18 }}</p>{% endif %}
+          <a href="{% url 'products_public:list' %}" class="shop-btn mt-4">
             Découvrir les produits
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </a>
         </div>
-        <div class="relative h-64 md:h-80">
-          {# Motif géométrique décoratif #}
-          <div class="absolute top-0 right-0 h-40 w-40 rounded-full shop-bg opacity-30"></div>
-          <div class="absolute bottom-0 left-8 h-32 w-32 rounded-full shop-bg opacity-50"></div>
-          <div class="absolute top-16 left-0 h-48 w-48 rounded-full shop-bg opacity-80 flex items-center justify-center text-white font-serif text-7xl">
+        {# Motif géométrique décoratif compact, masqué sur petit mobile pour gagner de la place #}
+        <div class="relative h-32 sm:h-40 md:h-52 hidden sm:block">
+          <div class="absolute top-0 right-0 h-20 w-20 md:h-28 md:w-28 rounded-full shop-bg opacity-25"></div>
+          <div class="absolute bottom-0 left-8 h-16 w-16 md:h-20 md:w-20 rounded-full shop-bg opacity-40"></div>
+          <div class="absolute top-6 left-0 h-24 w-24 md:h-32 md:w-32 rounded-full shop-bg opacity-80 flex items-center justify-center text-white font-serif text-3xl md:text-5xl">
             {{ shop.name|slice:":1"|upper }}
           </div>
         </div>
