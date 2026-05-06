@@ -3,63 +3,262 @@
 {% block title %}Jappesi — Vendez en ligne au Sénégal{% endblock %}
 
 {% block body %}
-<main class="mx-auto max-w-4xl px-4 py-12 sm:py-20">
+<div class="bg-white">
 
-  <header class="flex items-center justify-between mb-16">
-    <a href="{% url 'core:home' %}" class="inline-flex items-center">
-      {% include "partials/logo.html" with size="h-8" %}
-    </a>
-    <nav class="flex items-center gap-4 text-sm">
-      <a href="#avantages" class="hidden sm:inline text-slate-600 hover:text-jappesi-500">Avantages</a>
-      <a href="#tarifs" class="hidden sm:inline text-slate-600 hover:text-jappesi-500">Tarifs</a>
-      <a href="{% url 'core:shop_request' %}" class="btn-primary text-sm py-2 px-4">
-        Créer ma boutique
+  {# ============ HEADER ============ #}
+  <header class="border-b border-slate-100 sticky top-0 z-30 bg-white/95 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <a href="{% url 'core:home' %}" class="inline-flex items-center">
+        {% include "partials/logo.html" with size="h-7" %}
       </a>
-    </nav>
+      <nav class="flex items-center gap-1 sm:gap-2 text-sm">
+        <a href="#avantages" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium">Avantages</a>
+        <a href="#comment-ca-marche" class="hidden md:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium">Comment ça marche</a>
+        <a href="#tarifs" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium">Tarifs</a>
+        <a href="{% url 'accounts:login' %}" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium">Connexion</a>
+        <a href="{% url 'core:shop_request' %}" class="btn-primary text-sm py-2 px-4 ml-1">
+          Créer ma boutique
+        </a>
+      </nav>
+    </div>
   </header>
 
-  <section class="text-center">
-    <h1 class="font-serif text-4xl sm:text-6xl font-medium tracking-tight text-ink-500">
-      Ta boutique en ligne,
-      <span class="text-jappesi-500">en 5 minutes.</span>
-    </h1>
-    <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
-      Jappesi te donne une boutique e-commerce prête à vendre.
-      Tes clients commandent, paient avec Wave, Orange Money ou CinetPay,
-      et tu reçois ton argent. C'est tout.
-    </p>
-    <div class="mt-8 flex justify-center gap-4">
-      <a href="{% url 'core:shop_request' %}" class="btn-primary">
-        Ouvrir ma boutique gratuitement
+  {# ============ HERO ============ #}
+  <section class="relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 py-12 sm:py-16 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+      <div>
+        <div class="inline-flex items-center gap-2 rounded-full bg-jappesi-50 border border-jappesi-100 text-jappesi-700 px-3 py-1 text-xs font-medium">
+          <span class="h-2 w-2 rounded-full bg-jappesi-500 animate-pulse"></span>
+          E-commerce 100% sénégalais
+        </div>
+        <h1 class="mt-4 font-serif text-4xl sm:text-5xl font-medium tracking-tight text-ink-500 leading-tight">
+          Ta boutique en ligne, <span class="text-jappesi-500">en 5 minutes.</span>
+        </h1>
+        <p class="mt-4 text-base sm:text-lg text-slate-600 max-w-xl">
+          Tes clients commandent, paient avec Wave, Orange Money ou CinetPay,
+          et tu reçois ton argent. Pas d'abonnement, juste 8% sur les ventes.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a href="{% url 'core:shop_request' %}" class="btn-primary inline-flex items-center justify-center gap-2">
+            Ouvrir ma boutique gratuitement
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+          <a href="#comment-ca-marche" class="btn-secondary inline-flex items-center justify-center">
+            Voir comment ça marche
+          </a>
+        </div>
+        {# Trust signals #}
+        <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500">
+          <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Sans engagement</span>
+          <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Aucune carte bancaire requise</span>
+          <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Support en français</span>
+        </div>
+      </div>
+
+      {# Mockup illustratif compact #}
+      <div class="relative hidden md:block">
+        <div class="absolute top-4 right-8 h-20 w-20 rounded-full bg-jappesi-100"></div>
+        <div class="absolute bottom-4 left-8 h-14 w-14 rounded-full bg-jappesi-200"></div>
+        <div class="relative bg-white border border-slate-200 rounded-2xl shadow-xl p-5 max-w-sm mx-auto">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="h-2 w-2 rounded-full bg-red-400"></div>
+            <div class="h-2 w-2 rounded-full bg-amber-400"></div>
+            <div class="h-2 w-2 rounded-full bg-emerald-400"></div>
+            <div class="ml-2 text-[10px] text-slate-400 font-mono truncate">chez-fatou.jappesi.sn</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="aspect-square rounded-lg bg-gradient-to-br from-jappesi-200 to-jappesi-400"></div>
+            <div class="aspect-square rounded-lg bg-gradient-to-br from-emerald-200 to-emerald-400"></div>
+            <div class="aspect-square rounded-lg bg-gradient-to-br from-blue-200 to-blue-400"></div>
+            <div class="aspect-square rounded-lg bg-gradient-to-br from-amber-200 to-amber-400"></div>
+          </div>
+          <div class="mt-3 flex items-center justify-between text-xs">
+            <span class="font-serif text-ink-500">Pack découverte</span>
+            <span class="font-medium text-jappesi-600">12 000 XOF</span>
+          </div>
+          <button class="mt-3 w-full bg-jappesi-500 text-white text-xs font-medium py-2 rounded-lg">Ajouter au panier</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ============ AVANTAGES (3 cards SVG) ============ #}
+  <section id="avantages" class="border-t border-slate-100 bg-slate-50/50">
+    <div class="max-w-6xl mx-auto px-4 py-14 sm:py-16">
+      <div class="text-center mb-10">
+        <div class="text-xs font-medium uppercase tracking-wider text-jappesi-600">Pourquoi Jappesi</div>
+        <h2 class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">Tout ce qu'il te faut, rien de plus.</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+        <div class="card group hover:shadow-md transition">
+          <div class="h-12 w-12 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-3">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+          <h3 class="font-serif text-lg font-medium text-ink-500">Catalogue simple</h3>
+          <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">
+            Ajoute tes produits, photos, prix. Tout se gère depuis ton téléphone, en 2 minutes par produit.
+          </p>
+        </div>
+
+        <div class="card group hover:shadow-md transition">
+          <div class="h-12 w-12 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-3">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h2"/></svg>
+          </div>
+          <h3 class="font-serif text-lg font-medium text-ink-500">Paiements locaux</h3>
+          <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">
+            Wave, Orange Money, CinetPay. Tes clients paient comme ils veulent, l'argent arrive directement chez toi.
+          </p>
+        </div>
+
+        <div class="card group hover:shadow-md transition">
+          <div class="h-12 w-12 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-3">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M11 18h2"/></svg>
+          </div>
+          <h3 class="font-serif text-lg font-medium text-ink-500">Lien à partager</h3>
+          <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">
+            Ta boutique sur <code class="text-jappesi-600 font-mono text-xs">tonNom.jappesi.sn</code>. Partage sur WhatsApp, Instagram, Facebook.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  {# ============ COMMENT CA MARCHE (4 étapes) ============ #}
+  <section id="comment-ca-marche" class="border-t border-slate-100">
+    <div class="max-w-6xl mx-auto px-4 py-14 sm:py-16">
+      <div class="text-center mb-10">
+        <div class="text-xs font-medium uppercase tracking-wider text-jappesi-600">En 4 étapes</div>
+        <h2 class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">Comment ça marche</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+        <div class="relative">
+          <div class="h-10 w-10 rounded-full bg-jappesi-500 text-white font-serif flex items-center justify-center text-lg font-medium">1</div>
+          <h3 class="mt-3 font-medium text-ink-500">Inscris-toi</h3>
+          <p class="mt-1 text-sm text-slate-600">Remplis un formulaire en 2 minutes. On valide ta boutique sous 24h.</p>
+        </div>
+
+        <div class="relative">
+          <div class="h-10 w-10 rounded-full bg-jappesi-500 text-white font-serif flex items-center justify-center text-lg font-medium">2</div>
+          <h3 class="mt-3 font-medium text-ink-500">Ajoute tes produits</h3>
+          <p class="mt-1 text-sm text-slate-600">Pré-remplissage de catégories + idées produits adaptés au Sénégal pour démarrer vite.</p>
+        </div>
+
+        <div class="relative">
+          <div class="h-10 w-10 rounded-full bg-jappesi-500 text-white font-serif flex items-center justify-center text-lg font-medium">3</div>
+          <h3 class="mt-3 font-medium text-ink-500">Partage ton lien</h3>
+          <p class="mt-1 text-sm text-slate-600">Sur WhatsApp, Instagram, ou directement par SMS. Tes clients arrivent en 1 clic.</p>
+        </div>
+
+        <div class="relative">
+          <div class="h-10 w-10 rounded-full bg-jappesi-500 text-white font-serif flex items-center justify-center text-lg font-medium">4</div>
+          <h3 class="mt-3 font-medium text-ink-500">Encaisse</h3>
+          <p class="mt-1 text-sm text-slate-600">Wave/OM/CinetPay créditent ton compte. Tu livres, c'est fini.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  {# ============ TARIFS ============ #}
+  <section id="tarifs" class="border-t border-slate-100 bg-slate-50/50">
+    <div class="max-w-3xl mx-auto px-4 py-14 sm:py-16 text-center">
+      <div class="text-xs font-medium uppercase tracking-wider text-jappesi-600">Tarifs simples</div>
+      <h2 class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">Pas d'abonnement, juste une commission.</h2>
+
+      <div class="mt-8 mx-auto max-w-md bg-white border-2 border-jappesi-100 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div class="flex items-baseline justify-center gap-2">
+          <span class="font-serif text-5xl sm:text-6xl font-medium text-jappesi-500">8%</span>
+          <span class="text-slate-500">par vente</span>
+        </div>
+        <p class="mt-2 text-sm text-slate-600">Sur le montant de chaque commande payée. Pas de frais cachés.</p>
+
+        <ul class="mt-6 space-y-2 text-left text-sm">
+          {% with check_svg='<svg class="h-5 w-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' %}
+            {% with items="Boutique illimitée|Produits illimités|Paiements Wave / OM / CinetPay|Sous-domaine .jappesi.sn|SMS de confirmation|Suivi de commande client|Support en français" %}
+              {% for item in items|slice:":7" %}{% endfor %}
+            {% endwith %}
+          {% endwith %}
+          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Boutique illimitée, produits illimités</li>
+          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Paiements Wave, Orange Money, CinetPay</li>
+          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Ton sous-domaine personnalisé .jappesi.sn</li>
+          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> SMS automatiques aux clients</li>
+          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Suivi de commande pour tes clients</li>
+          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Support en français par WhatsApp</li>
+        </ul>
+
+        <a href="{% url 'core:shop_request' %}" class="btn-primary mt-8 w-full inline-flex items-center justify-center gap-2">
+          Démarrer maintenant
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {# ============ CTA FINAL ============ #}
+  <section class="border-t border-slate-100">
+    <div class="max-w-4xl mx-auto px-4 py-14 sm:py-16 text-center">
+      <h2 class="font-serif text-2xl sm:text-3xl font-medium text-ink-500">Prête à vendre en ligne ?</h2>
+      <p class="mt-2 text-slate-600">Crée ta boutique gratuitement, sans engagement. Tu peux la fermer quand tu veux.</p>
+      <a href="{% url 'core:shop_request' %}" class="btn-primary mt-6 inline-flex items-center gap-2">
+        Ouvrir ma boutique
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
       </a>
     </div>
-    <p class="mt-4 text-sm text-slate-500">Pas d'abonnement — commission de 8% seulement sur les ventes.</p>
   </section>
 
-  <section id="avantages" class="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6">
-    <div class="card">
-      <div class="text-2xl">🛒</div>
-      <h3 class="mt-4 font-semibold">Catalogue simple</h3>
-      <p class="mt-2 text-sm text-slate-600">Ajoute tes produits, photos, prix. Tout se gère depuis ton téléphone.</p>
+  {# ============ FOOTER ============ #}
+  <footer class="border-t border-slate-200 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
+      <div class="col-span-2 sm:col-span-1">
+        {% include "partials/logo.html" with size="h-6" %}
+        <p class="mt-2 text-xs text-slate-500 leading-relaxed">
+          La boutique en ligne pour les commerçants sénégalais.
+        </p>
+      </div>
+      <div>
+        <h4 class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-2">Plateforme</h4>
+        <ul class="space-y-1.5">
+          <li><a href="#avantages" class="text-slate-600 hover:text-jappesi-600">Avantages</a></li>
+          <li><a href="#comment-ca-marche" class="text-slate-600 hover:text-jappesi-600">Comment ça marche</a></li>
+          <li><a href="#tarifs" class="text-slate-600 hover:text-jappesi-600">Tarifs</a></li>
+          <li><a href="{% url 'core:shop_request' %}" class="text-slate-600 hover:text-jappesi-600">Créer ma boutique</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-2">Légal</h4>
+        <ul class="space-y-1.5">
+          <li><a href="{% url 'core:legal_cgu' %}" class="text-slate-600 hover:text-jappesi-600">CGU</a></li>
+          <li><a href="{% url 'core:legal_cgv' %}" class="text-slate-600 hover:text-jappesi-600">CGV</a></li>
+          <li><a href="{% url 'core:legal_confidentialite' %}" class="text-slate-600 hover:text-jappesi-600">Confidentialité</a></li>
+          <li><a href="{% url 'core:legal_mentions' %}" class="text-slate-600 hover:text-jappesi-600">Mentions légales</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-2">Contact</h4>
+        <ul class="space-y-1.5 text-slate-600">
+          <li>
+            <a href="mailto:contact@jappesi.sn" class="hover:text-jappesi-600 inline-flex items-center gap-1.5">
+              <svg class="h-4 w-4 text-jappesi-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              contact@jappesi.sn
+            </a>
+          </li>
+          <li class="inline-flex items-center gap-1.5">
+            <svg class="h-4 w-4 text-jappesi-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.7 16.7L12 22l-5.7-5.3a8 8 0 1111.4 0z"/><circle cx="12" cy="11" r="3" stroke-width="1.5"/></svg>
+            Dakar, Sénégal
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="card">
-      <div class="text-2xl">💳</div>
-      <h3 class="mt-4 font-semibold">Paiements locaux</h3>
-      <p class="mt-2 text-sm text-slate-600">Wave, Orange Money, CinetPay. Tes clients paient comme ils veulent.</p>
+    <div class="border-t border-slate-200 py-3">
+      <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+        <span>© {% now "Y" %} Jappesi · Tous droits réservés</span>
+        <span>Fait avec ♥ au Sénégal</span>
+      </div>
     </div>
-    <div class="card">
-      <div class="text-2xl">📱</div>
-      <h3 class="mt-4 font-semibold">Sous-domaine perso</h3>
-      <p class="mt-2 text-sm text-slate-600">Ta boutique sur <code class="text-jappesi-600">tonNom.jappesi.sn</code>. Partage le lien sur WhatsApp.</p>
-    </div>
-  </section>
-
-  <footer class="mt-24 border-t border-slate-200 pt-8 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      {% include "partials/logo.html" with size="h-6" %}
-      <span class="text-sm text-slate-500">— Dakar, Sénégal</span>
-    </div>
-    <p class="text-sm text-slate-500">© {% now "Y" %} Jappesi</p>
   </footer>
-</main>
+
+</div>
 {% endblock %}
