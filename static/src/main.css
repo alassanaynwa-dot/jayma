@@ -80,3 +80,71 @@ body {
   font-family: var(--font-sans);
   color: var(--color-ink-500);
 }
+
+/* -----------------------------------------------------------
+ * Landing jappesi.sn — composants spécifiques à la home publique
+ * ----------------------------------------------------------- */
+@layer components {
+  .iphone-frame {
+    @apply relative mx-auto rounded-[2.5rem] bg-ink-500 p-2.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.25)];
+    width: 280px;
+  }
+  .iphone-frame::before {
+    content: "";
+    position: absolute;
+    top: 0.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 22px;
+    background: #1C1612;
+    border-radius: 0 0 14px 14px;
+    z-index: 2;
+  }
+  .iphone-screen {
+    @apply relative overflow-hidden rounded-[2rem] bg-white;
+    aspect-ratio: 9/19;
+  }
+
+  .stat-num {
+    @apply font-serif text-5xl sm:text-6xl font-medium text-ink-500 leading-none tracking-tight;
+  }
+  .stat-label {
+    @apply mt-3 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium;
+  }
+
+  .faq-item {
+    @apply border-b border-slate-200 last:border-b-0;
+  }
+  .faq-trigger {
+    @apply flex w-full items-center justify-between gap-4 py-5 text-left text-base font-medium text-ink-500 transition hover:text-jappesi-600;
+  }
+  .faq-icon {
+    @apply h-6 w-6 shrink-0 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 transition;
+  }
+  .faq-trigger[aria-expanded="true"] .faq-icon {
+    @apply bg-jappesi-500 border-jappesi-500 text-white;
+  }
+  .faq-panel {
+    @apply pb-5 pr-10 text-sm text-slate-600 leading-relaxed;
+  }
+
+  .avatar-init {
+    @apply h-11 w-11 rounded-full flex items-center justify-center text-white font-serif text-base font-medium shrink-0;
+  }
+
+  .trust-pill {
+    @apply inline-flex items-center gap-1.5 text-xs text-slate-600;
+  }
+  .trust-pill-dot {
+    @apply h-1.5 w-1.5 rounded-full bg-emerald-500;
+  }
+}
+
+@keyframes landing-pulse-soft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.85); }
+}
+.animate-soft-pulse {
+  animation: landing-pulse-soft 2.4s ease-in-out infinite;
+}

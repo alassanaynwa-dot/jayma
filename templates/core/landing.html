@@ -1,264 +1,458 @@
 {% extends "base/base.html" %}
 
 {% block title %}Jappesi — Vendez en ligne au Sénégal{% endblock %}
+{% block meta_description %}Crée ta boutique en ligne en 5 minutes au Sénégal. Wave, Orange Money, CinetPay. Gratuit pour démarrer, sans engagement.{% endblock %}
+
+{% block extra_head %}
+<style>
+  html { scroll-behavior: smooth; }
+</style>
+{% endblock %}
 
 {% block body %}
 <div class="bg-white">
 
-  {# ============ HEADER ============ #}
-  <header class="border-b border-slate-100 sticky top-0 z-30 bg-white/95 backdrop-blur">
-    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-      <a href="{% url 'core:home' %}" class="inline-flex items-center">
-        {% include "partials/logo.html" with size="h-7" %}
-      </a>
-      <nav class="flex items-center gap-1 sm:gap-2 text-sm">
-        <a href="#avantages" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium">Avantages</a>
-        <a href="#comment-ca-marche" class="hidden md:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium">Comment ça marche</a>
-        <a href="#tarifs" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium">Tarifs</a>
-        <a href="{% url 'accounts:login' %}" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium">Connexion</a>
-        <a href="{% url 'core:shop_request' %}" class="btn-primary text-sm py-2 px-4 ml-1">
-          Créer ma boutique
-        </a>
-      </nav>
-    </div>
-  </header>
+{# ============ NAV ============ #}
+<header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-100">
+  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <a href="{% url 'core:home' %}" class="inline-flex items-center" aria-label="Jappesi accueil">
+      {% include "partials/logo.html" with size="h-7" %}
+    </a>
+    <nav class="flex items-center gap-1 sm:gap-2 text-sm">
+      <a href="#avantages" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium transition">Avantages</a>
+      <a href="#tarifs" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium transition">Tarifs</a>
+      <a href="#temoignages" class="hidden md:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium transition">Témoignages</a>
+      <a href="{% url 'accounts:login' %}" class="hidden sm:inline px-3 py-1.5 text-slate-600 hover:text-jappesi-600 font-medium transition">Connexion</a>
+      <a href="{% url 'core:shop_request' %}" class="btn-primary text-sm py-2 px-4 ml-1">Créer ma boutique</a>
+    </nav>
+  </div>
+</header>
 
-  {# ============ HERO ============ #}
-  <section class="relative overflow-hidden">
-    <div class="max-w-6xl mx-auto px-4 py-12 sm:py-16 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-      <div>
-        <div class="inline-flex items-center gap-2 rounded-full bg-jappesi-50 border border-jappesi-100 text-jappesi-700 px-3 py-1 text-xs font-medium">
-          <span class="h-2 w-2 rounded-full bg-jappesi-500 animate-pulse"></span>
-          E-commerce 100% sénégalais
-        </div>
-        <h1 class="mt-4 font-serif text-4xl sm:text-5xl font-medium tracking-tight text-ink-500 leading-tight">
-          Ta boutique en ligne, <span class="text-jappesi-500">en 5 minutes.</span>
-        </h1>
-        <p class="mt-4 text-base sm:text-lg text-slate-600 max-w-xl">
-          Tes clients commandent, paient avec Wave, Orange Money ou CinetPay,
-          et tu reçois ton argent. Pas d'abonnement, juste 8% sur les ventes.
-        </p>
-        <div class="mt-6 flex flex-col sm:flex-row gap-3">
-          <a href="{% url 'core:shop_request' %}" class="btn-primary inline-flex items-center justify-center gap-2">
-            Ouvrir ma boutique gratuitement
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-          </a>
-          <a href="#comment-ca-marche" class="btn-secondary inline-flex items-center justify-center">
-            Voir comment ça marche
-          </a>
-        </div>
-        {# Trust signals #}
-        <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500">
-          <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Sans engagement</span>
-          <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Aucune carte bancaire requise</span>
-          <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Support en français</span>
-        </div>
+{# ============ HERO ============ #}
+<section class="relative overflow-hidden">
+  <div class="max-w-6xl mx-auto px-4 pt-12 pb-16 sm:pt-20 sm:pb-24 grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14 items-center">
+
+    {# Texte (col-span 3 sur 5 ≈ 60%) #}
+    <div class="lg:col-span-3">
+      <div class="inline-flex items-center gap-2 rounded-full bg-jappesi-50 border border-jappesi-100 text-jappesi-700 px-3 py-1 text-xs font-medium">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-soft-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        +{{ stats.shops_count }} boutiques actives au Sénégal
       </div>
 
-      {# Mockup illustratif compact #}
-      <div class="relative hidden md:block">
-        <div class="absolute top-4 right-8 h-20 w-20 rounded-full bg-jappesi-100"></div>
-        <div class="absolute bottom-4 left-8 h-14 w-14 rounded-full bg-jappesi-200"></div>
-        <div class="relative bg-white border border-slate-200 rounded-2xl shadow-xl p-5 max-w-sm mx-auto">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="h-2 w-2 rounded-full bg-red-400"></div>
-            <div class="h-2 w-2 rounded-full bg-amber-400"></div>
-            <div class="h-2 w-2 rounded-full bg-emerald-400"></div>
-            <div class="ml-2 text-[10px] text-slate-400 font-mono truncate">chez-fatou.jappesi.sn</div>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="aspect-square rounded-lg bg-gradient-to-br from-jappesi-200 to-jappesi-400"></div>
-            <div class="aspect-square rounded-lg bg-gradient-to-br from-emerald-200 to-emerald-400"></div>
-            <div class="aspect-square rounded-lg bg-gradient-to-br from-blue-200 to-blue-400"></div>
-            <div class="aspect-square rounded-lg bg-gradient-to-br from-amber-200 to-amber-400"></div>
-          </div>
-          <div class="mt-3 flex items-center justify-between text-xs">
-            <span class="font-serif text-ink-500">Pack découverte</span>
-            <span class="font-medium text-jappesi-600">12 000 XOF</span>
-          </div>
-          <button class="mt-3 w-full bg-jappesi-500 text-white text-xs font-medium py-2 rounded-lg">Ajouter au panier</button>
-        </div>
-      </div>
-    </div>
-  </section>
+      <h1 class="mt-5 font-serif text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-ink-500 leading-[1.05]">
+        Ta boutique en ligne, prête en
+        <span class="text-jappesi-500">5&nbsp;minutes.</span>
+      </h1>
 
-  {# ============ AVANTAGES (3 cards SVG) ============ #}
-  <section id="avantages" class="border-t border-slate-100 bg-slate-50/50">
-    <div class="max-w-6xl mx-auto px-4 py-14 sm:py-16">
-      <div class="text-center mb-10">
-        <div class="text-xs font-medium uppercase tracking-wider text-jappesi-600">Pourquoi Jappesi</div>
-        <h2 class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">Tout ce qu'il te faut, rien de plus.</h2>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <p class="mt-5 text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed">
+        Wave, Orange Money, CinetPay. Tes clients commandent, tu reçois ton argent
+        directement.
+      </p>
 
-        <div class="card group hover:shadow-md transition">
-          <div class="h-12 w-12 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-3">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-          </div>
-          <h3 class="font-serif text-lg font-medium text-ink-500">Catalogue simple</h3>
-          <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">
-            Ajoute tes produits, photos, prix. Tout se gère depuis ton téléphone, en 2 minutes par produit.
-          </p>
-        </div>
-
-        <div class="card group hover:shadow-md transition">
-          <div class="h-12 w-12 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-3">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h2"/></svg>
-          </div>
-          <h3 class="font-serif text-lg font-medium text-ink-500">Paiements locaux</h3>
-          <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">
-            Wave, Orange Money, CinetPay. Tes clients paient comme ils veulent, l'argent arrive directement chez toi.
-          </p>
-        </div>
-
-        <div class="card group hover:shadow-md transition">
-          <div class="h-12 w-12 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-3">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M11 18h2"/></svg>
-          </div>
-          <h3 class="font-serif text-lg font-medium text-ink-500">Lien à partager</h3>
-          <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">
-            Ta boutique sur <code class="text-jappesi-600 font-mono text-xs">tonNom.jappesi.sn</code>. Partage sur WhatsApp, Instagram, Facebook.
-          </p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  {# ============ COMMENT CA MARCHE (4 étapes) ============ #}
-  <section id="comment-ca-marche" class="border-t border-slate-100">
-    <div class="max-w-6xl mx-auto px-4 py-14 sm:py-16">
-      <div class="text-center mb-10">
-        <div class="text-xs font-medium uppercase tracking-wider text-jappesi-600">En 4 étapes</div>
-        <h2 class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">Comment ça marche</h2>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-        <div class="relative">
-          <div class="h-10 w-10 rounded-full bg-jappesi-500 text-white font-serif flex items-center justify-center text-lg font-medium">1</div>
-          <h3 class="mt-3 font-medium text-ink-500">Inscris-toi</h3>
-          <p class="mt-1 text-sm text-slate-600">Remplis un formulaire en 2 minutes. On valide ta boutique sous 24h.</p>
-        </div>
-
-        <div class="relative">
-          <div class="h-10 w-10 rounded-full bg-jappesi-500 text-white font-serif flex items-center justify-center text-lg font-medium">2</div>
-          <h3 class="mt-3 font-medium text-ink-500">Ajoute tes produits</h3>
-          <p class="mt-1 text-sm text-slate-600">Pré-remplissage de catégories + idées produits adaptés au Sénégal pour démarrer vite.</p>
-        </div>
-
-        <div class="relative">
-          <div class="h-10 w-10 rounded-full bg-jappesi-500 text-white font-serif flex items-center justify-center text-lg font-medium">3</div>
-          <h3 class="mt-3 font-medium text-ink-500">Partage ton lien</h3>
-          <p class="mt-1 text-sm text-slate-600">Sur WhatsApp, Instagram, ou directement par SMS. Tes clients arrivent en 1 clic.</p>
-        </div>
-
-        <div class="relative">
-          <div class="h-10 w-10 rounded-full bg-jappesi-500 text-white font-serif flex items-center justify-center text-lg font-medium">4</div>
-          <h3 class="mt-3 font-medium text-ink-500">Encaisse</h3>
-          <p class="mt-1 text-sm text-slate-600">Wave/OM/CinetPay créditent ton compte. Tu livres, c'est fini.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  {# ============ TARIFS ============ #}
-  <section id="tarifs" class="border-t border-slate-100 bg-slate-50/50">
-    <div class="max-w-3xl mx-auto px-4 py-14 sm:py-16 text-center">
-      <div class="text-xs font-medium uppercase tracking-wider text-jappesi-600">Tarifs simples</div>
-      <h2 class="mt-2 font-serif text-2xl sm:text-3xl font-medium text-ink-500">Pas d'abonnement, juste une commission.</h2>
-
-      <div class="mt-8 mx-auto max-w-md bg-white border-2 border-jappesi-100 rounded-2xl p-6 sm:p-8 shadow-sm">
-        <div class="flex items-baseline justify-center gap-2">
-          <span class="font-serif text-5xl sm:text-6xl font-medium text-jappesi-500">8%</span>
-          <span class="text-slate-500">par vente</span>
-        </div>
-        <p class="mt-2 text-sm text-slate-600">Sur le montant de chaque commande payée. Pas de frais cachés.</p>
-
-        <ul class="mt-6 space-y-2 text-left text-sm">
-          {% with check_svg='<svg class="h-5 w-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' %}
-            {% with items="Boutique illimitée|Produits illimités|Paiements Wave / OM / CinetPay|Sous-domaine .jappesi.sn|SMS de confirmation|Suivi de commande client|Support en français" %}
-              {% for item in items|slice:":7" %}{% endfor %}
-            {% endwith %}
-          {% endwith %}
-          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Boutique illimitée, produits illimités</li>
-          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Paiements Wave, Orange Money, CinetPay</li>
-          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Ton sous-domaine personnalisé .jappesi.sn</li>
-          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> SMS automatiques aux clients</li>
-          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Suivi de commande pour tes clients</li>
-          <li class="flex items-start gap-2"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Support en français par WhatsApp</li>
-        </ul>
-
-        <a href="{% url 'core:shop_request' %}" class="btn-primary mt-8 w-full inline-flex items-center justify-center gap-2">
-          Démarrer maintenant
+      <div class="mt-7 flex flex-col sm:flex-row gap-3">
+        <a href="{% url 'core:shop_request' %}" class="btn-primary inline-flex items-center justify-center gap-2">
+          Ouvrir ma boutique
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </a>
+        <a href="#mockup" class="btn-secondary inline-flex items-center justify-center">Voir une démo</a>
+      </div>
+
+      <div class="mt-7 flex flex-wrap gap-x-5 gap-y-2">
+        <span class="trust-pill"><span class="trust-pill-dot"></span>Sans engagement</span>
+        <span class="trust-pill"><span class="trust-pill-dot"></span>Aucune carte requise</span>
+        <span class="trust-pill"><span class="trust-pill-dot"></span>Support WhatsApp en français</span>
       </div>
     </div>
-  </section>
 
-  {# ============ CTA FINAL ============ #}
-  <section class="border-t border-slate-100">
-    <div class="max-w-4xl mx-auto px-4 py-14 sm:py-16 text-center">
-      <h2 class="font-serif text-2xl sm:text-3xl font-medium text-ink-500">Prête à vendre en ligne ?</h2>
-      <p class="mt-2 text-slate-600">Crée ta boutique gratuitement, sans engagement. Tu peux la fermer quand tu veux.</p>
-      <a href="{% url 'core:shop_request' %}" class="btn-primary mt-6 inline-flex items-center gap-2">
-        Ouvrir ma boutique
+    {# Mockup iPhone (col-span 2 sur 5 ≈ 40%) — passe sous le texte sur mobile #}
+    <div id="mockup" class="lg:col-span-2 flex justify-center">
+      <div class="iphone-frame">
+        <div class="iphone-screen">
+
+          {# Status bar fake #}
+          <div class="absolute top-0 inset-x-0 h-7 flex items-center justify-between px-5 pt-1 text-[10px] font-semibold text-ink-500 z-10">
+            <span>9:41</span>
+            <span class="flex items-center gap-1">
+              <svg class="h-2.5 w-2.5" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11h2v3H1zm4-2h2v5H5zm4-3h2v8H9zm4-3h2v11h-2z"/></svg>
+              <svg class="h-2.5 w-2.5" viewBox="0 0 16 16" fill="currentColor"><path d="M14 4H2a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1V5a1 1 0 00-1-1zm-1 6H3V6h10v4zm2-3v2h.5V7H15z"/></svg>
+            </span>
+          </div>
+
+          {# Contenu boutique exemple #}
+          <div class="absolute inset-0 pt-9 flex flex-col">
+            {# Header boutique #}
+            <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-100">
+              <div>
+                <div class="font-serif text-sm font-medium text-ink-500 leading-tight">Maison Aïssa</div>
+                <div class="text-[9px] text-slate-500 uppercase tracking-wide">Mode wax · Dakar</div>
+              </div>
+              <div class="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center">
+                <svg class="h-3 w-3 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+            </div>
+
+            {# Grid 4 produits 2x2 #}
+            <div class="flex-1 px-3 py-3 grid grid-cols-2 gap-2.5 overflow-hidden">
+              {# Produit 1 — Robe wax #}
+              <div class="rounded-lg border border-slate-100 overflow-hidden flex flex-col">
+                <div class="aspect-square bg-gradient-to-br from-jappesi-200 via-jappesi-300 to-jappesi-500 flex items-center justify-center">
+                  <svg class="h-7 w-7 text-white/80" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path d="M9 4h6m-6 0c0 2-1 3-1 5l-3 7c0 1 1 2 2 2h10c1 0 2-1 2-2l-3-7c0-2-1-3-1-5"/></svg>
+                </div>
+                <div class="p-1.5">
+                  <div class="text-[9px] font-medium text-ink-500 truncate">Robe wax</div>
+                  <div class="text-[10px] font-semibold text-jappesi-600">15 000 F</div>
+                </div>
+              </div>
+              {# Produit 2 — Rouge mat #}
+              <div class="rounded-lg border border-slate-100 overflow-hidden flex flex-col">
+                <div class="aspect-square bg-gradient-to-br from-rose-200 via-rose-400 to-rose-600 flex items-center justify-center">
+                  <svg class="h-7 w-7 text-white/80" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="6"/><rect x="8" y="9" width="8" height="12" rx="1"/></svg>
+                </div>
+                <div class="p-1.5">
+                  <div class="text-[9px] font-medium text-ink-500 truncate">Rouge mat</div>
+                  <div class="text-[10px] font-semibold text-jappesi-600">4 500 F</div>
+                </div>
+              </div>
+              {# Produit 3 — Sac cuir #}
+              <div class="rounded-lg border border-slate-100 overflow-hidden flex flex-col">
+                <div class="aspect-square bg-gradient-to-br from-amber-200 via-amber-500 to-amber-700 flex items-center justify-center">
+                  <svg class="h-7 w-7 text-white/80" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path d="M5 9h14v11a1 1 0 01-1 1H6a1 1 0 01-1-1V9zM9 9V7a3 3 0 016 0v2"/></svg>
+                </div>
+                <div class="p-1.5">
+                  <div class="text-[9px] font-medium text-ink-500 truncate">Sac cuir</div>
+                  <div class="text-[10px] font-semibold text-jappesi-600">22 000 F</div>
+                </div>
+              </div>
+              {# Produit 4 — Karité #}
+              <div class="rounded-lg border border-slate-100 overflow-hidden flex flex-col">
+                <div class="aspect-square bg-gradient-to-br from-emerald-200 via-emerald-400 to-emerald-700 flex items-center justify-center">
+                  <svg class="h-7 w-7 text-white/80" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path d="M7 4h10l-1 3H8z"/><path d="M8 7h8v12a2 2 0 01-2 2h-4a2 2 0 01-2-2V7z"/></svg>
+                </div>
+                <div class="p-1.5">
+                  <div class="text-[9px] font-medium text-ink-500 truncate">Karité 250g</div>
+                  <div class="text-[10px] font-semibold text-jappesi-600">3 000 F</div>
+                </div>
+              </div>
+            </div>
+
+            {# Bouton commander Wave #}
+            <div class="p-3 border-t border-slate-100">
+              <button class="w-full rounded-lg bg-jappesi-500 text-white text-[11px] font-semibold py-2.5 flex items-center justify-center gap-1.5">
+                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24"><path d="M3 12c0-2 1-3 2-3s2 2 3 2 2-3 4-3 3 4 5 4 2-2 3-2 1 1 1 2-1 3-2 3-2-2-3-2-2 3-4 3-3-4-5-4-2 2-3 2-1-1-1-2z"/></svg>
+                Commander avec Wave
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{# ============ STATS ============ #}
+<section class="border-t border-slate-100">
+  <div class="max-w-5xl mx-auto px-4 py-14 sm:py-16 grid grid-cols-3 gap-6 sm:gap-12 text-center">
+    <div>
+      <div class="stat-num">{{ stats.shops_count }}+</div>
+      <div class="stat-label">Boutiques actives</div>
+    </div>
+    <div>
+      <div class="stat-num">{{ stats.sales_xof_millions }}M&nbsp;F</div>
+      <div class="stat-label">Ventes traitées</div>
+    </div>
+    <div>
+      <div class="stat-num">{{ stats.rating }}<span class="text-jappesi-500">/5</span></div>
+      <div class="stat-label">Note vendeurs</div>
+    </div>
+  </div>
+</section>
+
+{# ============ AVANTAGES ============ #}
+<section id="avantages" class="border-t border-slate-100 scroll-mt-20 bg-slate-50/40">
+  <div class="max-w-5xl mx-auto px-4 py-16 sm:py-20">
+    <div class="text-center mb-12">
+      <div class="text-xs font-medium uppercase tracking-[0.18em] text-jappesi-600">Pourquoi Jappesi</div>
+      <h2 class="mt-2 font-serif text-3xl sm:text-4xl font-medium text-ink-500">Tout ce qu'il te faut, rien de plus.</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+
+      {# Catalogue depuis ton téléphone #}
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 hover:border-jappesi-200 hover:shadow-sm transition">
+        <div class="h-11 w-11 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-4">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <h3 class="font-serif text-xl font-medium text-ink-500">Catalogue depuis ton téléphone</h3>
+        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+          Photo, nom, prix, stock. Un produit ajouté en moins de 2 minutes,
+          directement depuis ton mobile entre deux clients.
+        </p>
+      </div>
+
+      {# Paiements 100% locaux #}
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 hover:border-jappesi-200 hover:shadow-sm transition">
+        <div class="h-11 w-11 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-4">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h2"/></svg>
+        </div>
+        <h3 class="font-serif text-xl font-medium text-ink-500">Paiements 100% locaux</h3>
+        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+          Tes clients utilisent ce qu'ils ont déjà. L'argent arrive direct sur
+          ton compte, pas d'attente, pas d'intermédiaire.
+        </p>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          <span class="text-[11px] font-semibold rounded-md bg-blue-50 text-blue-700 px-2 py-1">Wave</span>
+          <span class="text-[11px] font-semibold rounded-md bg-orange-50 text-orange-700 px-2 py-1">Orange Money</span>
+          <span class="text-[11px] font-semibold rounded-md bg-slate-100 text-slate-700 px-2 py-1">CinetPay</span>
+        </div>
+      </div>
+
+      {# Lien à partager partout #}
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 hover:border-jappesi-200 hover:shadow-sm transition">
+        <div class="h-11 w-11 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-4">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 015.656 0l-3.5 3.5a4 4 0 01-5.656 0M10.172 13.828a4 4 0 01-5.656 0l3.5-3.5a4 4 0 015.656 0"/></svg>
+        </div>
+        <h3 class="font-serif text-xl font-medium text-ink-500">Lien à partager partout</h3>
+        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+          Ton sous-domaine perso à coller sur WhatsApp, Instagram, TikTok ou
+          Facebook. Tes clients arrivent en 1 clic.
+        </p>
+        <div class="mt-3 inline-block rounded-md bg-slate-50 border border-slate-200 px-2.5 py-1 font-mono text-xs text-slate-700">
+          tonNom<span class="text-jappesi-600">.jappesi.sn</span>
+        </div>
+      </div>
+
+      {# SMS et suivi automatiques #}
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 hover:border-jappesi-200 hover:shadow-sm transition">
+        <div class="h-11 w-11 rounded-xl bg-jappesi-50 flex items-center justify-center text-jappesi-600 mb-4">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </div>
+        <h3 class="font-serif text-xl font-medium text-ink-500">SMS et suivi automatiques</h3>
+        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+          Confirmation de commande, expédition, livraison : tout part tout seul
+          par SMS. Tu te concentres sur tes ventes.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{# ============ COMMENT ÇA MARCHE ============ #}
+<section class="border-t border-slate-100">
+  <div class="max-w-5xl mx-auto px-4 py-16 sm:py-20">
+    <div class="text-center mb-12">
+      <div class="text-xs font-medium uppercase tracking-[0.18em] text-jappesi-600">En 4 étapes</div>
+      <h2 class="mt-2 font-serif text-3xl sm:text-4xl font-medium text-ink-500">Comment ça marche</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6">
+      <div>
+        <div class="font-serif text-4xl text-jappesi-500 font-medium leading-none">01</div>
+        <h3 class="mt-3 font-serif text-lg font-medium text-ink-500">Inscris-toi</h3>
+        <p class="mt-1 text-sm text-slate-600 leading-relaxed">Formulaire en 2 minutes. Validation sous 24h ouvrées.</p>
+      </div>
+      <div>
+        <div class="font-serif text-4xl text-jappesi-500 font-medium leading-none">02</div>
+        <h3 class="mt-3 font-serif text-lg font-medium text-ink-500">Ajoute tes produits</h3>
+        <p class="mt-1 text-sm text-slate-600 leading-relaxed">Catégories pré-mâchées et idées produits adaptées au Sénégal.</p>
+      </div>
+      <div>
+        <div class="font-serif text-4xl text-jappesi-500 font-medium leading-none">03</div>
+        <h3 class="mt-3 font-serif text-lg font-medium text-ink-500">Partage ton lien</h3>
+        <p class="mt-1 text-sm text-slate-600 leading-relaxed">WhatsApp, Instagram, SMS. Tes clients arrivent en 1 clic.</p>
+      </div>
+      <div>
+        <div class="font-serif text-4xl text-jappesi-500 font-medium leading-none">04</div>
+        <h3 class="mt-3 font-serif text-lg font-medium text-ink-500">Encaisse</h3>
+        <p class="mt-1 text-sm text-slate-600 leading-relaxed">Wave, OM ou CinetPay créditent ton compte. Tu livres.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ============ TÉMOIGNAGES ============ #}
+<section id="temoignages" class="border-t border-slate-100 scroll-mt-20 bg-slate-50/40">
+  <div class="max-w-5xl mx-auto px-4 py-16 sm:py-20">
+    <div class="text-center mb-12">
+      <div class="text-xs font-medium uppercase tracking-[0.18em] text-jappesi-600">Vendeuses Jappesi</div>
+      <h2 class="mt-2 font-serif text-3xl sm:text-4xl font-medium text-ink-500">Elles vendent déjà avec nous.</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+      {% for t in testimonials %}
+        <article class="rounded-2xl bg-white border border-slate-200 p-6 hover:shadow-sm transition flex flex-col">
+          <div class="flex items-center gap-3">
+            <div class="avatar-init {{ t.color }}">{{ t.initials }}</div>
+            <div class="min-w-0">
+              <div class="font-medium text-ink-500 truncate">{{ t.name }}</div>
+              <div class="text-xs text-slate-500 truncate">{{ t.shop }} · {{ t.activity }} · {{ t.city }}</div>
+            </div>
+          </div>
+          <div class="mt-4 flex gap-0.5 text-jappesi-500" aria-label="5 sur 5 étoiles">
+            {% for _ in "12345" %}
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.16c.969 0 1.371 1.24.588 1.81l-3.367 2.446a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118L10 13.347l-3.366 2.446c-.784.57-1.838-.197-1.539-1.118l1.286-3.957a1 1 0 00-.364-1.118L2.65 9.154c-.783-.57-.38-1.81.588-1.81h4.16a1 1 0 00.95-.69l1.286-3.957z"/></svg>
+            {% endfor %}
+          </div>
+          <p class="mt-3 text-sm text-slate-700 leading-relaxed flex-1">« {{ t.quote }} »</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ============ TARIFS ============ #}
+<section id="tarifs" class="border-t border-slate-100 scroll-mt-20">
+  <div class="max-w-2xl mx-auto px-4 py-16 sm:py-20 text-center">
+    <div class="text-xs font-medium uppercase tracking-[0.18em] text-jappesi-600">Tarifs</div>
+    <h2 class="mt-2 font-serif text-3xl sm:text-4xl font-medium text-ink-500">Démarre sans rien payer.</h2>
+    <p class="mt-3 text-slate-600 max-w-md mx-auto">Aucun abonnement, aucun frais d'installation. Tu ouvres ta boutique aujourd'hui et tu vends dès demain.</p>
+
+    <div class="mt-8 mx-auto bg-white border border-jappesi-200 rounded-2xl p-7 sm:p-9 shadow-sm text-left">
+      <div class="text-center">
+        <span class="font-serif text-5xl sm:text-6xl font-medium text-jappesi-500 leading-none tracking-tight">Gratuit</span>
+        <div class="mt-2 text-sm text-slate-500">pour démarrer ta boutique</div>
+      </div>
+
+      <ul class="mt-7 space-y-3 text-sm text-slate-700">
+        <li class="flex items-start gap-3"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Boutique illimitée, produits illimités</span></li>
+        <li class="flex items-start gap-3"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Paiements Wave, Orange Money, CinetPay</span></li>
+        <li class="flex items-start gap-3"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Sous-domaine personnalisé <code class="font-mono text-xs text-jappesi-600">.jappesi.sn</code></span></li>
+        <li class="flex items-start gap-3"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>SMS automatiques aux clients</span></li>
+        <li class="flex items-start gap-3"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Suivi de commande pour tes clients</span></li>
+        <li class="flex items-start gap-3"><svg class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>Support WhatsApp en français, 7j/7</span></li>
+      </ul>
+
+      <a href="{% url 'core:shop_request' %}" class="btn-primary mt-8 w-full inline-flex items-center justify-center gap-2">
+        Démarrer maintenant
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
       </a>
     </div>
-  </section>
+  </div>
+</section>
 
-  {# ============ FOOTER ============ #}
-  <footer class="border-t border-slate-200 bg-slate-50">
-    <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
-      <div class="col-span-2 sm:col-span-1">
+{# ============ FAQ ============ #}
+<section class="border-t border-slate-100 bg-slate-50/40">
+  <div class="max-w-3xl mx-auto px-4 py-16 sm:py-20">
+    <div class="text-center mb-10">
+      <div class="text-xs font-medium uppercase tracking-[0.18em] text-jappesi-600">Questions fréquentes</div>
+      <h2 class="mt-2 font-serif text-3xl sm:text-4xl font-medium text-ink-500">On répond à tes doutes.</h2>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 px-5 sm:px-7">
+      {% for faq in faqs %}
+        <div class="faq-item" x-data="{ open: false }">
+          <button type="button"
+                  class="faq-trigger"
+                  @click="open = !open"
+                  :aria-expanded="open ? 'true' : 'false'"
+                  aria-controls="faq-panel-{{ forloop.counter }}">
+            <span>{{ faq.q }}</span>
+            <span class="faq-icon" aria-hidden="true">
+              <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
+                <path x-show="open" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
+              </svg>
+            </span>
+          </button>
+          <div x-show="open"
+               x-transition.duration.200ms
+               id="faq-panel-{{ forloop.counter }}"
+               class="faq-panel"
+               x-cloak>
+            {{ faq.a }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ============ CTA FINAL ============ #}
+<section class="border-t border-slate-100 bg-gradient-to-b from-jappesi-50/60 to-white">
+  <div class="max-w-3xl mx-auto px-4 py-16 sm:py-20 text-center">
+    <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl font-medium text-ink-500 leading-tight">
+      Prête à vendre <span class="text-jappesi-500">en ligne</span> ?
+    </h2>
+    <p class="mt-4 text-slate-600 max-w-xl mx-auto">
+      Crée ta boutique aujourd'hui. Sans engagement, sans carte bancaire.
+      Tu peux la fermer quand tu veux.
+    </p>
+    <a href="{% url 'core:shop_request' %}" class="btn-primary mt-7 inline-flex items-center gap-2 px-6 py-3.5">
+      Ouvrir ma boutique gratuitement
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+    </a>
+    <p class="mt-6 text-xs text-slate-500">
+      🇸🇳 Conçu et hébergé au Sénégal · <a href="mailto:contact@jappesi.sn" class="hover:text-jappesi-600 underline underline-offset-2">contact@jappesi.sn</a>
+    </p>
+  </div>
+</section>
+
+{# ============ FOOTER ============ #}
+<footer class="border-t border-slate-200 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-4 py-12 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 text-sm">
+
+    <div class="col-span-2 lg:col-span-1">
+      <a href="{% url 'core:home' %}" class="inline-flex items-center" aria-label="Jappesi accueil">
         {% include "partials/logo.html" with size="h-6" %}
-        <p class="mt-2 text-xs text-slate-500 leading-relaxed">
-          La boutique en ligne pour les commerçants sénégalais.
-        </p>
-      </div>
-      <div>
-        <h4 class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-2">Plateforme</h4>
-        <ul class="space-y-1.5">
-          <li><a href="#avantages" class="text-slate-600 hover:text-jappesi-600">Avantages</a></li>
-          <li><a href="#comment-ca-marche" class="text-slate-600 hover:text-jappesi-600">Comment ça marche</a></li>
-          <li><a href="#tarifs" class="text-slate-600 hover:text-jappesi-600">Tarifs</a></li>
-          <li><a href="{% url 'core:shop_request' %}" class="text-slate-600 hover:text-jappesi-600">Créer ma boutique</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-2">Légal</h4>
-        <ul class="space-y-1.5">
-          <li><a href="{% url 'core:legal_cgu' %}" class="text-slate-600 hover:text-jappesi-600">CGU</a></li>
-          <li><a href="{% url 'core:legal_cgv' %}" class="text-slate-600 hover:text-jappesi-600">CGV</a></li>
-          <li><a href="{% url 'core:legal_confidentialite' %}" class="text-slate-600 hover:text-jappesi-600">Confidentialité</a></li>
-          <li><a href="{% url 'core:legal_mentions' %}" class="text-slate-600 hover:text-jappesi-600">Mentions légales</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-2">Contact</h4>
-        <ul class="space-y-1.5 text-slate-600">
-          <li>
-            <a href="mailto:contact@jappesi.sn" class="hover:text-jappesi-600 inline-flex items-center gap-1.5">
-              <svg class="h-4 w-4 text-jappesi-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-              contact@jappesi.sn
-            </a>
-          </li>
-          <li class="inline-flex items-center gap-1.5">
-            <svg class="h-4 w-4 text-jappesi-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.7 16.7L12 22l-5.7-5.3a8 8 0 1111.4 0z"/><circle cx="12" cy="11" r="3" stroke-width="1.5"/></svg>
-            Dakar, Sénégal
-          </li>
-        </ul>
-      </div>
+      </a>
+      <p class="mt-3 text-sm text-slate-500 leading-relaxed max-w-xs">
+        La boutique en ligne pour les commerçants sénégalais. Sans abonnement,
+        gratuit pour démarrer.
+      </p>
     </div>
-    <div class="border-t border-slate-200 py-3">
-      <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-        <span>© {% now "Y" %} Jappesi · Tous droits réservés</span>
-        <span>Fait avec ♥ au Sénégal</span>
-      </div>
+
+    <div>
+      <h4 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-3">Plateforme</h4>
+      <ul class="space-y-2">
+        <li><a href="#avantages" class="text-slate-600 hover:text-jappesi-600 transition">Avantages</a></li>
+        <li><a href="#temoignages" class="text-slate-600 hover:text-jappesi-600 transition">Témoignages</a></li>
+        <li><a href="#tarifs" class="text-slate-600 hover:text-jappesi-600 transition">Tarifs</a></li>
+        <li><a href="{% url 'accounts:login' %}" class="text-slate-600 hover:text-jappesi-600 transition">Connexion</a></li>
+      </ul>
     </div>
-  </footer>
+
+    <div>
+      <h4 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-3">Légal</h4>
+      <ul class="space-y-2">
+        <li><a href="{% url 'core:legal_cgu' %}" class="text-slate-600 hover:text-jappesi-600 transition">CGU</a></li>
+        <li><a href="{% url 'core:legal_cgv' %}" class="text-slate-600 hover:text-jappesi-600 transition">CGV</a></li>
+        <li><a href="{% url 'core:legal_confidentialite' %}" class="text-slate-600 hover:text-jappesi-600 transition">Confidentialité</a></li>
+        <li><a href="{% url 'core:legal_mentions' %}" class="text-slate-600 hover:text-jappesi-600 transition">Mentions légales</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-3">Contact</h4>
+      <ul class="space-y-3 text-slate-600">
+        <li>
+          <a href="mailto:contact@jappesi.sn" class="hover:text-jappesi-600 transition inline-flex items-center gap-2">
+            <svg class="h-4 w-4 text-jappesi-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span class="truncate">contact@jappesi.sn</span>
+          </a>
+        </li>
+        <li class="flex items-center gap-2">
+          <svg class="h-4 w-4 text-jappesi-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.7 16.7L12 22l-5.7-5.3a8 8 0 1111.4 0z"/><circle cx="12" cy="11" r="3" stroke-width="1.5"/></svg>
+          <span>Dakar, Sénégal</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-slate-200">
+    <div class="max-w-5xl mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <span>© {% now "Y" %} Jappesi · Tous droits réservés</span>
+      <span class="inline-flex items-center gap-1">Fait avec <span class="text-jappesi-500">♥</span> au Sénégal</span>
+    </div>
+  </div>
+</footer>
 
 </div>
+
+{# Cache l'élément FAQ tant qu'Alpine n'a pas hydraté (évite flash) #}
+<style>[x-cloak] { display: none !important; }</style>
 {% endblock %}
