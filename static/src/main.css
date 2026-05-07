@@ -1,12 +1,13 @@
 /*
- * Jayma — feuille de style Tailwind v4 (CSS-first config).
- * Build : ./bin/tailwindcss -i static/src/main.css -o static/css/main.css --minify
+ * Jappesi — feuille de style Tailwind v4 (CSS-first config).
+ * Build : ./.bin/tailwindcss -i static/src/main.css -o static/css/main.css --minify
+ * Ou via le Makefile : `make css` (prod) / `make css-watch` (dev).
  */
 
 @import "tailwindcss";
 
 /* -----------------------------------------------------------
- * Palette Jayma — couleurs chaleureuses, inspiration sénégalaise
+ * Palette Jappesi — couleurs chaleureuses, inspiration sénégalaise
  * ----------------------------------------------------------- */
 @theme {
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
@@ -104,13 +105,6 @@ body {
   .iphone-screen {
     @apply relative overflow-hidden rounded-[2rem] bg-white;
     aspect-ratio: 9/19;
-  }
-
-  .stat-num {
-    @apply font-serif text-5xl sm:text-6xl font-medium text-ink-500 leading-none tracking-tight;
-  }
-  .stat-label {
-    @apply mt-3 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium;
   }
 
   .faq-item {
