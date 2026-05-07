@@ -34,10 +34,12 @@
 
     {# Texte (col-span 3 sur 5 ≈ 60%) #}
     <div class="lg:col-span-3">
-      {# Badge "+ N boutiques actives" — désactivé tant qu'on n'a pas les vrais
-         chiffres. Pour le réactiver, remplacer le badge neutre ci-dessous par
-         le bloc commenté en dessous (et s'assurer que stats.shops_count reflète
-         la valeur réelle dans core/views.py LANDING_STATS). #}
+      {% comment %}
+      Badge "+ N boutiques actives" — désactivé tant qu'on n'a pas les vrais
+      chiffres. Pour le réactiver, remplacer le badge neutre ci-dessous par
+      le bloc commenté en dessous (et s'assurer que stats.shops_count reflète
+      la valeur réelle dans core/views.py LANDING_STATS).
+      {% endcomment %}
       <div class="inline-flex items-center gap-2 rounded-full bg-jappesi-50 border border-jappesi-100 text-jappesi-700 px-3 py-1 text-xs font-medium">
         <span class="relative flex h-2 w-2">
           <span class="animate-soft-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -168,10 +170,9 @@
 </section>
 
 {# ============ STATS ============ #}
-{# Section désactivée tant qu'on n'a pas les vrais chiffres.
-   Pour la réactiver : décommenter le bloc {% comment %}…{% endcomment %}
-   ci-dessous ET mettre à jour LANDING_STATS dans core/views.py avec les
-   chiffres réels (boutiques actives, ventes traitées en MF, note moyenne). #}
+{# Section désactivée tant qu'on n'a pas les vrais chiffres. #}
+{# Pour réactiver : retirer les balises comment ci-dessous ET mettre à jour #}
+{# LANDING_STATS dans core/views.py (boutiques, ventes en MF, note moyenne). #}
 {% comment %}
 <section class="border-t border-slate-100">
   <div class="max-w-5xl mx-auto px-4 py-14 sm:py-16 grid grid-cols-3 gap-6 sm:gap-12 text-center">
