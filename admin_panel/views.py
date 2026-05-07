@@ -501,6 +501,63 @@ def admin_notifications(request):
     })
 
 
+@platform_admin_required
+def admin_sms_test(request):
+    """Page outil pour envoyer un SMS de test depuis l'admin et voir la réponse
+    provider brute. Utile pour valider rapidement la config AfricasTalking
+    (clé API, sender ID, crédit) sans devoir simuler une commande complète.
+
+    Le SMS passe par toute la pipeline normale (normalisation E.164,
+    kill-switch PlatformSettings.sms_enabled, NotificationLog), donc le
+    résultat reflète exactement ce qui se passerait pour un vrai SMS métier.
+    """
+    from django.conf import settings as dj_settings
+
+    from notifications.services.sms import send_sms
+
+    DEFAULT_MSG = "Test SMS Jappesi — merci d'ignorer ce message."
+    log = None
+
+    if request.method == "POST":
+        # En POST on prend les valeurs telles quelles (sans défaut) pour qu'un
+        # message vide soit bien détecté comme erreur de saisie.
+        phone = (request.POST.get("phone") or "").strip()
+        message = (request.POST.get("message") or "").strip()
+        if not phone:
+            messages.error(request, "Le numéro de téléphone est requis.")
+        elif not message:
+            messages.error(request, "Le message est requis.")
+        else:
+            log = send_sms(phone, message)
+            if log.status == NotificationLog.Status.SENT:
+                messages.success(request, f"SMS envoyé avec succès à {log.recipient}.")
+            else:
+                messages.warning(
+                    request,
+                    f"SMS en échec : {log.error or 'voir détail provider ci-dessous'}",
+                )
+    else:
+        # GET initial : pré-remplir avec le message par défaut + numéro vide.
+        phone = ""
+        message = DEFAULT_MSG
+
+    backend_path = getattr(dj_settings, "SMS_BACKEND", "")
+    return render(request, "admin_panel/sms_test.html", {
+        "phone": phone,
+        "message": message,
+        "default_message": DEFAULT_MSG,
+        "log": log,
+        "config": {
+            "backend": backend_path.rsplit(".", 1)[-1] if backend_path else "(non défini)",
+            "is_console": "Console" in backend_path,
+            "at_username": getattr(dj_settings, "AT_USERNAME", ""),
+            "at_sender_id": getattr(dj_settings, "AT_SENDER_ID", "") or "(vide)",
+            "at_api_key_set": bool(getattr(dj_settings, "AT_API_KEY", "")),
+            "sms_enabled": PlatformSettings.load().sms_enabled,
+        },
+    })
+
+
 # ============ WEBHOOKS (événements providers) ============
 
 @platform_admin_required

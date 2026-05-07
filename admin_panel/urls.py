@@ -40,6 +40,7 @@ urlpatterns = [
 
     # Logs notifications
     path("notifications/", views.admin_notifications, name="notifications"),
+    path("notifications/test-sms/", views.admin_sms_test, name="sms_test"),
 
     # Webhooks providers
     path("webhooks/", views.admin_webhooks, name="webhooks"),

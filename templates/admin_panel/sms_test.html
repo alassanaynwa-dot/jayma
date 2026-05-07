@@ -1,0 +1,158 @@
+{% extends "admin_panel/base.html" %}
+{% block title %}Test SMS — Admin Jappesi{% endblock %}
+{% block header_title %}Envoyer un SMS de test{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-3xl">
+
+  {# ============ Statut config ============ #}
+  <div class="card">
+    <h2 class="font-serif text-lg font-medium text-ink-500">Configuration actuelle</h2>
+    <p class="mt-1 text-sm text-slate-500">Ces valeurs viennent du fichier <code class="font-mono text-xs">.env</code> du serveur. Pour les changer, mettre à jour le <code class="font-mono text-xs">.env</code> et redémarrer le container.</p>
+
+    <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+      <div>
+        <dt class="text-xs uppercase tracking-wide text-slate-500">Backend</dt>
+        <dd class="mt-0.5 font-mono text-ink-500">
+          {{ config.backend }}
+          {% if config.is_console %}
+            <span class="ml-1 inline-flex rounded-full bg-amber-100 text-amber-800 px-2 py-0.5 text-[11px] font-medium">DEV (logs uniquement)</span>
+          {% else %}
+            <span class="ml-1 inline-flex rounded-full bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[11px] font-medium">LIVE</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs uppercase tracking-wide text-slate-500">AT Username</dt>
+        <dd class="mt-0.5 font-mono text-ink-500">{{ config.at_username|default:"(vide)" }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs uppercase tracking-wide text-slate-500">AT Sender ID</dt>
+        <dd class="mt-0.5 font-mono text-ink-500">
+          {{ config.at_sender_id }}
+          {% if config.at_sender_id == "(vide)" %}
+            <span class="ml-1 text-[11px] text-slate-500">→ AT utilise le short code par défaut</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs uppercase tracking-wide text-slate-500">AT API Key</dt>
+        <dd class="mt-0.5">
+          {% if config.at_api_key_set %}
+            <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs">✓ Définie</span>
+          {% else %}
+            <span class="inline-flex rounded-full bg-red-100 text-red-700 px-2 py-0.5 text-xs">✗ Vide — l'envoi va échouer</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div class="sm:col-span-2">
+        <dt class="text-xs uppercase tracking-wide text-slate-500">Kill-switch SMS</dt>
+        <dd class="mt-0.5">
+          {% if config.sms_enabled %}
+            <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs">SMS activés</span>
+          {% else %}
+            <span class="inline-flex rounded-full bg-red-100 text-red-700 px-2 py-0.5 text-xs">⚠ Désactivés globalement (Réglages plateforme)</span>
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  {# ============ Formulaire envoi ============ #}
+  <form method="post" class="card space-y-4">
+    {% csrf_token %}
+    <div>
+      <h2 class="font-serif text-lg font-medium text-ink-500">Envoyer un SMS</h2>
+      <p class="mt-1 text-sm text-slate-500">Le SMS passe par toute la pipeline réelle (normalisation E.164, kill-switch, log <code class="font-mono text-xs">NotificationLog</code>). Tu peux entrer un numéro avec ou sans préfixe — il sera normalisé en <code class="font-mono text-xs">+221XXXXXXXXX</code> avant l'envoi.</p>
+    </div>
+
+    <div>
+      <label for="phone" class="label">Numéro destinataire</label>
+      <input type="text" id="phone" name="phone" value="{{ phone }}"
+             placeholder="+221770001234 ou 770001234"
+             class="input font-mono" required>
+      <p class="mt-1 text-xs text-slate-500">Pour tester en sandbox AT : utilise un numéro du <a href="https://account.africastalking.com/launch_simulator" target="_blank" rel="noopener" class="text-jappesi-600 hover:underline">simulateur AT</a>.</p>
+    </div>
+
+    <div>
+      <label for="message" class="label">Message</label>
+      <textarea id="message" name="message" rows="3"
+                class="input font-mono text-sm" required>{{ message }}</textarea>
+      <p class="mt-1 text-xs text-slate-500"><span id="char-count">{{ message|length }}</span> caractères — au-delà de 160, AT facture plusieurs SMS.</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="submit" class="btn-primary">
+        Envoyer le SMS
+      </button>
+      <a href="{% url 'admin_panel:notifications' %}" class="btn-secondary">Voir l'historique</a>
+    </div>
+  </form>
+
+  {# ============ Résultat dernier envoi ============ #}
+  {% if log %}
+    <div class="card">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="font-serif text-lg font-medium text-ink-500">Résultat</h2>
+        {% if log.status == 'sent' %}
+          <span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-xs font-medium">✓ Envoyé</span>
+        {% elif log.status == 'failed' %}
+          <span class="inline-flex rounded-full bg-red-100 text-red-700 px-3 py-1 text-xs font-medium">✗ Échoué</span>
+        {% else %}
+          <span class="inline-flex rounded-full bg-amber-100 text-amber-700 px-3 py-1 text-xs font-medium">⋯ En attente</span>
+        {% endif %}
+      </div>
+
+      <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+        <div>
+          <dt class="text-xs uppercase tracking-wide text-slate-500">Destinataire normalisé</dt>
+          <dd class="mt-0.5 font-mono text-ink-500">{{ log.recipient }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase tracking-wide text-slate-500">Heure</dt>
+          <dd class="mt-0.5 text-ink-500">{{ log.created_at|date:"d/m/Y H:i:s" }}</dd>
+        </div>
+        <div class="sm:col-span-2">
+          <dt class="text-xs uppercase tracking-wide text-slate-500">Message envoyé</dt>
+          <dd class="mt-0.5 text-ink-500 whitespace-pre-wrap">{{ log.body }}</dd>
+        </div>
+        {% if log.error %}
+          <div class="sm:col-span-2">
+            <dt class="text-xs uppercase tracking-wide text-red-500">Erreur</dt>
+            <dd class="mt-0.5 text-red-700 font-mono text-xs whitespace-pre-wrap">{{ log.error }}</dd>
+          </div>
+        {% endif %}
+      </dl>
+
+      {% if log.provider_response %}
+        <div class="mt-5">
+          <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Réponse provider brute</h3>
+          <pre class="bg-slate-900 text-slate-100 rounded-lg p-4 text-xs overflow-x-auto font-mono">{{ log.provider_response|pprint }}</pre>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# ============ Aide debug ============ #}
+  <div class="card bg-slate-50">
+    <h3 class="font-medium text-ink-500">Codes d'erreur AfricasTalking fréquents</h3>
+    <ul class="mt-3 space-y-2 text-sm text-slate-600">
+      <li><code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded">InvalidSenderId</code> — le Sender ID configuré n'est pas validé pour ce pays. Solution : vider <code class="font-mono text-xs">AT_SENDER_ID</code> en attendant que JAPPESI soit validé par AT.</li>
+      <li><code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded">InsufficientBalance</code> — pas assez de crédit sur le wallet AT. Recharger via Billing → Top Up.</li>
+      <li><code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded">InvalidPhoneNumber</code> — numéro mal formé après normalisation. Vérifier que le numéro est bien sénégalais (préfixe 70/75/76/77/78).</li>
+      <li><code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded">DeliveryFailure</code> (en sandbox) — normal, le sandbox ne livre pas aux vrais numéros. Utiliser le simulateur AT pour vérifier la livraison.</li>
+    </ul>
+  </div>
+
+</div>
+
+{# Compteur de caractères live #}
+<script>
+  (function() {
+    const ta = document.getElementById('message');
+    const counter = document.getElementById('char-count');
+    if (!ta || !counter) return;
+    ta.addEventListener('input', () => { counter.textContent = ta.value.length; });
+  })();
+</script>
+{% endblock %}
