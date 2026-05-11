@@ -1,14 +1,16 @@
 """Vues shops — boutique publique + paramètres dashboard."""
 from django.contrib import messages
 from django.core.cache import cache
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from accounts.decorators import merchant_required
 
 from .forms import ShopSettingsForm
+from .models import WaitlistSignup
 
 # ============ PUBLIC ============
 
@@ -17,6 +19,18 @@ def shop_public_home(request):
         raise Http404("Aucune boutique détectée sur ce sous-domaine.")
 
     shop = request.shop
+
+    # Boutique sans aucun produit actif → page "en préparation" avec form
+    # waitlist au lieu d'une boutique vide. Évite que le visiteur tombe sur
+    # une coquille vide quand le commerçant a partagé son lien trop tôt.
+    if not shop.products.filter(is_active=True).exists():
+        signup_count = shop.waitlist_signups.count()
+        return render(request, "shops/public_coming_soon.html", {
+            "shop": shop,
+            "signup_count": signup_count,
+            "submitted": request.GET.get("merci") == "1",
+        })
+
     featured = shop.products.filter(is_active=True, is_featured=True).prefetch_related("images")[:8]
     latest = shop.products.filter(is_active=True).prefetch_related("images")[:8]
 
@@ -53,6 +67,67 @@ def shop_public_home(request):
     })
 
 
+@require_POST
+def shop_waitlist_register(request):
+    """Inscription d'un visiteur à la waitlist d'une boutique en préparation.
+
+    Crée un WaitlistSignup (ou retourne silencieusement si déjà inscrit pour
+    le même couple shop+phone), envoie un SMS au commerçant pour le prévenir
+    qu'un client potentiel attend l'ouverture, et redirige vers la home avec
+    un flag ?merci=1 pour afficher le message de confirmation.
+    """
+    if not request.shop:
+        raise Http404("Aucune boutique détectée sur ce sous-domaine.")
+
+    from accounts.models import normalize_phone_sn
+
+    shop = request.shop
+    raw_phone = (request.POST.get("phone") or "").strip()
+    name = (request.POST.get("name") or "").strip()[:100]
+    email = (request.POST.get("email") or "").strip()[:254]
+
+    # Validation phone — obligatoire
+    try:
+        phone = normalize_phone_sn(raw_phone)
+    except Exception:
+        messages.error(
+            request,
+            "Numéro de téléphone invalide. Format attendu : 77 123 45 67 ou +221771234567.",
+        )
+        return redirect("shops_public:home")
+
+    # Création (ou silencieux si déjà inscrit). On wrap dans un savepoint
+    # transaction.atomic() pour que l'IntegrityError du UniqueConstraint ne
+    # casse pas la transaction parente (sinon impossible de continuer en
+    # tests + side-effects).
+    try:
+        with transaction.atomic():
+            signup = WaitlistSignup.objects.create(
+                shop=shop, name=name, phone=phone, email=email,
+            )
+    except IntegrityError:
+        # Déjà inscrit avec ce numéro pour cette boutique : on traite comme
+        # un succès silencieux (pas de double notif au commerçant).
+        signup = None
+
+    # Notif SMS au commerçant — best-effort, n'échoue pas le flow
+    if signup is not None and shop.owner and shop.owner.phone:
+        try:
+            from notifications.services.sms import send_sms
+            who = name or "Quelqu'un"
+            text = (
+                f"{who} ({phone}) attend l'ouverture de ta boutique "
+                f"{shop.name} sur Jappesi. Total liste d'attente : "
+                f"{shop.waitlist_signups.count()}. Ajoute tes premiers "
+                f"produits pour leur répondre !"
+            )
+            send_sms(shop.owner.phone, text)
+        except Exception:
+            pass
+
+    return redirect(f"{request.path}?merci=1")
+
+
 # ============ DASHBOARD ============
 
 @merchant_required
@@ -69,4 +144,24 @@ def shop_settings(request):
         form = ShopSettingsForm(instance=shop)
     return render(request, "dashboard/shop/settings.html", {
         "shop": shop, "form": form,
+    })
+
+
+@merchant_required
+def shop_waitlist_dashboard(request):
+    """Page dashboard : liste des inscrits à la waitlist du commerçant.
+
+    Permet au commerçant de voir qui attend l'ouverture de sa boutique.
+    Quand il aura mis ses premiers produits, il pourra contacter ces
+    personnes (par WhatsApp directement via les liens, ou plus tard avec
+    une fonction "Notifier toute la waitlist" en bulk SMS).
+    """
+    shop = request.merchant_shop
+    signups = shop.waitlist_signups.order_by("-created_at")
+    has_products = shop.products.filter(is_active=True).exists()
+    return render(request, "dashboard/shop/waitlist.html", {
+        "shop": shop,
+        "signups": signups,
+        "signup_count": signups.count(),
+        "has_products": has_products,
     })

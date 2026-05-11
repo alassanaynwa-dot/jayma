@@ -1,5 +1,6 @@
 {% extends "base/base.html" %}
 {% load static %}
+{% load onboarding_tags %}
 
 {% block extra_head %}
 <style>
@@ -34,6 +35,14 @@
     {% include "dashboard/partials/header.html" %}
 
     <main class="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 lg:pb-8">
+
+      {# Checklist d'onboarding — visible tant que les 6 étapes ne sont pas toutes
+         complétées. Cachée automatiquement quand boutique 100% configurée.
+         shop est injecté soit par la vue, soit par le context_processor merchant. #}
+      {% if shop %}
+        <div class="mb-6">{% onboarding_checklist shop %}</div>
+      {% endif %}
+
       {% if messages %}
         <div class="mb-6 space-y-2">
           {% for m in messages %}

@@ -1,0 +1,83 @@
+{# Checklist d'onboarding — affichée en haut du dashboard tant que pas 100%. #}
+{# Rien à rendre si onboarding=None (= boutique 100% configurée). #}
+{% if onboarding %}
+<div x-data="{ open: true }" class="rounded-2xl border border-jappesi-200 bg-gradient-to-br from-jappesi-50 to-white p-5 sm:p-6">
+
+  <div class="flex items-start sm:items-center gap-4 flex-wrap sm:flex-nowrap">
+    {# Cercle de progression à gauche #}
+    <div class="relative h-14 w-14 shrink-0">
+      <svg class="h-14 w-14 -rotate-90" viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="16" fill="none" stroke="#FCE6D5" stroke-width="3"/>
+        <circle cx="18" cy="18" r="16" fill="none" stroke="#C45C2A" stroke-width="3"
+                stroke-dasharray="{{ onboarding.percent }}, 100"
+                stroke-linecap="round"
+                pathLength="100"/>
+      </svg>
+      <div class="absolute inset-0 flex items-center justify-center font-serif text-sm font-semibold text-jappesi-700">
+        {{ onboarding.done_count }}/{{ onboarding.total }}
+      </div>
+    </div>
+
+    {# Titre + sous-titre #}
+    <div class="min-w-0 flex-1">
+      <h2 class="font-serif text-lg sm:text-xl font-medium text-ink-500">
+        Configure ta boutique pour vendre
+      </h2>
+      <p class="mt-0.5 text-sm text-slate-600">
+        {% if onboarding.percent < 100 %}
+          Plus que <strong>{{ onboarding.total|add:"-"|add:onboarding.done_count }}</strong>
+          étape{{ onboarding.steps|length|pluralize }} avant d'être prêt(e) à vendre.
+        {% else %}
+          Tu es prêt(e) à vendre !
+        {% endif %}
+      </p>
+    </div>
+
+    {# Toggle pour masquer/afficher la liste des étapes #}
+    <button @click="open = !open" type="button"
+            class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition">
+      <span x-show="open">Masquer</span>
+      <span x-show="!open" x-cloak>Voir les étapes</span>
+      <svg class="h-3.5 w-3.5 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </button>
+  </div>
+
+  {# Liste des étapes (collapsible) #}
+  <div x-show="open" x-transition class="mt-5">
+    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      {% for step in onboarding.steps %}
+        <li>
+          <a href="{% url step.url_name %}"
+             class="flex items-start gap-3 rounded-lg p-3 transition
+                    {% if step.done %}bg-emerald-50/50 border border-emerald-100{% else %}bg-white border border-slate-200 hover:border-jappesi-300 hover:bg-jappesi-50/30{% endif %}">
+            {# Icône check / cercle vide #}
+            {% if step.done %}
+              <span class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </span>
+            {% else %}
+              <span class="h-5 w-5 rounded-full border-2 border-slate-300 shrink-0 mt-0.5"></span>
+            {% endif %}
+
+            <div class="min-w-0 flex-1">
+              <div class="text-sm font-medium {% if step.done %}text-emerald-800{% else %}text-ink-500{% endif %}">
+                {{ step.label }}
+              </div>
+              {% if step.hint and not step.done %}
+                <div class="mt-0.5 text-xs text-slate-500 leading-snug">{{ step.hint }}</div>
+              {% endif %}
+            </div>
+
+            {% if not step.done %}
+              <svg class="h-4 w-4 text-slate-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            {% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</div>
+{% endif %}

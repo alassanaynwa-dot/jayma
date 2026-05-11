@@ -6,4 +6,5 @@ app_name = "shops_public"
 
 urlpatterns = [
     path("", views.shop_public_home, name="home"),
+    path("liste-attente/", views.shop_waitlist_register, name="waitlist_register"),
 ]

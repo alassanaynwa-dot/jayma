@@ -133,3 +133,48 @@ class Shop(models.Model):
         """URL publique complète de la boutique."""
         from django.conf import settings as dj_settings
         return f"https://{self.slug}.{dj_settings.JAYMA_ROOT_DOMAIN}"
+
+
+class WaitlistSignup(models.Model):
+    """Inscription à la liste d'attente d'une boutique en préparation.
+
+    Quand un visiteur arrive sur <slug>.jappesi.sn et que la boutique n'a
+    encore aucun produit actif, il voit une page "Boutique en préparation"
+    avec un formulaire pour être notifié de l'ouverture. Chaque soumission
+    crée une entrée WaitlistSignup, et un SMS est envoyé au commerçant pour
+    qu'il sache qu'un client potentiel attend.
+
+    Le couple (shop, phone) est unique pour éviter les doublons d'un même
+    visiteur qui re-soumet plusieurs fois.
+    """
+
+    shop = models.ForeignKey(
+        Shop,
+        on_delete=models.CASCADE,
+        related_name="waitlist_signups",
+    )
+    name = models.CharField(max_length=100, blank=True)
+    phone = models.CharField(
+        max_length=20,
+        help_text="Numéro WhatsApp normalisé E.164 (+221XXXXXXXXX).",
+    )
+    email = models.EmailField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    # Permet plus tard une fonction "Notifier la waitlist du lancement"
+    # qui ne renotifie pas ceux qui l'ont déjà été.
+    notified_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Inscription liste d'attente"
+        verbose_name_plural = "Inscriptions liste d'attente"
+        ordering = ("-created_at",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=("shop", "phone"),
+                name="uniq_waitlist_shop_phone",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.phone} → {self.shop.slug}"

@@ -3,9 +3,19 @@ from django.conf import settings
 
 
 def current_shop(request):
-    """Injecte shop, tenant_type et subdomain dans le contexte des templates."""
+    """Injecte shop, tenant_type et subdomain dans le contexte des templates.
+
+    Sur les sous-domaines boutique (<slug>.jappesi.sn), shop vient de
+    request.shop (résolu par TenantMiddleware via le slug).
+    Sur le dashboard (dashboard.jappesi.sn), shop vient de
+    request.merchant_shop (la boutique du commerçant connecté). Permet
+    aux templates dashboard d'utiliser {% if shop %} sans avoir à passer
+    shop explicitement dans chaque vue (notamment pour la checklist
+    d'onboarding).
+    """
+    shop = getattr(request, "shop", None) or getattr(request, "merchant_shop", None)
     return {
-        "shop": getattr(request, "shop", None),
+        "shop": shop,
         "tenant_type": getattr(request, "tenant_type", "public"),
         "subdomain": getattr(request, "subdomain", ""),
     }
