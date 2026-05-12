@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from django_ratelimit.decorators import ratelimit
 
 from accounts.decorators import merchant_required
 
@@ -18,6 +19,11 @@ from .models import Category, Product
 
 # ======================== BOUTIQUE PUBLIQUE ========================
 
+# 200 requêtes/h par IP : confortable pour un client humain (qui browse 5-30
+# produits par session) mais bloque un scraper qui voudrait aspirer toutes
+# les boutiques en série. Si un crawler legit (Google) déclenche, on peut
+# mettre les UAs allowlistées en exception côté Nginx plus tard.
+@ratelimit(key="ip", rate="200/h", method="GET", block=True)
 def product_list_public(request):
     """Catalogue d'une boutique sur <slug>.jappesi.sn."""
     if not request.shop:

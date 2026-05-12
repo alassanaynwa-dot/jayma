@@ -137,8 +137,18 @@ def webhook_wave(request):
 @csrf_exempt
 @require_POST
 def webhook_orange_money(request):
-    """Webhook OM — payload JSON."""
+    """Webhook OM — payload JSON.
+
+    OM ne signe pas son webhook avec un HMAC natif. Pour éviter qu'un
+    attaquant fake un POST avec status=SUCCESS, on cross-vérifie en
+    rappelant l'API OM (/transactionstatus/<pay_token>) — seul ce statut
+    fait foi. Sans pay_token, ou si l'API renvoie autre chose que SUCCESS,
+    on log le webhook mais on n'encaisse PAS le paiement.
+    """
     import json
+
+    from .services import orange_money
+
     try:
         payload = json.loads(request.body or b"{}")
     except Exception:
@@ -146,14 +156,34 @@ def webhook_orange_money(request):
 
     txn_id = payload.get("txnid", "")
     status = payload.get("status", "")
-    evt = _log_webhook("orange_money", txn_id, payload, True)
+    pay_token = payload.get("pay_token", "")
+
+    # Cross-check via API OM si le webhook prétend SUCCESS et qu'on a un
+    # pay_token. C'est l'équivalent fonctionnel d'un HMAC : seule l'API
+    # peut confirmer la vérité du paiement.
+    api_confirmed = False
+    if status == "SUCCESS" and pay_token:
+        try:
+            api_status = orange_money.check_transaction_status(pay_token)
+            api_confirmed = api_status.get("status") == "SUCCESS"
+        except orange_money.OrangeMoneyError as exc:
+            logger.warning("Webhook OM cross-check échoué (txn=%s) : %s", txn_id, exc)
+
+    evt = _log_webhook("orange_money", txn_id, payload, api_confirmed)
     if evt.processed:
         return JsonResponse({"ok": True, "duplicate": True})
 
-    if status == "SUCCESS":
-        payment = Payment.objects.filter(provider_reference=txn_id).first()
-        if payment:
-            mark_order_paid(payment.order, payment, payload)
+    if not api_confirmed:
+        # Webhook reçu mais non confirmé par l'API → potentiel fake. On log
+        # et on rejette sans encaisser. Si OM réessaie plus tard avec un
+        # statut confirmable, le webhook sera traité (processed=False ici).
+        logger.warning("Webhook OM non confirmé par API (txn=%s, status=%s)", txn_id, status)
+        return JsonResponse({"ok": False, "reason": "unconfirmed"}, status=403)
+
+    payment = Payment.objects.filter(provider_reference=txn_id).first()
+    if payment:
+        mark_order_paid(payment.order, payment, payload)
+
     evt.processed = True
     from django.utils import timezone
     evt.processed_at = timezone.now()
@@ -164,19 +194,49 @@ def webhook_orange_money(request):
 @csrf_exempt
 @require_POST
 def webhook_cinetpay(request):
-    """Webhook CinetPay — confirmation avec transaction_id."""
+    """Webhook CinetPay — confirmation avec transaction_id.
+
+    CinetPay signe son webhook via HMAC-SHA256 dans le header `x-token`.
+    On vérifie obligatoirement la signature avant de traiter le paiement
+    pour éviter qu'un attaquant fake un POST avec cpm_result=00.
+    En complément (best practice CinetPay), on cross-vérifie via l'API
+    /payment/check si la signature est OK.
+    """
+    from .services import cinetpay
+
+    raw_body = request.body
     payload = request.POST.dict() or {}
     txn_id = payload.get("cpm_trans_id", "")
-    evt = _log_webhook("cinetpay", txn_id, payload, True)
+
+    # 1. Vérification HMAC obligatoire
+    received_token = request.headers.get("X-Token", "")
+    sig_ok = cinetpay.verify_hmac(raw_body, received_token) if received_token else False
+
+    evt = _log_webhook("cinetpay", txn_id, payload, sig_ok)
+    if not sig_ok:
+        logger.warning("Webhook CinetPay signature invalide (txn=%s)", txn_id)
+        return HttpResponse("FORBIDDEN", status=403)
     if evt.processed:
         return HttpResponse("OK")
 
-
-    # Signal de succès (à confirmer via API check en prod)
+    # 2. Cross-check via API CinetPay (best practice doc CinetPay)
+    api_confirmed = False
     if payload.get("cpm_result") == "00":
-        payment = Payment.objects.filter(provider_reference=txn_id).first()
-        if payment:
-            mark_order_paid(payment.order, payment, payload)
+        try:
+            check = cinetpay.check_payment_status(txn_id)
+            # CinetPay renvoie data.status = "ACCEPTED" pour un paiement valide
+            api_confirmed = (check.get("data") or {}).get("status") == "ACCEPTED"
+        except cinetpay.CinetPayError as exc:
+            logger.warning("Webhook CinetPay cross-check échoué (txn=%s) : %s", txn_id, exc)
+
+    if not api_confirmed:
+        logger.warning("Webhook CinetPay non confirmé par API (txn=%s)", txn_id)
+        return HttpResponse("UNCONFIRMED", status=403)
+
+    payment = Payment.objects.filter(provider_reference=txn_id).first()
+    if payment:
+        mark_order_paid(payment.order, payment, payload)
+
     evt.processed = True
     from django.utils import timezone
     evt.processed_at = timezone.now()

@@ -9,6 +9,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 
+from core.validators import IMAGE_VALIDATORS
+
 
 class Category(models.Model):
     """Catégorie propre à une boutique.
@@ -242,7 +244,7 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE,
         related_name="images",
     )
-    image = models.ImageField(upload_to="products/")
+    image = models.ImageField(upload_to="products/", validators=list(IMAGE_VALIDATORS))
     alt_text = models.CharField(max_length=200, blank=True)
     is_primary = models.BooleanField(default=False)
     position = models.PositiveSmallIntegerField(default=0)

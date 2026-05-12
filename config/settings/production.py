@@ -3,6 +3,17 @@ from .base import *  # noqa: F401, F403
 
 DEBUG = False
 
+# Garde-fou : SECRET_KEY doit être explicitement défini en prod (pas de
+# fallback "insecure-dev-key-change-me" silencieux). Si la var d'env est
+# absente, on échoue au démarrage plutôt que de risquer un déploiement
+# avec une clé prévisible (qui casserait sessions, CSRF, signed cookies).
+if not SECRET_KEY or SECRET_KEY.startswith("insecure-"):  # noqa: F405
+    raise RuntimeError(
+        "DJANGO_SECRET_KEY manquante ou non sécurisée en production. "
+        "Génère une clé avec `python -c 'import secrets; "
+        "print(secrets.token_urlsafe(50))'` et mets-la dans .env."
+    )
+
 # ALLOWED_HOSTS est fourni via .env en prod
 
 # Sécurité HTTPS

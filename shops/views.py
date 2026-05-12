@@ -6,6 +6,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django_ratelimit.decorators import ratelimit
 
 from accounts.decorators import merchant_required
 
@@ -14,6 +15,10 @@ from .models import WaitlistSignup
 
 # ============ PUBLIC ============
 
+# 200 req/h par IP : protège contre un scraping en masse des homes boutiques.
+# Un visiteur normal qui rafraîchit ne sera jamais bloqué. Les crawlers legit
+# (Google, Bing) qui crawlent peuvent être whitelisted plus tard côté Nginx.
+@ratelimit(key="ip", rate="200/h", method="GET", block=True)
 def shop_public_home(request):
     if not request.shop:
         raise Http404("Aucune boutique détectée sur ce sous-domaine.")

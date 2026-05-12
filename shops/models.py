@@ -8,6 +8,18 @@ from django.conf import settings
 from django.core.validators import RegexValidator
 from django.db import models
 
+from core.validators import IMAGE_VALIDATORS
+
+
+def _image_validators():
+    """Wrapper utilisé pour passer la liste de validateurs aux ImageField.
+
+    Sert juste à éviter d'importer le tuple dans la signature du Field
+    (utile pour mocker en test si besoin).
+    """
+    return IMAGE_VALIDATORS
+
+
 # Slug de boutique : lettres minuscules, chiffres, tirets, 3-40 caractères
 slug_validator = RegexValidator(
     regex=r"^[a-z0-9]([a-z0-9-]{1,38}[a-z0-9])$",
@@ -84,8 +96,14 @@ class Shop(models.Model):
         db_index=True,
     )
     description = models.TextField(blank=True)
-    logo = models.ImageField(upload_to="shops/logos/", blank=True, null=True)
-    banner = models.ImageField(upload_to="shops/banners/", blank=True, null=True)
+    logo = models.ImageField(
+        upload_to="shops/logos/", blank=True, null=True,
+        validators=list(_image_validators()),
+    )
+    banner = models.ImageField(
+        upload_to="shops/banners/", blank=True, null=True,
+        validators=list(_image_validators()),
+    )
 
     # Contact affiché sur la boutique publique
     phone = models.CharField(max_length=20)
