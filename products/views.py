@@ -29,7 +29,12 @@ def product_list_public(request):
     if not request.shop:
         raise Http404()
     shop = request.shop
-    products = shop.products.filter(is_active=True).select_related("category").prefetch_related("images", "items_in_pack__item")
+    products = (
+        shop.products.with_ratings()
+        .filter(is_active=True)
+        .select_related("category")
+        .prefetch_related("images", "items_in_pack__item")
+    )
 
     q = request.GET.get("q", "").strip()
     cat_slug = request.GET.get("cat", "").strip()

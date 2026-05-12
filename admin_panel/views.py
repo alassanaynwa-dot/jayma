@@ -267,29 +267,51 @@ def admin_clients(request):
             | Q(client_email__icontains=q)
         )
 
+    # Tout aggréger en 1 query : on annote aussi le created_at max + le
+    # nom client le plus récent. Évite le N+1 (anciennement : 1 SELECT par
+    # client pour récupérer le last order).
+    from django.db.models import Max
+    from django.db.models.functions import Coalesce
+
     grouped = (
         orders_qs.values("client_phone")
         .annotate(
             orders_count=Count("id"),
             shops_count=Count("shop", distinct=True),
-            total_spent=Sum("total_xof"),
+            total_spent=Coalesce(Sum("total_xof"), 0),
             paid_count=Count("id", filter=Q(payment_status=Order.PaymentStatus.PAID)),
+            last_at=Max("created_at"),
         )
         .order_by("-total_spent")[:200]
     )
+    grouped = list(grouped)
 
-    rows = []
-    for g in grouped:
-        last = orders_qs.filter(client_phone=g["client_phone"]).order_by("-created_at").first()
-        rows.append({
+    # Récupère les noms (last) en 1 batch query au lieu de N
+    phones = [g["client_phone"] for g in grouped]
+    last_names = {}
+    if phones:
+        # On prend le client_name de la commande la plus récente par téléphone.
+        # Postgres-friendly : DISTINCT ON sur (client_phone, -created_at).
+        last_orders = (
+            Order.objects.filter(client_phone__in=phones)
+            .order_by("client_phone", "-created_at")
+            .distinct("client_phone")
+            .values_list("client_phone", "client_name")
+        )
+        last_names = dict(last_orders)
+
+    rows = [
+        {
             "phone": g["client_phone"],
-            "name": last.client_name if last else "",
+            "name": last_names.get(g["client_phone"], ""),
             "orders_count": g["orders_count"],
             "shops_count": g["shops_count"],
-            "total_spent": g["total_spent"] or 0,
-            "paid_count": g["paid_count"] or 0,
-            "last_at": last.created_at if last else None,
-        })
+            "total_spent": g["total_spent"],
+            "paid_count": g["paid_count"],
+            "last_at": g["last_at"],
+        }
+        for g in grouped
+    ]
 
     return render(request, "admin_panel/clients_list.html", {
         "clients": rows, "q": q,

@@ -36,22 +36,41 @@ def shop_public_home(request):
             "submitted": request.GET.get("merci") == "1",
         })
 
-    featured = shop.products.filter(is_active=True, is_featured=True).prefetch_related("images")[:8]
-    latest = shop.products.filter(is_active=True).prefetch_related("images")[:8]
+    featured = (
+        shop.products.with_ratings()
+        .filter(is_active=True, is_featured=True)
+        .prefetch_related("images")[:8]
+    )
+    latest = (
+        shop.products.with_ratings()
+        .filter(is_active=True)
+        .prefetch_related("images")[:8]
+    )
 
     # Catégories : on n'affiche QUE les univers (racines) avec un compteur
     # qui inclut les produits du parent + de ses sous-catégories. On masque
     # les univers vides (0 produit) pour ne pas encombrer la home.
+    #
+    # Optimisation : on compte les produits actifs pour TOUTES les categories
+    # de la boutique en 1 seule query GROUP BY, puis on agrège côté Python
+    # parent + enfants. Évite le N+1 (1 SELECT COUNT par univers).
+    cat_counts = dict(
+        shop.products.filter(is_active=True, category__isnull=False)
+        .values("category_id")
+        .annotate(c=models.Count("id"))
+        .values_list("category_id", "c")
+    )
     roots = list(
         shop.categories.filter(parent__isnull=True, is_active=True)
         .order_by("position", "name")
         .prefetch_related("children")
     )
     for root in roots:
-        cat_ids = [root.pk] + [c.pk for c in root.children.all() if c.is_active]
-        root.products_count = shop.products.filter(
-            category_id__in=cat_ids, is_active=True,
-        ).count()
+        children_ids = [c.pk for c in root.children.all() if c.is_active]
+        root.products_count = (
+            cat_counts.get(root.pk, 0)
+            + sum(cat_counts.get(cid, 0) for cid in children_ids)
+        )
     categories = [r for r in roots if r.products_count > 0]
 
     # Bannière promo : premier coupon actif + dans les dates + quota non atteint

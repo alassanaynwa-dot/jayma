@@ -49,11 +49,29 @@ class PlatformSettings(models.Model):
     def __str__(self):
         return "Réglages plateforme"
 
+    CACHE_KEY = "platform_settings:singleton"
+    CACHE_TIMEOUT = 600  # 10 min — invalidation explicite via save()
+
     def save(self, *args, **kwargs):
+        from django.core.cache import cache
         self.pk = 1
         super().save(*args, **kwargs)
+        # Invalider le cache : le prochain load() relira depuis la BDD
+        cache.delete(self.CACHE_KEY)
 
     @classmethod
     def load(cls) -> "PlatformSettings":
+        """Charge le singleton — caché Redis 10 min pour éviter les hits SQL.
+
+        Cette méthode est appelée à chaque envoi SMS (kill-switch) et à
+        chaque request dashboard (théoriquement) → ~100s appels/jour. Sans
+        cache, c'est ~100s SELECT * FROM core_platformsettings/jour. Avec
+        cache, c'est 1 SELECT toutes les 10 min, sauf invalidation.
+        """
+        from django.core.cache import cache
+        cached = cache.get(cls.CACHE_KEY)
+        if cached is not None:
+            return cached
         obj, _ = cls.objects.get_or_create(pk=1)
+        cache.set(cls.CACHE_KEY, obj, cls.CACHE_TIMEOUT)
         return obj

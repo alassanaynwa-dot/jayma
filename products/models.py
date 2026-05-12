@@ -26,6 +26,7 @@ class Category(models.Model):
         "shops.Shop",
         on_delete=models.CASCADE,
         related_name="categories",
+        db_index=True,
     )
     parent = models.ForeignKey(
         "self",
@@ -33,6 +34,7 @@ class Category(models.Model):
         on_delete=models.SET_NULL,
         related_name="children",
         help_text="Catégorie parente. Vide = catégorie racine (univers).",
+        db_index=True,
     )
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
@@ -83,6 +85,27 @@ class Category(models.Model):
         return [self, *self.children.all()]
 
 
+class ProductQuerySet(models.QuerySet):
+    """QuerySet personnalisé pour Product avec helpers de perf."""
+
+    def with_ratings(self):
+        """Annote rating_avg_anno + rating_count_anno en 1 query.
+
+        Évite N+1 sur les listes de produits qui affichent les notes
+        (toutes les pages catalogue, home boutique, etc.). Utilise les
+        attributs *_anno pour ne pas écraser les FK Django.
+        """
+        from django.db.models import Avg, Count, Q
+        return self.annotate(
+            rating_count_anno=Count(
+                "reviews", filter=Q(reviews__is_approved=True), distinct=True,
+            ),
+            rating_avg_anno=Avg(
+                "reviews__rating", filter=Q(reviews__is_approved=True),
+            ),
+        )
+
+
 class Product(models.Model):
     """Produit d'une boutique — prix en XOF entier. Peut être simple ou pack."""
 
@@ -100,7 +123,10 @@ class Product(models.Model):
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name="products",
+        db_index=True,
     )
+
+    objects = ProductQuerySet.as_manager()
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200)
     description = models.TextField(blank=True)
@@ -202,7 +228,25 @@ class Product(models.Model):
 
     @property
     def rating_summary(self) -> dict:
-        """Retourne {avg, count} des avis approuvés pour ce produit."""
+        """Retourne {avg, count} des avis approuvés pour ce produit.
+
+        Si la queryset a été annotée avec rating_avg/rating_count via
+        Product.objects.with_ratings() (ce qui est le cas dans toutes les
+        vues qui listent N produits), on lit ces attributs en O(0) au lieu
+        de refaire 2 queries SQL par produit.
+
+        Sinon (cas isolé : page détail d'1 produit), on fallback en mode
+        2 queries — acceptable pour 1 seul produit.
+        """
+        # Fast path : annotation présente sur la queryset
+        if hasattr(self, "rating_count_anno"):
+            count = self.rating_count_anno or 0
+            avg = self.rating_avg_anno
+            if count == 0:
+                return {"avg": None, "count": 0}
+            return {"avg": round(avg, 1) if avg is not None else None, "count": count}
+
+        # Fallback : 2 queries (acceptable pour 1 produit isolé)
         qs = self.reviews.filter(is_approved=True)
         count = qs.count()
         if count == 0:
