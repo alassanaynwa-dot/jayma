@@ -22,17 +22,28 @@ def current_shop(request):
 
 
 def jayma_urls(request):
-    """
-    Expose les URLs de la plateforme (sans sous-domaine et avec sous-domaines
-    principaux), calculées dynamiquement à partir du host courant.
+    """Expose les URLs de la plateforme (root + sous-domaines principaux).
+
+    Les clés `jappesi_*_url` sont les noms officiels depuis le rebrand.
+    Les clés `jayma_*_url` sont conservées comme alias rétro-compatibles
+    (1 release) pour que les templates existants continuent de marcher
+    sans modification ; à supprimer dans la release suivante.
     """
     host = request.get_host()
     scheme = "https" if request.is_secure() else "http"
     port = ":" + host.split(":", 1)[1] if ":" in host else ""
-    root = settings.JAYMA_ROOT_DOMAIN
+    root = settings.JAPPESI_ROOT_DOMAIN
+
+    root_url = f"{scheme}://{root}{port}"
+    dashboard_url = f"{scheme}://dashboard.{root}{port}"
+    admin_url = f"{scheme}://admin.{root}{port}"
 
     return {
-        "jayma_root_url":      f"{scheme}://{root}{port}",
-        "jayma_dashboard_url": f"{scheme}://dashboard.{root}{port}",
-        "jayma_admin_url":     f"{scheme}://admin.{root}{port}",
+        "jappesi_root_url":      root_url,
+        "jappesi_dashboard_url": dashboard_url,
+        "jappesi_admin_url":     admin_url,
+        # Alias rétro-compatibles
+        "jayma_root_url":      root_url,
+        "jayma_dashboard_url": dashboard_url,
+        "jayma_admin_url":     admin_url,
     }

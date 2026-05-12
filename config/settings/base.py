@@ -36,7 +36,16 @@ ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS")
 # ----------------------------------------------------------------
 # Domaine racine Jappesi
 # ----------------------------------------------------------------
-JAYMA_ROOT_DOMAIN = env("JAYMA_ROOT_DOMAIN", default="jappesi.sn")
+# Var d'env recommandée : JAPPESI_ROOT_DOMAIN. JAYMA_ROOT_DOMAIN reste
+# accepté comme fallback pour les .env qui datent de l'époque Jayma →
+# pas de rupture pour les déploiements existants au moment du rename.
+JAPPESI_ROOT_DOMAIN = env(
+    "JAPPESI_ROOT_DOMAIN",
+    default=env("JAYMA_ROOT_DOMAIN", default="jappesi.sn"),
+)
+# Alias rétro-compatible — supprimable après une release qui aura
+# migré toutes les références internes vers JAPPESI_ROOT_DOMAIN.
+JAYMA_ROOT_DOMAIN = JAPPESI_ROOT_DOMAIN
 
 # ----------------------------------------------------------------
 # Applications

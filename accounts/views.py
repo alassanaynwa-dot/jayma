@@ -143,5 +143,3 @@ def check_notifications(request):
     })
 
 
-# Vue historique conservée pour compatibilité du dispatcher
-dashboard_redirect = dashboard_home
