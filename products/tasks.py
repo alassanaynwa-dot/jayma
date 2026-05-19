@@ -5,6 +5,8 @@ from celery import shared_task
 from django.conf import settings
 from django.utils import timezone
 
+from notifications.services.sms import send_sms
+
 from .models import Product, StockAlert
 
 logger = logging.getLogger("jayma")
@@ -36,7 +38,6 @@ def notify_stock_back(product_id: int) -> int:
             f"chez {shop.name}. Commande vite : {url}"
         )
         try:
-            from notifications.services.sms import send_sms
             send_sms(alert.client_phone, text)
             alert.notified_at = timezone.now()
             alert.save(update_fields=["notified_at"])

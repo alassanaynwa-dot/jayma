@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from accounts.decorators import merchant_required
+from notifications.services.sms import send_sms
 from orders.models import Order
 
 from .forms import CourierForm, DeliveryZoneForm
@@ -215,7 +216,6 @@ def assign_courier(request, reference):
         messages.success(request, f"Commande assignée à {order.courier.name}.")
         # SMS au livreur avec lien portail direct
         try:
-            from notifications.services.sms import send_sms
             portal = build_portal_url(order.courier)
             send_sms(
                 order.courier.phone,

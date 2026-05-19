@@ -16,6 +16,8 @@ import logging
 from django.db import transaction
 from django.utils import timezone
 
+from notifications.services.sms import send_sms
+
 from ..models import Order
 
 logger = logging.getLogger("jayma")
@@ -95,7 +97,6 @@ def _notify_client(order: Order) -> None:
         return
 
     try:
-        from notifications.services.sms import send_sms
         send_sms(order.client_phone, text)
     except Exception:
         logger.exception("Échec SMS client pour order %s", order.reference)

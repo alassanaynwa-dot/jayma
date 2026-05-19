@@ -1,4 +1,6 @@
 """Vues shops — boutique publique + paramètres dashboard."""
+import logging
+
 from django.contrib import messages
 from django.core.cache import cache
 from django.db import IntegrityError, models, transaction
@@ -9,9 +11,12 @@ from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
 
 from accounts.decorators import merchant_required
+from notifications.services.sms import send_sms
 
 from .forms import ShopSettingsForm
 from .models import WaitlistSignup
+
+logger = logging.getLogger("jayma")
 
 # ============ PUBLIC ============
 
@@ -137,7 +142,6 @@ def shop_waitlist_register(request):
     # Notif SMS au commerçant — best-effort, n'échoue pas le flow
     if signup is not None and shop.owner and shop.owner.phone:
         try:
-            from notifications.services.sms import send_sms
             who = name or "Quelqu'un"
             text = (
                 f"{who} ({phone}) attend l'ouverture de ta boutique "
@@ -147,7 +151,7 @@ def shop_waitlist_register(request):
             )
             send_sms(shop.owner.phone, text)
         except Exception:
-            pass
+            logger.exception("Échec notif SMS waitlist au commerçant %s", shop.slug)
 
     return redirect(f"{request.path}?merci=1")
 

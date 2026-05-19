@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from core.services.emails import send_branded_email
+from notifications.services.sms import send_sms
 
 logger = logging.getLogger("jayma")
 User = get_user_model()
@@ -25,7 +26,6 @@ def reset_merchant_password(user) -> str:
 
     # SMS
     try:
-        from notifications.services.sms import send_sms
         send_sms(
             user.phone,
             f"Jappesi : ton mot de passe a ete reinitialise. "

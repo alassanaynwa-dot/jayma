@@ -22,6 +22,8 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.utils import timezone
 
+from notifications.services.sms import send_sms
+
 from ..models import OTPToken
 
 logger = logging.getLogger("jayma")
@@ -73,7 +75,6 @@ def send_otp(phone: str) -> OTPResult:
     # Envoi SMS (best-effort, n'échoue pas le flow)
     text = f"Ton code Jappesi : {code} (valable {OTP_LIFETIME_MIN} min). Ne le partage avec personne."
     try:
-        from notifications.services.sms import send_sms
         send_sms(phone, text)
     except Exception:
         logger.exception("Échec envoi SMS OTP pour %s", phone)

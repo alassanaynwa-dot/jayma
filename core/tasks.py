@@ -5,6 +5,7 @@ from celery import shared_task
 from django.conf import settings
 
 from core.services.emails import send_branded_email
+from notifications.services.sms import send_sms
 from shops.models import Shop, ShopRequest
 
 logger = logging.getLogger("jayma")
@@ -60,7 +61,6 @@ def send_merchant_welcome(shop_id: int, temp_password: str | None = None) -> Non
 
     # --- SMS (inchangé, on garde le format court existant) ---
     try:
-        from notifications.services.sms import send_sms
         sms_text = (
             f"Felicitations ! Ta boutique Jappesi est en ligne sur "
             f"{shop.slug}.{settings.JAYMA_ROOT_DOMAIN}. "

@@ -1,4 +1,6 @@
 """Vues core — landing, formulaire demande de boutique."""
+import logging
+
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -6,6 +8,8 @@ from django_ratelimit.decorators import ratelimit
 
 from .forms import ShopRequestForm
 from .tasks import notify_admin_of_new_request
+
+logger = logging.getLogger("jayma")
 
 LANDING_STATS = {
     # Valeurs vitrine — à remplacer par des chiffres réels dès qu'on dépasse
@@ -130,8 +134,9 @@ def shop_request(request):
             try:
                 notify_admin_of_new_request.delay(sr.pk)
             except Exception:
-                # Si Celery est indisponible, on envoie quand même l'email
-                # inline pour ne pas perdre la notif en dev.
+                # Si Celery est indisponible (broker down, worker absent), on
+                # envoie quand même l'email inline pour ne pas perdre la notif.
+                logger.warning("Celery indisponible pour notify_admin (sr=%s), fallback inline", sr.pk)
                 notify_admin_of_new_request(sr.pk)
 
             messages.success(request, "Ta demande a bien été reçue !")

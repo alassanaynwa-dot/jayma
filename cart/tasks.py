@@ -6,6 +6,8 @@ from celery import shared_task
 from django.conf import settings
 from django.utils import timezone
 
+from notifications.services.sms import send_sms
+
 from .models import AbandonedCart
 
 logger = logging.getLogger("jayma")
@@ -59,7 +61,6 @@ def _send_reminder_sms(ac: AbandonedCart) -> None:
         f"{ac.shop.slug}.{root}/panier/"
     )
     try:
-        from notifications.services.sms import send_sms
         send_sms(ac.client_phone, text)
         ac.reminded_at = timezone.now()
         ac.save(update_fields=["reminded_at"])

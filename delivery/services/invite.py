@@ -3,6 +3,8 @@ import logging
 
 from django.conf import settings
 
+from notifications.services.sms import send_sms
+
 from ..models import Courier
 from .tokens import make_courier_token
 
@@ -20,7 +22,6 @@ def send_portal_link(courier: Courier) -> None:
         f"Ouvre : {url} (lien valable 90 jours)"
     )
     try:
-        from notifications.services.sms import send_sms
         send_sms(courier.phone, text)
     except Exception:
         logger.exception("Échec envoi SMS portail pour courier %s", courier.pk)

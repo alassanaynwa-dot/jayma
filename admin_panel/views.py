@@ -13,6 +13,7 @@ from core.models import PlatformSettings
 from core.tasks import send_merchant_welcome
 from delivery.models import Courier
 from notifications.models import NotificationLog
+from notifications.services.sms import send_sms
 from orders.models import Order
 from payments.models import WebhookEvent
 from products.models import Category, Product, ProductReview
@@ -535,7 +536,6 @@ def admin_sms_test(request):
     """
     from django.conf import settings as dj_settings
 
-    from notifications.services.sms import send_sms
 
     DEFAULT_MSG = "Test SMS Jappesi — merci d'ignorer ce message."
     log = None
@@ -974,7 +974,6 @@ def admin_user_send_reengage(request, pk):
     """Envoie un SMS de relance à un commerçant zombie."""
     from django.contrib.auth import get_user_model
 
-    from notifications.services.sms import send_sms
 
     User = get_user_model()
     user = get_object_or_404(User, pk=pk)

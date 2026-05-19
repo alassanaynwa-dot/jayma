@@ -5,6 +5,7 @@ from celery import shared_task
 from django.conf import settings
 
 from core.services.emails import send_branded_email
+from notifications.services.sms import send_sms
 from orders.models import Order
 
 logger = logging.getLogger("jayma")
@@ -38,7 +39,6 @@ def notify_merchant_payment_received(order_id: int) -> None:
 
     # SMS
     try:
-        from notifications.services.sms import send_sms
         send_sms(
             owner.phone,
             f"Jappesi : commande {order.reference} payee ({order.total_xof} XOF). "
