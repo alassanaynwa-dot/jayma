@@ -125,6 +125,11 @@ class Order(models.Model):
         indexes = [
             models.Index(fields=["shop", "status"]),
             models.Index(fields=["shop", "-created_at"]),
+            # Composite pour les dashboards admin / commerçant qui filtrent
+            # par payment_status et trient par date (revenus, commissions).
+            # Devient critique à 10k+ commandes — anticipé maintenant pour
+            # éviter une migration tardive sous charge.
+            models.Index(fields=["payment_status", "-created_at"]),
         ]
 
     def __str__(self):

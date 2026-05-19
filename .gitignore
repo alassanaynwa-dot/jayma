@@ -53,3 +53,4 @@ static/css/main.css.map
 # Celery
 celerybeat-schedule
 celerybeat.pid
+.claude/

@@ -212,10 +212,17 @@ class Product(models.Model):
         return self.kind == self.Kind.PACK
 
     def total_savings(self) -> int:
-        """Pour un pack : combien on économise par rapport aux prix individuels."""
+        """Pour un pack : combien on économise par rapport aux prix individuels.
+
+        select_related("item") évite le N+1 — sans ça on faisait 1 query
+        par PackItem pour fetcher son `item` lié (3-10 produits par pack).
+        """
         if not self.is_pack:
             return 0
-        total = sum(item.item.price * item.quantity for item in self.items_in_pack.all())
+        total = sum(
+            item.item.price * item.quantity
+            for item in self.items_in_pack.select_related("item")
+        )
         return max(total - self.price, 0)
 
     @property
