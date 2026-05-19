@@ -258,64 +258,13 @@ def admin_order_detail(request, reference):
 
 @platform_admin_required
 def admin_clients(request):
+    """Liste des clients cross-boutique. Logique d'agrégation → services/clients.py."""
+    from .services.clients import list_top_clients
+
     q = (request.GET.get("q") or "").strip()
-
-    orders_qs = Order.objects.all()
-    if q:
-        orders_qs = orders_qs.filter(
-            Q(client_name__icontains=q)
-            | Q(client_phone__icontains=q)
-            | Q(client_email__icontains=q)
-        )
-
-    # Tout aggréger en 1 query : on annote aussi le created_at max + le
-    # nom client le plus récent. Évite le N+1 (anciennement : 1 SELECT par
-    # client pour récupérer le last order).
-    from django.db.models import Max
-    from django.db.models.functions import Coalesce
-
-    grouped = (
-        orders_qs.values("client_phone")
-        .annotate(
-            orders_count=Count("id"),
-            shops_count=Count("shop", distinct=True),
-            total_spent=Coalesce(Sum("total_xof"), 0),
-            paid_count=Count("id", filter=Q(payment_status=Order.PaymentStatus.PAID)),
-            last_at=Max("created_at"),
-        )
-        .order_by("-total_spent")[:200]
-    )
-    grouped = list(grouped)
-
-    # Récupère les noms (last) en 1 batch query au lieu de N
-    phones = [g["client_phone"] for g in grouped]
-    last_names = {}
-    if phones:
-        # On prend le client_name de la commande la plus récente par téléphone.
-        # Postgres-friendly : DISTINCT ON sur (client_phone, -created_at).
-        last_orders = (
-            Order.objects.filter(client_phone__in=phones)
-            .order_by("client_phone", "-created_at")
-            .distinct("client_phone")
-            .values_list("client_phone", "client_name")
-        )
-        last_names = dict(last_orders)
-
-    rows = [
-        {
-            "phone": g["client_phone"],
-            "name": last_names.get(g["client_phone"], ""),
-            "orders_count": g["orders_count"],
-            "shops_count": g["shops_count"],
-            "total_spent": g["total_spent"],
-            "paid_count": g["paid_count"],
-            "last_at": g["last_at"],
-        }
-        for g in grouped
-    ]
-
+    clients = list_top_clients(q=q)
     return render(request, "admin_panel/clients_list.html", {
-        "clients": rows, "q": q,
+        "clients": clients, "q": q,
     })
 
 
@@ -398,53 +347,11 @@ def admin_commission_mark_paid(request, pk):
 
 @platform_admin_required
 def admin_commissions_export_csv(request):
-    """Export CSV streamé des commissions (filtrable par ?state=unpaid|paid|all)."""
-    import csv
-
-    from django.http import StreamingHttpResponse
+    """Export CSV streamé des commissions. Logique → services/exports.py."""
+    from .services.exports import stream_commissions_csv
 
     filter_state = request.GET.get("state", "unpaid")
-    qs = Commission.objects.select_related("order", "shop", "shop__owner").order_by("-created_at")
-    if filter_state == "unpaid":
-        qs = qs.filter(is_paid=False)
-    elif filter_state == "paid":
-        qs = qs.filter(is_paid=True)
-
-    class Echo:
-        """File-like qui yield au lieu d'écrire — pour streaming."""
-        def write(self, value):
-            return value
-
-    writer = csv.writer(Echo())
-    columns = [
-        "Référence commande", "Boutique", "Slug", "Commerçant", "Email",
-        "Date", "Vente XOF", "Taux %", "Commission XOF", "À reverser XOF",
-        "Reversé", "Date reversement", "Référence virement",
-    ]
-
-    def rows():
-        yield writer.writerow(columns)
-        for c in qs.iterator():
-            yield writer.writerow([
-                c.order.reference,
-                c.shop.name,
-                c.shop.slug,
-                c.shop.owner.username,
-                c.shop.owner.email,
-                c.created_at.strftime("%Y-%m-%d %H:%M"),
-                c.sale_amount_xof,
-                f"{c.rate}",
-                c.commission_xof,
-                c.merchant_amount_xof,
-                "oui" if c.is_paid else "non",
-                c.paid_at.strftime("%Y-%m-%d") if c.paid_at else "",
-                c.payout_reference or "",
-            ])
-
-    response = StreamingHttpResponse(rows(), content_type="text/csv; charset=utf-8")
-    fname = f"commissions_{filter_state}_{timezone.now().strftime('%Y%m%d_%H%M')}.csv"
-    response["Content-Disposition"] = f'attachment; filename="{fname}"'
-    return response
+    return stream_commissions_csv(filter_state)
 
 
 @platform_admin_required
